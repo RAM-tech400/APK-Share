@@ -6,6 +6,8 @@ import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -80,5 +82,25 @@ public class MainActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.mainMenuItemSort) {
+            //TODO: implement here.
+        } else if (item.getItemId() == R.id.mainMenuItemType) {
+            //TODO: implement here.
+        } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
+            //TODO: implement here.
+        } else if (item.getItemId() == R.id.mainMenuItemSettings) {
+            //TODO: implement here.
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mainMenuItemSort"
+        android:title="@string/sort_by"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/mainMenuItemType"
+        android:title="@string/application_type"
+        android:icon="@drawable/is_group"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/mainMenuItemColumnCount"
+        android:title="@string/column_count"
+        android:icon="@drawable/ic_grid"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/mainMenuItemSettings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_cog"
+        app:showAsAction="ifRoom"/>
+</menu>
