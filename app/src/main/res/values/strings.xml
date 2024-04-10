@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">APK Share</string>
     <string name="send">Send</string>
+    <string name="app_version">App Version</string>
 </resources>
