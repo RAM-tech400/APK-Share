@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="sortOptions">
+        <item>Name</item>
+        <item>Install date</item>
+        <item>Size</item>
+    </array>
+    <array name="appCategories">
+        <item>All</item>
+        <item>Game</item>
+        <item>Multi media</item>
+        <item>Social</item>
+        <item>Other</item>
+</array>
+</resources>
