@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String PREFERENCES_SETTINGS = "Settings";
     public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
+    public static final String PREFERENCES_SETTINGS_COLUMN_COUNT = "Column count";
 
     public static final int FLAG_SORT_BY_NAME = 0;
     public static final int FLAG_SORT_BY_INSTALL_DATE = 1;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAppsOnScreen() {
         MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }
 
@@ -155,10 +156,32 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.mainMenuItemType) {
             //TODO: implement here.
         } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
-            //TODO: implement here.
+            AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.column_count)
+                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 0), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
+                            recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
+                            recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemSettings) {
             //TODO: implement here.
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+            menu.getItem(2).setIcon(R.drawable.ic_list);
+        } else {
+            menu.getItem(2).setIcon(R.drawable.ic_grid);
+        }
+        return true;
     }
 }
