@@ -29,9 +29,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private FloatingActionButton fabSend;
+    public static FloatingActionButton fabSend;
 
     private List<PackageInfo> installedPackagesInfo;
+    private List<Boolean> selectionTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +51,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAppsOnScreen() {
-        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo);
+        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.setAdapter(adapter);
     }
 
     private void getInstalledApps() {
         installedPackagesInfo = new ArrayList<PackageInfo>();
-        PackageManager pm = getPackageManager();
-        installedPackagesInfo = pm.getInstalledPackages(PackageManager.GET_META_DATA);
+        selectionTracker = new ArrayList<Boolean>();
+        for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
+            installedPackagesInfo.add(pi);
+            selectionTracker.add(false);
+        }
     }
 
     private void init() {
