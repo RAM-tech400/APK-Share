@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
             menu.getItem(2).setIcon(R.drawable.ic_list);
         } else {
-            menu.getItem(2).setIcon(R.drawable.ic_grid);
+            menu.getItem(2).setIcon(R.drawable.ic_grid_view);
         }
         return true;
     }

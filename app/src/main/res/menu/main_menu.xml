@@ -4,24 +4,24 @@
     <item
         android:id="@+id/mainMenuItemSort"
         android:title="@string/sort_by"
-        android:icon="@drawable/ic_sort"
+        android:icon="@drawable/ic_filter_list"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/mainMenuItemType"
         android:title="@string/application_type"
-        android:icon="@drawable/is_group"
+        android:icon="@drawable/ic_category"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/mainMenuItemColumnCount"
         android:title="@string/column_count"
-        android:icon="@drawable/ic_grid"
+        android:icon="@drawable/ic_grid_view"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/mainMenuItemSettings"
         android:title="@string/settings"
-        android:icon="@drawable/ic_cog"
+        android:icon="@drawable/ic_settings"
         app:showAsAction="ifRoom"/>
 </menu>
