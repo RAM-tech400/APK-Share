@@ -1,5 +1,6 @@
 package com.ramapps.apkshare;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -7,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,11 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -131,9 +135,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        ((MenuBuilder) menu).setOptionalIconsVisible(true);
+        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+            menu.getItem(2).setIcon(R.drawable.ic_list);
+        } else {
+            menu.getItem(2).setIcon(R.drawable.ic_grid_view);
+        }
         return true;
     }
 
@@ -165,22 +176,17 @@ public class MainActivity extends AppCompatActivity {
                             recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
                             recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
                             dialog.dismiss();
+                            if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+                                item.setIcon(R.drawable.ic_list);
+                            } else {
+                                item.setIcon(R.drawable.ic_grid_view);
+                            }
                         }
                     })
                     .create();
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemSettings) {
             //TODO: implement here.
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
-            menu.getItem(2).setIcon(R.drawable.ic_list);
-        } else {
-            menu.getItem(2).setIcon(R.drawable.ic_grid_view);
         }
         return true;
     }
