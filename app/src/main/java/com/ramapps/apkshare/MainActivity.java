@@ -3,6 +3,7 @@ package com.ramapps.apkshare;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Insets;
@@ -110,8 +111,10 @@ public class MainActivity extends AppCompatActivity {
         installedPackagesInfo = new ArrayList<PackageInfo>();
         selectionTracker = new ArrayList<Boolean>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
-            installedPackagesInfo.add(pi);
-            selectionTracker.add(false);
+            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0){
+                installedPackagesInfo.add(pi);
+                selectionTracker.add(false);
+            }
         }
     }
 
