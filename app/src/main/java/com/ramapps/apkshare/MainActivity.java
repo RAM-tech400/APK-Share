@@ -2,14 +2,17 @@ package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Insets;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.content.FileProvider;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -65,7 +69,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) getWindow().setNavigationBarColor(0x88FFFFFF);
         init();
+        addListeners();
         setSupportActionBar(toolbar);
+    }
+
+    private void addListeners() {
+        fabSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Uri> pickedAppsUri = new ArrayList<Uri>();
+                for(int i = 0; i < installedPackagesInfo.size(); i++) {
+                    if(selectionTracker.get(i)) {
+                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
+                        Uri uri = FileProvider.getUriForFile(getApplicationContext(), ".provider", file);
+                        pickedAppsUri.add(uri);
+                    }
+                }
+                Intent intent = new Intent();
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("text/plain");
+                startActivity(intent);
+                if (pickedAppsUri.size() == 1) {
+                    intent.setAction(Intent.ACTION_SEND);
+                    intent.putExtra(Intent.EXTRA_STREAM, pickedAppsUri.get(0));
+                } else {
+                    intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, (ArrayList<? extends Parcelable>) pickedAppsUri);
+                }
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
