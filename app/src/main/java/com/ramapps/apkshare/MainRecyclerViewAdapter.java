@@ -1,8 +1,10 @@
 package com.ramapps.apkshare;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 
+import java.io.File;
 import java.util.List;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
@@ -70,6 +74,27 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 ((MaterialCardView) v).setChecked(selectionTracker.get(index));
             }
         });
+        holder.getCardViewContainer().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+                if (action == 1) {
+                    Intent intent = new Intent(Intent.ACTION_DELETE);
+                    intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                    context.startActivity(intent);
+                } else if (action == 2) {
+                    File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, ".provider", file));
+                    context.startActivity(Intent.createChooser(intent, "Share apk file via: "));
+                } else {
+                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -97,6 +122,16 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             try {
                 imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));
                 textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
+                int quickInfoSettings = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1);
+                if (quickInfoSettings == 1) {
+                    textViewAppDetail.setText(packageInfo.packageName);
+                } else if (quickInfoSettings == 2) {
+                    textViewAppDetail.setText(packageInfo.versionCode + "");
+                } else if (quickInfoSettings == 3) {
+                    textViewAppDetail.setText(packageInfo.versionName);
+                } else {
+                    textViewAppDetail.setVisibility(View.GONE);
+                }
                 textViewAppDetail.setText(packageInfo.versionName);
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);

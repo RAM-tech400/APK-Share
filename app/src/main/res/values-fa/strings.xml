@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="send">ارسال</string>
+    <string name="app_version">نسخه برنامه</string>
+    <string name="sort_by">مرتب سازی با</string>
+    <string name="application_type">نوع برنامه</string>
+    <string name="settings">تنظیمات</string>
+    <string name="column_count">تعداد ستون</string>
+    <string name="general">عمومی</string>
+    <string name="open_application">باز کردن برنامه</string>
+    <string name="long_press_action">عمل لمس طولانی</string>
+    <string name="quick_info">اطلاعات سریع</string>
+    <string name="package_name">نام بسته</string>
+    <string name="language">زبان</string>
+    <string name="system_default">پیشفرض سامانه</string>
+    <string name="display">نمایش</string>
+    <string name="dynamic_colors">رنگ‌های پویا</string>
+    <string name="night_mode">حالت شب</string>
+    <string name="app_theme">طرح برنامه</string>
+    <string name="more">بیشتر</string>
+    <string name="help_and_feedback">راهنما و بازخورد</string>
+    <string name="about">درباره</string>
+    <string name="uninstall_application">حذف نصب برنامه</string>
+    <string name="direct_share">اشتراک گذاری مستقیم</string>
+    <string name="none">هیچکدام</string>
+    <string name="version_code">رمز نسخه</string>
+    <string name="version_name">نام نسخه</string>
+    <string name="default_colors">رنگ‌های پیشفرض</string>
+    <string name="on">روشن</string>
+    <string name="off">خاموش</string>
+</resources>

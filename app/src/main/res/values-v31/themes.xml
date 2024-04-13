@@ -6,4 +6,8 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_ic_launcher</item>
     </style>
+    <style name="dynamic_color_theme" parent="@style/Theme.Material3.DynamicColors.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

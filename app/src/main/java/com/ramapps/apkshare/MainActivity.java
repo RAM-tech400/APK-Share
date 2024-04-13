@@ -7,12 +7,14 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +28,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.FileProvider;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -43,12 +46,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String PREFERENCES_SETTINGS = "Settings";
     public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
     public static final String PREFERENCES_SETTINGS_COLUMN_COUNT = "Column count";
+    public static final String PREFERENCES_SETTINGS_LONG_PRESS_ACTON = "Long press action";
+    public static final String PREFERENCES_SETTINGS_QUICK_INFO = "Quick info";
+    public static final String PREFERENCES_SETTINGS_LANGUAGE = "Language";
+    public static final String PREFERENCES_SETTINGS_NIGHT_MODE = "Night mode";
+    public static final String PREFERENCES_SETTINGS_THEME = "App theme";
 
     public static final int FLAG_SORT_BY_NAME = 0;
     public static final int FLAG_SORT_BY_INSTALL_DATE = 1;
@@ -65,6 +74,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // set language
+        Configuration configuration = getResources().getConfiguration();
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        configuration.setLocale(new Locale(getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "")));
+        getResources().updateConfiguration(configuration, displayMetrics);
+        //set app theme
+        if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setTheme(R.style.dynamic_color_theme);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+        //set nightMode
+        AppCompatDelegate.setDefaultNightMode(getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) getWindow().setNavigationBarColor(0x88FFFFFF);
@@ -222,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemSettings) {
-            //TODO: implement here.
+            startActivity(new Intent(this, SettingsActivity.class));
         }
         return true;
     }

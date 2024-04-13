@@ -11,5 +11,31 @@
         <item>Multi media</item>
         <item>Social</item>
         <item>Other</item>
-</array>
+    </array>
+
+    <array name="longPressActionOptions">
+        <item>@string/open_application</item>
+        <item>@string/uninstall_application</item>
+        <item>@string/direct_share</item>
+    </array>
+    <array name="quickInfoOptions">
+        <item>@string/none</item>
+        <item>@string/package_name</item>
+        <item>@string/version_code</item>
+        <item>@string/version_name</item>
+    </array>
+    <array name="languageOptions">
+        <item>@string/system_default</item>
+        <item>@string/english</item>
+        <item>@string/persian</item>
+    </array>
+    <array name="nightModeOptions">
+        <item>@string/system_default</item>
+        <item>@string/on</item>
+        <item>@string/off</item>
+    </array>
+    <array name="themeOptions">
+        <item>@string/dynamic_colors</item>
+        <item>@string/default_colors</item>
+    </array>
 </resources>
