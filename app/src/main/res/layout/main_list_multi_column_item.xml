@@ -8,7 +8,8 @@
     style="@style/Widget.Material3.CardView.Filled"
     android:focusable="true"
     android:clickable="true"
-    android:checkable="true">
+    android:checkable="true"
+    app:cardCornerRadius="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +41,9 @@
             android:id="@+id/mainListTextViewAppDetail"
             android:text="@string/app_version"
             android:gravity="center_horizontal"
-            android:textAppearance="?textAppearanceBodySmall"/>
+            android:textAppearance="?textAppearanceBodySmall"
+            android:singleLine="true"
+            android:ellipsize="middle"/>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

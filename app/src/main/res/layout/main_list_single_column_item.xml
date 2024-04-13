@@ -9,7 +9,8 @@
     style="@style/Widget.Material3.CardView.Filled"
     android:focusable="true"
     android:clickable="true"
-    android:checkable="true">
+    android:checkable="true"
+    app:cardCornerRadius="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,33 +21,45 @@
             android:layout_width="74dp"
             android:layout_height="74dp"
             android:id="@+id/listItemImageViewAppIcon"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/listItemImageViewAppIcon"
-            android:layout_alignTop="@id/listItemImageViewAppIcon"
-            android:layout_marginStart="10dp"
-            android:text="@string/app_name"
-            android:textAppearance="?textAppearanceTitleMedium"
-            android:id="@+id/mainListTextViewAppName"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:gravity="center_horizontal"/>
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/mainListTextViewAppName"
-            android:layout_alignStart="@id/mainListTextViewAppName"
-            android:layout_alignEnd="@id/mainListTextViewAppName"
-            android:id="@+id/mainListTextViewAppDetail"
-            android:text="@string/app_version"
-            android:gravity="center_horizontal"
-            android:textAppearance="?textAppearanceBodySmall"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/app_name"
+                android:textAppearance="?textAppearanceTitleMedium"
+                android:id="@+id/mainListTextViewAppName"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:gravity="start"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:id="@+id/mainListTextViewAppDetail"
+                android:text="@string/app_version"
+                android:gravity="start"
+                android:textAppearance="?textAppearanceBodySmall"
+                android:singleLine="true"
+                android:ellipsize="middle"/>
+        </LinearLayout>
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>
