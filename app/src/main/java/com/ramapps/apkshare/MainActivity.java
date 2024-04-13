@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         getInstalledApps();
         sortPackageInfoList();
         showAppsOnScreen();
+        fabSend.hide();
     }
 
     private void sortPackageInfoList() {
