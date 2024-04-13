@@ -204,13 +204,8 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[which]);
                         preferences.edit().putInt(MainActivity.PREFERENCES_SETTINGS_THEME, which).apply();
-                        if (which == 0) {
-                            getApplication().setTheme(R.style.dynamic_color_theme);
-                        } else {
-                            getApplication().setTheme(R.style.AppTheme);
-                        }
-                        recreate();
                         dialog.dismiss();
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     }
                 });
                 AlertDialog dialog = dialogBuilder
