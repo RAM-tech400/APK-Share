@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setType("text/plain");
-                startActivity(intent);
                 if (pickedAppsUri.size() == 1) {
                     intent.setAction(Intent.ACTION_SEND);
                     intent.putExtra(Intent.EXTRA_STREAM, pickedAppsUri.get(0));
