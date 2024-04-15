@@ -222,7 +222,7 @@ public class SettingsActivity extends AppCompatActivity {
         llAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Implement this method.
+                startActivity(new Intent(getApplicationContext(), AboutActivity.class));
             }
         });
     }
