@@ -1,9 +1,11 @@
 package com.ramapps.apkshare;
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -216,7 +218,19 @@ public class SettingsActivity extends AppCompatActivity {
         llHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Implement this method.
+                try{
+                    Intent selectorIntent = new Intent(Intent.ACTION_SENDTO);
+                    selectorIntent.setData(Uri.parse("mailto:"));
+
+                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"newram098@gmail.com"});
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.help_and_feedback_mail_subject));
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.help_and_feedback_mail_hint));
+                    emailIntent.setSelector(selectorIntent);
+                    startActivity(Intent.createChooser(emailIntent, "Send mail"));
+                } catch (ActivityNotFoundException e){
+                    e.printStackTrace();
+                }
             }
         });
         llAbout.setOnClickListener(new View.OnClickListener() {
