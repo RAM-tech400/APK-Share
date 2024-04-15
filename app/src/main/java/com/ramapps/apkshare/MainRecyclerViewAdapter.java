@@ -132,7 +132,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 } else {
                     textViewAppDetail.setVisibility(View.GONE);
                 }
-                textViewAppDetail.setText(packageInfo.versionName);
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
