@@ -179,18 +179,12 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.mainToolbar);
         recyclerView = findViewById(R.id.mainRecyclerView);
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
-        fabSend.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-            @NonNull
-            @Override
-            public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets insets) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                    layoutParams.bottomMargin += systemBars.bottom;
-                }
-                return insets;
-            }
-        });
+        // Set FAB bottom margin
+        int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
+        int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        int navigationBarHeight = navigationBarHeightId > 0? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
+        layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
     }
 
     @SuppressLint("RestrictedApi")
