@@ -79,9 +79,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             public boolean onLongClick(View v) {
                 int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
                 if (action == 1) {
-                    Intent intent = new Intent(Intent.ACTION_DELETE);
-                    intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
-                    context.startActivity(intent);
+                    if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
+                        Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_DELETE);
+                        intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                        context.startActivity(intent);
+                    }
                 } else if (action == 2) {
                     File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
                     Intent intent = new Intent(Intent.ACTION_SEND);
