@@ -1,42 +1,30 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.FileProvider;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -45,7 +33,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -99,29 +86,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addListeners() {
-        fabSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Uri> pickedAppsUri = new ArrayList<Uri>();
-                for(int i = 0; i < installedPackagesInfo.size(); i++) {
-                    if(selectionTracker.get(i)) {
-                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                        Uri uri = FileProvider.getUriForFile(getApplicationContext(), ".provider", file);
-                        pickedAppsUri.add(uri);
-                    }
+        fabSend.setOnClickListener(v -> {
+            List<Uri> pickedAppsUri = new ArrayList<>();
+            for(int i = 0; i < installedPackagesInfo.size(); i++) {
+                if(selectionTracker.get(i)) {
+                    File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
+                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), ".provider", file);
+                    pickedAppsUri.add(uri);
                 }
-                Intent intent = new Intent();
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("text/plain");
-                if (pickedAppsUri.size() == 1) {
-                    intent.setAction(Intent.ACTION_SEND);
-                    intent.putExtra(Intent.EXTRA_STREAM, pickedAppsUri.get(0));
-                } else {
-                    intent.setAction(Intent.ACTION_SEND_MULTIPLE);
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, (ArrayList<? extends Parcelable>) pickedAppsUri);
-                }
-                startActivity(intent);
             }
+            Intent intent = new Intent();
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setType("text/plain");
+            if (pickedAppsUri.size() == 1) {
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, pickedAppsUri.get(0));
+            } else {
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, (ArrayList<? extends Parcelable>) pickedAppsUri);
+            }
+            startActivity(intent);
         });
     }
 
@@ -143,25 +127,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void sortPackageInfoList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            installedPackagesInfo.sort(new Comparator<PackageInfo>() {
-                @Override
-                public int compare(PackageInfo o1, PackageInfo o2) {
-                    int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
-                    if (sortType == FLAG_SORT_BY_NAME){
-                        String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
-                        String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
-                        return name1.compareTo(name2);
-                    } else if (sortType == FLAG_SORT_BY_INSTALL_DATE){
-                        String date1 = o1.firstInstallTime + "";
-                        String date2 = o2.firstInstallTime + "";
-                        return date1.compareTo(date2);
-                    } else if (sortType == FLAG_SORT_BY_SIZE) {
-                        String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
-                        String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
-                        return size1.compareTo(size2);
-                    }
-                    return 0;
+            installedPackagesInfo.sort((o1, o2) -> {
+                int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
+                if (sortType == FLAG_SORT_BY_NAME){
+                    String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
+                    String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
+                    return name1.compareTo(name2);
+                } else if (sortType == FLAG_SORT_BY_INSTALL_DATE){
+                    String date1 = o1.firstInstallTime + "";
+                    String date2 = o2.firstInstallTime + "";
+                    return date1.compareTo(date2);
+                } else if (sortType == FLAG_SORT_BY_SIZE) {
+                    String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
+                    String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
+                    return size1.compareTo(size2);
                 }
+                return 0;
             });
         }
     }
@@ -173,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getInstalledApps() {
-        installedPackagesInfo = new ArrayList<PackageInfo>();
-        selectionTracker = new ArrayList<Boolean>();
+        installedPackagesInfo = new ArrayList<>();
+        selectionTracker = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0){
                 installedPackagesInfo.add(pi);
@@ -191,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
-        int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         int navigationBarHeight = navigationBarHeightId > 0? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
         layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
@@ -215,34 +196,28 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.mainMenuItemSort) {
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.sort_by)
-                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, which).apply();
-                            sortPackageInfoList();
-                            showAppsOnScreen();
-                            dialog.dismiss();
-                        }
+                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> {
+                        preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, which).apply();
+                        sortPackageInfoList();
+                        showAppsOnScreen();
+                        dialog1.dismiss();
                     })
                     .create();
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemType) {
-            //TODO: implement here.
+            Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show();
         } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.column_count)
-                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 0), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
-                            recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
-                            recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
-                            dialog.dismiss();
-                            if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
-                                item.setIcon(R.drawable.ic_list);
-                            } else {
-                                item.setIcon(R.drawable.ic_grid_view);
-                            }
+                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 0), (dialog12, which) -> {
+                        preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
+                        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
+                        recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
+                        dialog12.dismiss();
+                        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+                            item.setIcon(R.drawable.ic_list);
+                        } else {
+                            item.setIcon(R.drawable.ic_grid_view);
                         }
                     })
                     .create();
