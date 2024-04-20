@@ -150,12 +150,8 @@ public class SettingsActivity extends AppCompatActivity {
                                 String[] locales = new String[] {"", "en", "fa"};
                                 textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[which]);
                                 preferences.edit().putString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
-                                Configuration configuration = getResources().getConfiguration();
-                                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                                configuration.setLocale(new Locale(getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "")));
-                                getResources().updateConfiguration(configuration, displayMetrics);
-                                recreate();
                                 dialog.dismiss();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             }
                         })
                         .create();
