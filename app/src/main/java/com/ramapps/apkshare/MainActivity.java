@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     private List<PackageInfo> installedPackagesInfo;
     private List<Boolean> selectionTracker;
     private SharedPreferences preferences;
+
+    private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,12 +126,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         getInstalledApps();
         sortPackageInfoList();
         showAppsOnScreen();
         fabSend.hide();
+        Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
     }
 
     private void sortPackageInfoList() {
