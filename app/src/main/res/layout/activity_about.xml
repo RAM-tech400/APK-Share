@@ -47,7 +47,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.95 (Demo)"
+                android:text="0.97 (Trial)"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:layout_gravity="center_horizontal"/>
 
