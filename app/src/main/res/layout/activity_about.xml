@@ -40,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
+                android:textColor="?android:colorPrimary"
                 android:textAppearance="?textAppearanceHeadlineLarge"
                 android:layout_marginTop="24dp"
                 android:layout_gravity="center_horizontal"/>
@@ -48,16 +49,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.97 (Trial)"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_gravity="center_horizontal"/>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="28dp"
-                android:layout_marginEnd="28dp"
+<!--            <com.google.android.material.divider.MaterialDivider-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginStart="28dp"-->
+<!--                android:layout_marginEnd="28dp"-->
+<!--                android:layout_marginTop="24dp"-->
+<!--                android:layout_marginBottom="24dp"/>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginBottom="24dp"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/developer_colon"
+                    android:textAppearance="?textAppearanceBodyLarge"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?textAppearanceTitleLarge"
+                    android:text="@string/developer_name"
+                    android:textColor="?android:colorPrimary"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
