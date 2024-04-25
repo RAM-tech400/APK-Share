@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
         String langCode = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "");
         Configuration configuration = getResources().getConfiguration();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        if (!langCode.isEmpty()) {
+        if (langCode.isEmpty()) {
+            configuration.setLocale(Locale.getDefault());
+        } else {
             configuration.setLocale(new Locale(langCode));
         }
         getResources().updateConfiguration(configuration, displayMetrics);
