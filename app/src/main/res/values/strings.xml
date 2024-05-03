@@ -40,4 +40,5 @@
     <string name="developer_colon">developer:</string>
     <string name="developer_name">Reza AliMohammadi</string>
     <string name="app_version_name">0.9.9 (Stage)</string>
+    <string name="msg_openning_app_error">You cannot open this application directly.</string>
 </resources>

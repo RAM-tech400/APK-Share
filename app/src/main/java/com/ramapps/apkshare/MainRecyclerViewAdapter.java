@@ -1,6 +1,7 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -90,7 +91,11 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, ".provider", file));
                 context.startActivity(Intent.createChooser(intent, "Share apk file via: "));
             } else {
-                context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
+                try {
+                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
+                } catch (NullPointerException e) {
+                    Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
+                }
             }
             return false;
         });
