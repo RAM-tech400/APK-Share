@@ -11,7 +11,7 @@
     android:checkable="true"
     app:cardCornerRadius="0dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -21,7 +21,22 @@
         <ImageView
             android:layout_width="74dp"
             android:layout_height="74dp"
-            android:id="@+id/listItemImageViewAppIcon"/>
+            android:id="@+id/listItemImageViewAppIcon"
+            android:layout_centerHorizontal="true"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listItemLottieAnimationStars"
+            app:lottie_rawRes="@raw/starts_motion"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            app:lottie_clipToCompositionBounds="false"
+            android:layout_alignStart="@id/listItemImageViewAppIcon"
+            android:layout_alignEnd="@id/listItemImageViewAppIcon"
+            android:layout_alignTop="@id/listItemImageViewAppIcon"
+            android:layout_alignBottom="@id/listItemImageViewAppIcon"
+            android:visibility="invisible" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +48,9 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:layout_below="@id/listItemImageViewAppIcon"
+            android:layout_centerHorizontal="true"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -43,7 +60,9 @@
             android:gravity="center_horizontal"
             android:textAppearance="?textAppearanceBodySmall"
             android:singleLine="true"
-            android:ellipsize="middle"/>
-    </LinearLayout>
+            android:ellipsize="middle"
+            android:layout_below="@id/mainListTextViewAppName"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

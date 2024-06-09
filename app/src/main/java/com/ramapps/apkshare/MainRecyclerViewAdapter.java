@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.card.MaterialCardView;
 
 import java.io.File;
@@ -99,6 +100,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             }
             return false;
         });
+        if (packagesInfo.get(index).packageName.equals(context.getPackageName()))
+            holder.getLottieStarts().setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -109,6 +112,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
         private final MaterialCardView cardViewContainer;
+        private final LottieAnimationView lottieStarts;
         private final ImageView imageViewIcon;
         private final TextView textViewAppName;
         private final TextView textViewAppDetail;
@@ -116,6 +120,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
             cardViewContainer = itemView.findViewById(R.id.listItemCardViewContainer);
+            lottieStarts = itemView.findViewById(R.id.listItemLottieAnimationStars);
             imageViewIcon = itemView.findViewById(R.id.listItemImageViewAppIcon);
             textViewAppName = itemView.findViewById(R.id.mainListTextViewAppName);
             textViewAppDetail = itemView.findViewById(R.id.mainListTextViewAppDetail);
@@ -144,6 +149,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
         public MaterialCardView getCardViewContainer() {
             return cardViewContainer;
+        }
+
+        public LottieAnimationView getLottieStarts() {
+            return lottieStarts;
         }
     }
 }

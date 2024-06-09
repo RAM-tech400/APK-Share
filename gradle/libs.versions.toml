@@ -8,6 +8,7 @@ material = "1.11.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 dotlottieAndroid = "0.3.0"
+lottie = "6.4.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -18,6 +19,7 @@ material = { group = "com.google.android.material", name = "material", version =
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 dotlottie-android = { group = "com.github.LottieFiles", name = "dotlottie-android", version.ref = "dotlottieAndroid" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
