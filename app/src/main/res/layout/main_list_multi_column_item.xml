@@ -24,20 +24,6 @@
             android:id="@+id/listItemImageViewAppIcon"
             android:layout_centerHorizontal="true"/>
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/listItemLottieAnimationStars"
-            app:lottie_rawRes="@raw/starts_motion"
-            app:lottie_loop="true"
-            app:lottie_autoPlay="true"
-            app:lottie_clipToCompositionBounds="false"
-            android:layout_alignStart="@id/listItemImageViewAppIcon"
-            android:layout_alignEnd="@id/listItemImageViewAppIcon"
-            android:layout_alignTop="@id/listItemImageViewAppIcon"
-            android:layout_alignBottom="@id/listItemImageViewAppIcon"
-            android:visibility="invisible" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
