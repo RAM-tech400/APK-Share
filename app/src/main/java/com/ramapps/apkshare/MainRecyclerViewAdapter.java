@@ -5,15 +5,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -100,6 +108,28 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             Utils.AnimatedGradientDrawable animatedSpotGradientDrawable = new Utils.AnimatedGradientDrawable();
             animatedSpotGradientDrawable.setAlpha(36);
             holder.getCardViewContainer().getChildAt(0).setBackground(animatedSpotGradientDrawable);
+        }
+        // Adding navigationBar size margin to the last items
+        if (packagesInfo.size() % columnCount == 0) {
+            if (position >= packagesInfo.size() - columnCount) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.getCardViewContainer().getLayoutParams();
+                layoutParams.setMargins(
+                        layoutParams.leftMargin,
+                        layoutParams.topMargin,
+                        layoutParams.rightMargin,
+                        MainActivity.systemBars.bottom
+                );
+            }
+        } else {
+            if (position >= packagesInfo.size() - (packagesInfo.size() % columnCount)) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.getCardViewContainer().getLayoutParams();
+                layoutParams.setMargins(
+                        layoutParams.leftMargin,
+                        layoutParams.topMargin,
+                        layoutParams.rightMargin,
+                        MainActivity.systemBars.bottom
+                );
+            }
         }
     }
 

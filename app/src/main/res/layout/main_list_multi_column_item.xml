@@ -1,56 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/listItemCardViewContainer"
-    app:cardBackgroundColor="@android:color/transparent"
-    style="@style/Widget.Material3.CardView.Filled"
-    android:focusable="true"
-    android:clickable="true"
-    android:checkable="true"
-    android:layout_margin="6dp"
-    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:id="@+id/listItemCardViewContainer"
+        app:cardBackgroundColor="@android:color/transparent"
+        style="@style/Widget.Material3.CardView.Filled"
+        android:focusable="true"
+        android:clickable="true"
+        android:checkable="true"
+        android:layout_margin="6dp"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
-        <ImageView
-            android:layout_width="74dp"
-            android:layout_height="74dp"
-            android:id="@+id/listItemImageViewAppIcon"
-            android:layout_centerHorizontal="true"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textAppearance="?textAppearanceTitleMedium"
-            android:id="@+id/mainListTextViewAppName"
-            android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:gravity="center_horizontal"
-            android:layout_below="@id/listItemImageViewAppIcon"
-            android:layout_centerHorizontal="true"/>
+            <ImageView
+                android:layout_width="74dp"
+                android:layout_height="74dp"
+                android:id="@+id/listItemImageViewAppIcon"
+                android:layout_centerHorizontal="true"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/mainListTextViewAppDetail"
-            android:text="@string/app_version"
-            android:gravity="center_horizontal"
-            android:textAppearance="?textAppearanceBodySmall"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_below="@id/mainListTextViewAppName"
-            android:layout_centerHorizontal="true"/>
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAppearance="?textAppearanceTitleMedium"
+                android:id="@+id/mainListTextViewAppName"
+                android:layout_marginTop="10dp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:gravity="center_horizontal"
+                android:layout_below="@id/listItemImageViewAppIcon"
+                android:layout_centerHorizontal="true"/>
 
-</com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainListTextViewAppDetail"
+                android:text="@string/app_version"
+                android:gravity="center_horizontal"
+                android:textAppearance="?textAppearanceBodySmall"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:layout_below="@id/mainListTextViewAppName"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>

@@ -27,6 +27,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int FLAG_SORT_BY_NAME = 0;
     public static final int FLAG_SORT_BY_INSTALL_DATE = 1;
     public static final int FLAG_SORT_BY_SIZE = 2;
+
+    public static Insets systemBars;
 
     private MaterialToolbar toolbar;
     private RecyclerView recyclerView;
@@ -91,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         init();
         addListeners();
         setSupportActionBar(toolbar);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            return insets;
+        });
     }
 
     private void addListeners() {
