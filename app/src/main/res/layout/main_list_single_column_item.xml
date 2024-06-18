@@ -10,12 +10,14 @@
     android:focusable="true"
     android:clickable="true"
     android:checkable="true"
-    app:cardCornerRadius="0dp">
+    android:layout_margin="6dp"
+    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:layout_width="74dp"
