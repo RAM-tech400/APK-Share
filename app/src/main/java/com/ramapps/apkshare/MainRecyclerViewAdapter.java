@@ -86,11 +86,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 }
             } else if (action == 2) {
                 File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, ".provider", file));
-                context.startActivity(Intent.createChooser(intent, "Share apk file via: "));
+                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                Utils.deleteRecursive(cacheApkFile.getParentFile());
+                Utils.copyFile(file, cacheApkFile);
+                Utils.shareCachedApks(context);
             } else {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));

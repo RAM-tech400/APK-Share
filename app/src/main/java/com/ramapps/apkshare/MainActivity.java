@@ -1,6 +1,7 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -10,8 +11,10 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
@@ -92,25 +95,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void addListeners() {
         fabSend.setOnClickListener(v -> {
-            List<Uri> pickedAppsUri = new ArrayList<>();
+            File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
+            Utils.deleteRecursive(cachedApksDir);
             for(int i = 0; i < installedPackagesInfo.size(); i++) {
                 if(selectionTracker.get(i)) {
                     File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), ".provider", file);
-                    pickedAppsUri.add(uri);
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/"+ getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
                 }
             }
-            Intent intent = new Intent();
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setType("text/plain");
-            if (pickedAppsUri.size() == 1) {
-                intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_STREAM, pickedAppsUri.get(0));
-            } else {
-                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
-                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, (ArrayList<? extends Parcelable>) pickedAppsUri);
-            }
-            startActivity(intent);
+            Utils.shareCachedApks(MainActivity.this);
         });
     }
 
