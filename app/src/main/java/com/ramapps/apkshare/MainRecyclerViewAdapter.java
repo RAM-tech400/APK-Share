@@ -99,7 +99,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         if (packagesInfo.get(index).packageName.equals(context.getPackageName())) {
             Utils.AnimatedGradientDrawable animatedSpotGradientDrawable = new Utils.AnimatedGradientDrawable();
             animatedSpotGradientDrawable.setAlpha(36);
-            holder.getCardViewContainer().setForeground(animatedSpotGradientDrawable);
+            holder.getCardViewContainer().setBackground(animatedSpotGradientDrawable);
         }
     }
 
