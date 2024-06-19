@@ -1,11 +1,14 @@
 package com.ramapps.apkshare;
 
+import android.app.LocaleManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +18,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -47,10 +51,19 @@ public class SettingsActivity extends AppCompatActivity {
         textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
 
         int lang = 0;
-        if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
-            lang = 1;
-        } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
-            lang = 2;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
+            if ((currentLocales.get(0) + "").toLowerCase().contains("en")) {
+                lang = 1;
+            } else if ((currentLocales.get(0) + "").toLowerCase().contains("fa")) {
+                lang = 2;
+            }
+        } else {
+            if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+                lang = 1;
+            } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+                lang = 2;
+            }
         }
         textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[lang]);
 
@@ -115,10 +128,19 @@ public class SettingsActivity extends AppCompatActivity {
         });
         llLanguage.setOnClickListener(v -> {
             int selected = 0;
-            if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
-                selected = 1;
-            } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
-                selected = 2;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
+                if ((currentLocales.get(0) + "").toLowerCase().contains("en")) {
+                    selected = 1;
+                } else if ((currentLocales.get(0) + "").toLowerCase().contains("fa")) {
+                    selected = 2;
+                }
+            } else {
+                if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+                    selected = 1;
+                } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+                    selected = 2;
+                }
             }
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
@@ -126,9 +148,14 @@ public class SettingsActivity extends AppCompatActivity {
                     .setSingleChoiceItems(R.array.languageOptions, selected, (dialog13, which) -> {
                         String[] locales = new String[] {"", "en", "fa"};
                         textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[which]);
-                        preferences.edit().putString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
-                        dialog13.dismiss();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(locales[which]);
+                            AppCompatDelegate.setApplicationLocales(appLocale);
+                        } else {
+                            preferences.edit().putString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
+                            dialog13.dismiss();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        }
                     })
                     .create();
             dialog.show();

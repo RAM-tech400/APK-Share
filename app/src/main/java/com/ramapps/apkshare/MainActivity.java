@@ -1,6 +1,7 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
+import android.app.LocaleManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -27,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.graphics.Insets;
+import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -75,15 +78,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // set language
-        String langCode = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "");
-        Configuration configuration = getResources().getConfiguration();
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        if (langCode.isEmpty()) {
-            configuration.setLocale(Locale.getDefault());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
+            if (!currentLocales.isEmpty()) {
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(currentLocales.get(0).toString()));
+            }
         } else {
-            configuration.setLocale(new Locale(langCode));
+            String langCode = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "");
+            Configuration configuration = getResources().getConfiguration();
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            if (langCode.isEmpty()) {
+                configuration.setLocale(Locale.getDefault());
+            } else {
+                configuration.setLocale(new Locale(langCode));
+            }
+            getResources().updateConfiguration(configuration, displayMetrics);
         }
-        getResources().updateConfiguration(configuration, displayMetrics);
         //set app theme
         if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
