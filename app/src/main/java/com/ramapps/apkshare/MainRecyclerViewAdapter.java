@@ -74,8 +74,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             }
             if(selectedCount > 0) {
                 MainActivity.fabSend.show();
+                MainActivity.fabSendSearchView.show();
             } else {
                 MainActivity.fabSend.hide();
+                MainActivity.fabSendSearchView.hide();
             }
             ((MaterialCardView) v).setChecked(selectionTracker.get(index));
         });

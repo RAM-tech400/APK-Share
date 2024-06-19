@@ -8,28 +8,63 @@
     android:id="@+id/main"
     tools:context=".MainActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mainRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scroll_thumb"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
-            <com.google.android.material.appbar.MaterialToolbar
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:title="@string/app_name"
-                android:id="@+id/mainToolbar"/>
+        android:fitsSystemWindows="true"
+        app:statusBarForeground="?attr/colorSurface">
+
+        <com.google.android.material.search.SearchBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/mainSearchBar"
+            android:contentDescription="@string/search_for_apps"/>
+
     </com.google.android.material.appbar.AppBarLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
+
+    <com.google.android.material.search.SearchView
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        android:id="@+id/mainSearchView"
+        android:hint="@string/search_for_apps"
+        app:layout_anchor="@id/mainSearchBar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/mainRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:scrollbarThumbVertical="@drawable/scroll_thumb" />
+                android:id="@+id/mainRecyclerViewSearchResults"/>
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainSearchViewFloatingActionBarSend"
+                android:src="@drawable/ic_send"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp"
+                android:contentDescription="@string/send"
+                style="@style/ThemeOverlay.Material3.FloatingActionButton.Secondary"/>
+        </RelativeLayout>
+    </com.google.android.material.search.SearchView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/mainFloatingActionBarSend"

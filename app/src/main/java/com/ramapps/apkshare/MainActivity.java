@@ -1,23 +1,23 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,16 +26,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,12 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static Insets systemBars;
 
-    private MaterialToolbar toolbar;
-    private RecyclerView recyclerView;
-    public static FloatingActionButton fabSend;
+    private SearchBar searchBar;
+    private SearchView searchView;
+    private RecyclerView recyclerView, recyclerViewSearchResults;
+    public static FloatingActionButton fabSend, fabSendSearchView;
 
-    private List<PackageInfo> installedPackagesInfo;
-    private List<Boolean> selectionTracker;
+    private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
+    private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
     private SharedPreferences preferences;
 
     private Parcelable recyclerViewState;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         init();
         addListeners();
-        setSupportActionBar(toolbar);
+        setSupportActionBar(searchBar);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             return insets;
@@ -114,6 +115,59 @@ public class MainActivity extends AppCompatActivity {
             }
             Utils.shareCachedApks(MainActivity.this);
         });
+
+        fabSendSearchView.setOnClickListener(v -> {
+            File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
+            Utils.deleteRecursive(cachedApksDir);
+            for(int i = 0; i < searchedPackagesInfo.size(); i++) {
+                if(selectionTrackerForSearchResults.get(i)) {
+                    File file = new File(searchedPackagesInfo.get(i).applicationInfo.publicSourceDir);
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/"+ getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                }
+            }
+            Utils.shareCachedApks(MainActivity.this);
+        });
+
+        searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                searchedPackagesInfo = searchForApps(v.getText().toString());
+                selectionTrackerForSearchResults = new ArrayList<>();
+                for (PackageInfo info : searchedPackagesInfo) {
+                    selectionTrackerForSearchResults.add(false);
+                }
+                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                recyclerViewSearchResults.setAdapter(adapter);
+                return true;
+            }
+        });
+
+        searchView.addTransitionListener(new SearchView.TransitionListener() {
+            @Override
+            public void onStateChanged(@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) {
+                if (transitionState == SearchView.TransitionState.SHOWN) {
+                    searchedPackagesInfo = new ArrayList<>();
+                    selectionTrackerForSearchResults = new ArrayList<>();
+                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setAdapter(adapter);
+                    fabSendSearchView.hide();
+                }
+            }
+        });
+    }
+
+    private List<PackageInfo> searchForApps(String keyword) {
+        List<PackageInfo> results = new ArrayList<>();
+
+        for (PackageInfo packageInfo : installedPackagesInfo) {
+            String appName = getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
+            if (appName.toLowerCase().contains(keyword.toLowerCase()))
+                results.add(packageInfo);
+        }
+
+        return results;
     }
 
     @Override
@@ -174,8 +228,11 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
 
-        toolbar = findViewById(R.id.mainToolbar);
+        searchBar = findViewById(R.id.mainSearchBar);
+        searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
+        recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
+        fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
