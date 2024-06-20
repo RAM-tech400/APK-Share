@@ -119,7 +119,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         layoutParams.leftMargin,
                         layoutParams.topMargin,
                         layoutParams.rightMargin,
-                        MainActivity.systemBars.bottom
+                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
                 );
             }
         } else {
@@ -129,7 +129,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         layoutParams.leftMargin,
                         layoutParams.topMargin,
                         layoutParams.rightMargin,
-                        MainActivity.systemBars.bottom
+                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
                 );
             }
         }

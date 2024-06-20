@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.column_count)
-                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 0), (dialog12, which) -> {
+                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
                         preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
                         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
                         recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
