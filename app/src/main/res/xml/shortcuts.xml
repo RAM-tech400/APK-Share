@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="reshare"
+        android:enabled="true"
+        android:icon="@mipmap/ic_reshare_shortcut"
+        android:shortcutShortLabel="@string/reshare"
+        android:shortcutLongLabel="@string/shortcut_long_label_reshare"
+        android:shortcutDisabledMessage="@string/reshare_shortcut_disabled">
+        <intent
+            android:action="com.ramapps.apkshare.Utils.ACTION_RESHARE"
+            android:targetPackage="com.ramapps.apkshare"
+            android:targetClass="com.ramapps.apkshare.MainActivity" />
+    </shortcut>
+
+
+
+</shortcuts>

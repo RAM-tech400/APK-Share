@@ -102,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
         }
         //set nightMode
         AppCompatDelegate.setDefaultNightMode(getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
+
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_main);
         init();
         addListeners();
@@ -111,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
             systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             return insets;
         });
+        if(Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)){
+            Utils.shareCachedApks(this);
+        }
     }
 
     private void addListeners() {

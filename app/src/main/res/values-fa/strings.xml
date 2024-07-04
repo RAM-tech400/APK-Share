@@ -40,4 +40,7 @@
     <string name="app_version_name">1.0.0</string>
     <string name="msg_openning_app_error">شما نمی توانید این برنامه را به طور مستقیم باز کنید.</string>
     <string name="search_for_apps">جستجو برای برنامه‌ها</string>
+    <string name="reshare">اشتراک‌گذاری دوباره</string>
+    <string name="reshare_shortcut_disabled">میانبر اشتراک‌گذاری دوباره غیرفعال شد.</string>
+    <string name="shortcut_long_label_reshare">دوباره به اشتراک‌گذاری آخرین برنامه‌های اشتراکگذاری شده</string>
 </resources>
