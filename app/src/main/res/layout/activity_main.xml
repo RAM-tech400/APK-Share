@@ -22,11 +22,27 @@
         android:fitsSystemWindows="true"
         app:statusBarForeground="?attr/colorSurface">
 
-        <com.google.android.material.search.SearchBar
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/mainSearchBar"
-            android:contentDescription="@string/search_for_apps"/>
+            android:layout_height="?collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed|enterAlways"
+            app:contentScrim="?colorSurfaceContainer"
+            app:title="@string/app_name"
+            app:titleCollapseMode="scale"
+            style="@style/Widget.Material3.CollapsingToolbar.Large">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:layout_collapseMode="pin"
+                app:title="@string/app_name"
+                app:titleCentered="true"
+                android:id="@+id/mainToolbar"/>
+            <com.google.android.material.search.SearchBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainSearchBar"
+                android:contentDescription="@string/search_for_apps"/>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

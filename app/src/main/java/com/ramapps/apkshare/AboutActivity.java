@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,9 +13,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
 public class AboutActivity extends AppCompatActivity {
+
+    private AppBarLayout appBarLayout;
+    private MaterialButton btnGithub;
+    private MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +34,34 @@ public class AboutActivity extends AppCompatActivity {
         }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_about);
+        init();
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.about), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            appBarLayout.setPadding(
+                    appBarLayout.getPaddingLeft(),
+                    appBarLayout.getPaddingTop() + insets.top,
+                    appBarLayout.getPaddingRight(),
+                    appBarLayout.getPaddingBottom());
+            return windowInsets;
+        });
+        addListeners();
+    }
 
-        MaterialButton btnGithub = findViewById(R.id.aboutButtonGithub);
+    private void addListeners() {
         btnGithub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RAM-tech400/APK-Share")));
             }
         });
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
+    }
+
+    private void init() {
+        appBarLayout = findViewById(R.id.aboutAppBarLayout);
+        toolbar = findViewById(R.id.aboutToolbar);
+        btnGithub = findViewById(R.id.aboutButtonGithub);
     }
 }

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/about"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AboutActivity">
@@ -11,12 +11,26 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/aboutAppBarLayout"
+        app:layout_scrollEffect="compress"
         android:fitsSystemWindows="true">
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|snap"
             app:title="@string/about"
-            android:id="@+id/aboutToolbar"/>
+            app:titleCollapseMode="scale"
+            style="@style/Widget.Material3.CollapsingToolbar.Large">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:layout_collapseMode="pin"
+                app:title="@string/about"
+                app:titleCentered="true"
+                android:id="@+id/aboutToolbar"
+                app:navigationIcon="@drawable/outline_arrow_back_24"/>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView

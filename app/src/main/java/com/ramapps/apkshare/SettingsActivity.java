@@ -18,14 +18,21 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
 import androidx.core.os.LocaleListCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llHelp, llAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
+    private AppBarLayout appBarLayout;
+    private MaterialToolbar toolbar;
 
     private SharedPreferences preferences;
 
@@ -42,6 +49,15 @@ public class SettingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            appBarLayout.setPadding(
+                    appBarLayout.getPaddingLeft(),
+                    appBarLayout.getPaddingTop() + insets.top,
+                    appBarLayout.getPaddingRight(),
+                    appBarLayout.getPaddingBottom());
+            return windowInsets;
+        });
         addListeners();
         loadSettings();
     }
@@ -76,6 +92,10 @@ public class SettingsActivity extends AppCompatActivity {
         }
         textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
         textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[preferences.getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0)]);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void init() {
@@ -94,6 +114,9 @@ public class SettingsActivity extends AppCompatActivity {
         textViewLanguage = findViewById(R.id.settingsTextViewLanguagePreview);
         textViewNightMode = findViewById(R.id.settingsTextViewNightModePreview);
         textViewAppTheme = findViewById(R.id.settingsTextViewThemePreview);
+
+        appBarLayout = findViewById(R.id.settingsAppBarLayout);
+        toolbar = findViewById(R.id.settingsToolbar);
 
         //Check for dynamic colors.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
