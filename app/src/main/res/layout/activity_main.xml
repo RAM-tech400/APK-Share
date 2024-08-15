@@ -42,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/mainSearchBar"
+            android:hint="@string/search_for_apps"
             android:contentDescription="@string/search_for_apps"/>
     </com.google.android.material.appbar.AppBarLayout>
 
