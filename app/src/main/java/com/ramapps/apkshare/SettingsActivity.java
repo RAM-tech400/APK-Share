@@ -49,15 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            appBarLayout.setPadding(
-                    appBarLayout.getPaddingLeft(),
-                    appBarLayout.getPaddingTop() + insets.top,
-                    appBarLayout.getPaddingRight(),
-                    appBarLayout.getPaddingBottom());
-            return windowInsets;
-        });
+
         addListeners();
         loadSettings();
     }

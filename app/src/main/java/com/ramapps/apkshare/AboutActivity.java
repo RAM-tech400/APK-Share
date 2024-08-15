@@ -35,15 +35,6 @@ public class AboutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_about);
         init();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.about), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            appBarLayout.setPadding(
-                    appBarLayout.getPaddingLeft(),
-                    appBarLayout.getPaddingTop() + insets.top,
-                    appBarLayout.getPaddingRight(),
-                    appBarLayout.getPaddingBottom());
-            return windowInsets;
-        });
         addListeners();
     }
 

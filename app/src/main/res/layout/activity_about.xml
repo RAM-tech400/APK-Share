@@ -17,16 +17,16 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="?collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|snap"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/about"
-            app:titleCollapseMode="scale"
+            app:titleCollapseMode="fade"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.DisplayMedium"
             style="@style/Widget.Material3.CollapsingToolbar.Large">
             <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 app:layout_collapseMode="pin"
                 app:title="@string/about"
-                app:titleCentered="true"
                 android:id="@+id/aboutToolbar"
                 app:navigationIcon="@drawable/outline_arrow_back_24"/>
         </com.google.android.material.appbar.CollapsingToolbarLayout>

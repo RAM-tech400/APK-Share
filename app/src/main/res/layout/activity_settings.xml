@@ -13,20 +13,21 @@
         android:fitsSystemWindows="true"
         android:id="@+id/settingsAppBarLayout">
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="@style/Widget.Material3.CollapsingToolbar.Large"
             android:layout_width="match_parent"
             android:layout_height="?collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|snap"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.DisplayMedium"
             app:title="@string/settings"
-            app:titleCollapseMode="scale"
-            style="@style/Widget.Material3.CollapsingToolbar.Large">
+            app:titleCollapseMode="fade">
             <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/settingsToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/outline_arrow_back_24"
                 app:title="@string/settings"
-                app:titleCentered="true"
-                android:id="@+id/settingsToolbar"
-                app:navigationIcon="@drawable/outline_arrow_back_24"/>
+                app:titleCentered="true"/>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
