@@ -306,4 +306,13 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
+            searchView.hide();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
