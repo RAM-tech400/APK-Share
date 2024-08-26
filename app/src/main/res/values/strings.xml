@@ -45,4 +45,7 @@
     <string name="reshare">Reshare</string>
     <string name="reshare_shortcut_disabled">Reshare shortcut is disabled.</string>
     <string name="shortcut_long_label_reshare">Share the last shared apps again.</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="reverse_sort">Reverse sort</string>
 </resources>

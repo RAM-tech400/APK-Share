@@ -43,4 +43,7 @@
     <string name="reshare">اشتراک‌گذاری دوباره</string>
     <string name="reshare_shortcut_disabled">میانبر اشتراک‌گذاری دوباره غیرفعال شد.</string>
     <string name="shortcut_long_label_reshare">دوباره به اشتراک‌گذاری آخرین برنامه‌های اشتراکگذاری شده</string>
+    <string name="cancel">لغو</string>
+    <string name="apply">اعمال کردن</string>
+    <string name="reverse_sort">مرتب سازی وارونه</string>
 </resources>
