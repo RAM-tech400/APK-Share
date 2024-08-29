@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="msg_selection_limit">
+        <item quantity="one">You can share %d app synchronized only.</item>
+        <item quantity="other">You can share %d apps synchronized only.</item>
+    </plurals>
+</resources>
