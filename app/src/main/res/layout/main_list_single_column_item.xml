@@ -25,8 +25,8 @@
             android:paddingBottom="10dp">
 
             <ImageView
-                android:layout_width="74dp"
-                android:layout_height="74dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:id="@+id/listItemImageViewAppIcon"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
@@ -49,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="@string/app_name"
-                    android:textAppearance="?textAppearanceTitleMedium"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                     android:id="@+id/mainListTextViewAppName"
                     android:singleLine="true"
                     android:ellipsize="marquee"
@@ -63,7 +63,7 @@
                     android:id="@+id/mainListTextViewAppDetail"
                     android:text="@string/app_version"
                     android:gravity="start"
-                    android:textAppearance="?textAppearanceBodySmall"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:singleLine="true"
                     android:ellipsize="middle"/>
             </LinearLayout>
