@@ -23,20 +23,22 @@
         app:statusBarForeground="?attr/colorSurface">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="@style/Widget.Design.CollapsingToolbar"
             android:layout_width="match_parent"
-            android:layout_height="?collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            android:layout_height="270dp"
             app:contentScrim="?colorSurfaceContainer"
-            app:title="@string/app_name"
             app:expandedTitleTextAppearance="@style/TextAppearance.Material3.DisplayMedium"
-            app:titleCollapseMode="fade"
-            style="@style/Widget.Material3.CollapsingToolbar.Large">
-            <com.google.android.material.appbar.MaterialToolbar
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:layout_collapseMode="pin"
-                app:title="@string/app_name"
-                android:id="@+id/mainToolbar"/>
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/app_name"
+            app:titleCollapseMode="fade">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+                app:layout_collapseMode="parallax" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
         <com.google.android.material.search.SearchBar
             android:layout_width="match_parent"
