@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int FLAG_SORT_BY_SIZE = 2;
 
     public static Insets systemBars;
+    public static Insets imeInsets;
+    public static Insets displayCutouts;
 
     private SearchBar searchBar;
     private SearchView searchView;
@@ -114,6 +116,19 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.mainSearchBar));
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            findViewById(R.id.mainAppBarLayout).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.mainAppBarLayout).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.mainAppBarLayout).getPaddingBottom());
+            recyclerView.setPadding(
+                    displayCutouts.left,
+                    recyclerView.getPaddingTop(),
+                    displayCutouts.right,
+                    recyclerView.getPaddingBottom());
+            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
             return insets;
         });
         if(Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)){

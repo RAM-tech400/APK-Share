@@ -20,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:statusBarForeground="?attr/colorSurface">
+        app:statusBarForeground="?attr/colorSurface"
+        android:id="@+id/mainAppBarLayout">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             style="@style/Widget.Design.CollapsingToolbar"
@@ -74,6 +75,7 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="24dp"
                 android:contentDescription="@string/send"
+                android:visibility="invisible"
                 style="@style/ThemeOverlay.Material3.FloatingActionButton.Secondary"/>
         </RelativeLayout>
     </com.google.android.material.search.SearchView>

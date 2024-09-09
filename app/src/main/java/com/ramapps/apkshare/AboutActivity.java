@@ -37,6 +37,20 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         init();
         addListeners();
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.about), (v, insets) -> {
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            findViewById(R.id.aboutNestedScrollView).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.aboutNestedScrollView).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.aboutNestedScrollView).getPaddingBottom());
+            toolbar.setPadding(
+                    displayCutouts.left,
+                    toolbar.getPaddingTop(),
+                    displayCutouts.right,
+                    toolbar.getPaddingBottom());
+            return insets;
+        });
     }
 
     private void addListeners() {

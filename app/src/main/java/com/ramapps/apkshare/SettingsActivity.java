@@ -49,7 +49,20 @@ public class SettingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            findViewById(R.id.settingsNestedScrollView).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
+            toolbar.setPadding(
+                    displayCutouts.left,
+                    toolbar.getPaddingTop(),
+                    displayCutouts.right,
+                    toolbar.getPaddingBottom());
+            return insets;
+        });
         addListeners();
         loadSettings();
     }
