@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/permissionsBottomSheetDragHandleView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/permissionsBottomSheetDragHandleView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingBottom="24dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:id="@+id/permissionsBottomSheetRelativeLayoutStoragePermission"
+            android:foreground="?selectableItemBackground">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/outline_folder_24"
+                android:id="@+id/permissionsBottomSheetImageViewStoragePermission"
+                app:tint="@color/material_on_surface_emphasis_high_type" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/outline_open_in_new_24"
+                android:id="@+id/permissionsBottomSheetImageViewGoTo"
+                app:tint="@color/material_on_surface_emphasis_medium"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/permissionsBottomSheetImageViewGoTo"
+                android:layout_toEndOf="@id/permissionsBottomSheetImageViewStoragePermission"
+                android:layout_alignParentTop="true"
+                android:text="@string/storage_permission"
+                android:layout_marginStart="12dp"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/permissionsBottomSheetImageViewGoTo"
+                android:layout_toEndOf="@id/permissionsBottomSheetImageViewStoragePermission"
+                android:layout_below="@id/permissionsBottomSheetImageViewGoTo"
+                android:text="@string/storage_permission_description"
+                android:layout_marginStart="12dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

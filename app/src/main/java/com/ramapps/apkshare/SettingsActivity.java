@@ -29,7 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llHelp, llAbout;
+    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
     private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
@@ -111,6 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
         llLanguage = findViewById(R.id.settingsLinearLayoutLanguage);
         llNightMode = findViewById(R.id.settingsLinearLayoutNightMode);
         llAppTheme = findViewById(R.id.settingsLinearLayoutTheme);
+        llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
         llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
         llAbout = findViewById(R.id.settingsLinearLayoutAbout);
 
@@ -229,6 +230,12 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
+        llPermissions.setOnClickListener(v -> {
+            PermissionsListModalBottomSheet permissionsListModalBottomSheet = new PermissionsListModalBottomSheet();
+            permissionsListModalBottomSheet.show(getSupportFragmentManager(), PermissionsListModalBottomSheet.class.getName());
+        });
+
         llHelp.setOnClickListener(v -> {
             try{
                 Intent selectorIntent = new Intent(Intent.ACTION_SENDTO);

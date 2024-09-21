@@ -51,4 +51,7 @@
     <string name="name">Name</string>
     <string name="install_date">Install date</string>
     <string name="size">Size</string>
+    <string name="storage_permission">Storage permission</string>
+    <string name="storage_permission_description">(OPTIONAL) This permission used for creating backup files into download directory.</string>
+    <string name="app_permissions">App pernissions</string>
 </resources>
