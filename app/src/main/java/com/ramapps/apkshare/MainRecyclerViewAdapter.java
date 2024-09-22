@@ -1,13 +1,17 @@
 package com.ramapps.apkshare;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +23,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.util.List;
@@ -98,7 +112,51 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 Utils.copyFile(file, cacheApkFile);
                 Utils.shareCachedApks(context);
             } else if (action == 3) {
-                // Creating backup file.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        // Creating backup file.
+                    } else {
+                        Intent intentGetAccessAllFiles = new Intent();
+                        intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        intentGetAccessAllFiles.setData(Uri.fromParts("package", context.getPackageName(), null));
+                        context.startActivity(intentGetAccessAllFiles);
+                    }
+                } else {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        // Creating backup file.
+                    } else {
+                        Dexter.withContext(context)
+                                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                .withListener(new PermissionListener() {
+                                    @Override
+                                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                                        // Creating backup file.
+                                    }
+
+                                    @Override
+                                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                                        Toast.makeText(context, R.string.msg_app_needs_storage_permission, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                                        AlertDialog alertDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                                                .setIcon(R.drawable.outline_folder_24)
+                                                .setTitle(R.string.storage_permission)
+                                                .setMessage(R.string.msg_app_needs_storage_permission)
+                                                .setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        permissionToken.continuePermissionRequest();
+                                                    }
+                                                })
+                                                .setNegativeButton(R.string.deny, null)
+                                                .create();
+                                        alertDialog.show();
+                                    }
+                                }).check();
+                    }
+                }
             } else {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));

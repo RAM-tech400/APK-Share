@@ -47,4 +47,8 @@
     <string name="apply">اعمال کردن</string>
     <string name="reverse_sort">مرتب سازی وارونه</string>
     <string name="create_backup_file">ایجاد نسخه پشتیبان</string>
+    <string name="msg_app_needs_storage_permission">برنامه برای ایجاد نسخه‌های پشتیان به \"دسترسی به فضای ذخیره‌سازی\" نیاز دارد.</string>
+    <string name="storage_permission">دسترسی به فضای ذخیره‌سازی</string>
+    <string name="grant">اجازه دادن</string>
+    <string name="deny">رد کردن</string>
 </resources>
