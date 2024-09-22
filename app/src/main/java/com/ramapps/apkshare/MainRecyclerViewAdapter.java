@@ -112,9 +112,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 Utils.copyFile(file, cacheApkFile);
                 Utils.shareCachedApks(context);
             } else if (action == 3) {
+                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
-                        // Creating backup file.
+                        Utils.copyFile(file, backupFile);
+                        showSuccessfulBackupMessage();
                     } else {
                         Intent intentGetAccessAllFiles = new Intent();
                         intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
@@ -123,14 +127,16 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                 } else {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        // Creating backup file.
+                        Utils.copyFile(file, backupFile);
+                        showSuccessfulBackupMessage();
                     } else {
                         Dexter.withContext(context)
                                 .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 .withListener(new PermissionListener() {
                                     @Override
                                     public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                        // Creating backup file.
+                                        Utils.copyFile(file, backupFile);
+                                        showSuccessfulBackupMessage();
                                     }
 
                                     @Override
@@ -193,6 +199,23 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 );
             }
         }
+    }
+
+    private void showSuccessfulBackupMessage() {
+        Snackbar.make(MainActivity.fabSend, R.string.msg_creating_backup_file_successful, Snackbar.LENGTH_SHORT)
+                .setAction(R.string.view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intentOpenBackupFolder = new Intent();
+                        intentOpenBackupFolder.setAction(Intent.ACTION_GET_CONTENT);
+                        intentOpenBackupFolder.setDataAndType(Uri.parse(
+                                Environment.getExternalStorageDirectory() + File.separator
+                                        + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/"
+                        ), "*/*");
+                        context.startActivity(intentOpenBackupFolder);
+                    }
+                })
+                .show();
     }
 
     @Override

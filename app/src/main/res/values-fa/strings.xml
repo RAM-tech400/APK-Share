@@ -51,4 +51,6 @@
     <string name="storage_permission">دسترسی به فضای ذخیره‌سازی</string>
     <string name="grant">اجازه دادن</string>
     <string name="deny">رد کردن</string>
+    <string name="msg_creating_backup_file_successful">ساخت نسخه پشتیبان موفقیت آمیز بود :)</string>
+    <string name="view">مشاهده</string>
 </resources>

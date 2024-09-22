@@ -53,4 +53,6 @@
     <string name="storage_permission">Storage permission</string>
     <string name="grant">Grant</string>
     <string name="deny">Deny</string>
+    <string name="msg_creating_backup_file_successful">Creating backup file is successful :)</string>
+    <string name="view">View</string>
 </resources>
