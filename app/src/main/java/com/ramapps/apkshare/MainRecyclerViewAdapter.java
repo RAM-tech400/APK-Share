@@ -97,6 +97,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
                 Utils.copyFile(file, cacheApkFile);
                 Utils.shareCachedApks(context);
+            } else if (action == 3) {
+                // Creating backup file.
             } else {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));

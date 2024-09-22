@@ -46,4 +46,5 @@
     <string name="cancel">لغو</string>
     <string name="apply">اعمال کردن</string>
     <string name="reverse_sort">مرتب سازی وارونه</string>
+    <string name="create_backup_file">ایجاد نسخه پشتیبان</string>
 </resources>

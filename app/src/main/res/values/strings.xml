@@ -48,4 +48,5 @@
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
     <string name="reverse_sort">Reverse sort</string>
+    <string name="create_backup_file">Create backup file</string>
 </resources>
