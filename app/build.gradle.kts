@@ -10,8 +10,8 @@ android {
         applicationId = "com.ramapps.apkshare"
         minSdk = 21
         targetSdk = 34
-        versionCode = 192
-        versionName = "1.9.2"
+        versionCode = 200
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
