@@ -19,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
     public static FloatingActionButton fabSend, fabSendSearchView;
+    private TextView textViewSearchResultCount;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
@@ -174,6 +176,12 @@ public class MainActivity extends AppCompatActivity {
                 MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
                 recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerViewSearchResults.setAdapter(adapter);
+                if (adapter.getItemCount() > 0) {
+                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
+                } else {
+                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
+                }
+                textViewSearchResultCount.setVisibility(View.VISIBLE);
                 return true;
             }
         });
@@ -208,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     fabSendSearchView.hide();
+                    textViewSearchResultCount.setVisibility(View.GONE);
                 }
             }
         });
@@ -290,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
         fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
+        textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
         @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");

@@ -60,10 +60,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mainSearchViewTextViewResultCount"
+                android:visibility="gone"
+                android:layout_margin="12dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_alignParentTop="true"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/mainRecyclerViewSearchResults"/>
+                android:id="@+id/mainRecyclerViewSearchResults"
+                android:layout_below="@id/mainSearchViewTextViewResultCount"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
@@ -77,6 +87,7 @@
                 android:contentDescription="@string/send"
                 android:visibility="invisible"
                 style="@style/ThemeOverlay.Material3.FloatingActionButton.Secondary"/>
+
         </RelativeLayout>
     </com.google.android.material.search.SearchView>
 
