@@ -13,10 +13,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +38,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.search.SearchBar;
@@ -64,11 +68,14 @@ public class MainActivity extends AppCompatActivity {
     public static final int FLAG_SORT_BY_SIZE = 2;
 
     public static Insets systemBars;
+    public static Insets imeInsets;
+    public static Insets displayCutouts;
 
     private SearchBar searchBar;
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
     public static FloatingActionButton fabSend, fabSendSearchView;
+    private TextView textViewSearchResultCount;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
@@ -110,12 +117,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         init();
         addListeners();
-        setSupportActionBar(findViewById(R.id.mainToolbar));
+        setSupportActionBar(findViewById(R.id.mainSearchBar));
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            findViewById(R.id.mainAppBarLayout).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.mainAppBarLayout).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.mainAppBarLayout).getPaddingBottom());
+            recyclerView.setPadding(
+                    displayCutouts.left,
+                    recyclerView.getPaddingTop(),
+                    displayCutouts.right,
+                    recyclerView.getPaddingBottom());
+            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
             return insets;
         });
-        if(Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)){
+        if (Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
     }
@@ -124,10 +144,10 @@ public class MainActivity extends AppCompatActivity {
         fabSend.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
-            for(int i = 0; i < installedPackagesInfo.size(); i++) {
-                if(selectionTracker.get(i)) {
+            for (int i = 0; i < installedPackagesInfo.size(); i++) {
+                if (selectionTracker.get(i)) {
                     File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/"+ getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
@@ -136,10 +156,10 @@ public class MainActivity extends AppCompatActivity {
         fabSendSearchView.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
-            for(int i = 0; i < searchedPackagesInfo.size(); i++) {
-                if(selectionTrackerForSearchResults.get(i)) {
+            for (int i = 0; i < searchedPackagesInfo.size(); i++) {
+                if (selectionTrackerForSearchResults.get(i)) {
                     File file = new File(searchedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/"+ getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
@@ -148,15 +168,43 @@ public class MainActivity extends AppCompatActivity {
         searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                searchedPackagesInfo = searchForApps(v.getText().toString());
-                selectionTrackerForSearchResults = new ArrayList<>();
-                for (PackageInfo info : searchedPackagesInfo) {
-                    selectionTrackerForSearchResults.add(false);
+                if (!v.getText().toString().isEmpty()) {
+                    searchedPackagesInfo = searchForApps(v.getText().toString());
+                    selectionTrackerForSearchResults = new ArrayList<>();
+                    for (PackageInfo info : searchedPackagesInfo) {
+                        selectionTrackerForSearchResults.add(false);
+                    }
+                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setAdapter(adapter);
+                    if (adapter.getItemCount() > 0) {
+                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
+                    } else {
+                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
+                    }
+                    textViewSearchResultCount.setVisibility(View.VISIBLE);
                 }
+                return true;
+            }
+        });
+
+        searchView.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchedPackagesInfo = new ArrayList<PackageInfo>();
                 MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
                 recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerViewSearchResults.setAdapter(adapter);
-                return true;
             }
         });
 
@@ -170,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                     recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     fabSendSearchView.hide();
+                    textViewSearchResultCount.setVisibility(View.GONE);
                 }
             }
         });
@@ -208,18 +257,18 @@ public class MainActivity extends AppCompatActivity {
             boolean reverseSort = preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false);
             installedPackagesInfo.sort((o1, o2) -> {
                 int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
-                if (sortType == FLAG_SORT_BY_NAME){
+                if (sortType == FLAG_SORT_BY_NAME) {
                     String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
                     String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
-                    return reverseSort? name2.compareTo(name1) : name1.compareTo(name2);
-                } else if (sortType == FLAG_SORT_BY_INSTALL_DATE){
+                    return reverseSort ? name2.compareTo(name1) : name1.compareTo(name2);
+                } else if (sortType == FLAG_SORT_BY_INSTALL_DATE) {
                     String date1 = o1.firstInstallTime + "";
                     String date2 = o2.firstInstallTime + "";
-                    return reverseSort? date2.compareTo(date1) : date1.compareTo(date2);
+                    return reverseSort ? date2.compareTo(date1) : date1.compareTo(date2);
                 } else if (sortType == FLAG_SORT_BY_SIZE) {
                     String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
                     String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
-                    return reverseSort? size2.compareTo(size1) : size1.compareTo(size2);
+                    return reverseSort ? size2.compareTo(size1) : size1.compareTo(size2);
                 }
                 return 0;
             });
@@ -236,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         installedPackagesInfo = new ArrayList<>();
         selectionTracker = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
-            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0){
+            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
                 installedPackagesInfo.add(pi);
                 selectionTracker.add(false);
             }
@@ -252,10 +301,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
         fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
+        textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
         @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        int navigationBarHeight = navigationBarHeightId > 0? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
+        int navigationBarHeight = navigationBarHeightId > 0 ? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
         layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
     }

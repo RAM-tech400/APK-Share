@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="msg_selection_limit">
+        <item quantity="one">You can share %d app synchronized only.</item>
+        <item quantity="other">You can share %d apps synchronized only.</item>
+    </plurals>
+    <plurals name="search_result_count">
+        <item quantity="one">for \"%s\" found %d item:</item>
+        <item quantity="other">for \"%s\" found %d items:</item>
+    </plurals>
+    <plurals name="msg_not_found">
+        <item quantity="other">Can\'t found any items for \"%s\"! Trying something else.</item>
+    </plurals>
+</resources>

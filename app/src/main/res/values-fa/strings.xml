@@ -53,4 +53,9 @@
     <string name="deny">رد کردن</string>
     <string name="msg_creating_backup_file_successful">ساخت نسخه پشتیبان موفقیت آمیز بود :)</string>
     <string name="view">مشاهده</string>
+    <string name="name">نام</string>
+    <string name="install_date">تاریخ نصب</string>
+    <string name="size">اندازه</string>
+    <string name="storage_permission_description">(اختیاری) این دسترسی برای ایجاد فایل‌های پشتیبان در پوشه دانلودها استفاده می‌شود.</string>
+    <string name="app_permissions">دسترسی‌های برنامه</string>
 </resources>

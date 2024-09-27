@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="sortOptions">
-        <item>Name</item>
-        <item>Install date</item>
-        <item>Size</item>
+        <item>@string/name</item>
+        <item>@string/install_date</item>
+        <item>@string/size</item>
     </array>
     <array name="appCategories">
         <item>All</item>

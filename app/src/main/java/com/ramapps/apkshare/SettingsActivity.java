@@ -29,7 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llHelp, llAbout;
+    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
     private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
@@ -49,7 +49,20 @@ public class SettingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            findViewById(R.id.settingsNestedScrollView).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
+            toolbar.setPadding(
+                    displayCutouts.left,
+                    toolbar.getPaddingTop(),
+                    displayCutouts.right,
+                    toolbar.getPaddingBottom());
+            return insets;
+        });
         addListeners();
         loadSettings();
     }
@@ -98,6 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
         llLanguage = findViewById(R.id.settingsLinearLayoutLanguage);
         llNightMode = findViewById(R.id.settingsLinearLayoutNightMode);
         llAppTheme = findViewById(R.id.settingsLinearLayoutTheme);
+        llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
         llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
         llAbout = findViewById(R.id.settingsLinearLayoutAbout);
 
@@ -216,6 +230,12 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
+        llPermissions.setOnClickListener(v -> {
+            PermissionsListModalBottomSheet permissionsListModalBottomSheet = new PermissionsListModalBottomSheet();
+            permissionsListModalBottomSheet.show(getSupportFragmentManager(), PermissionsListModalBottomSheet.class.getName());
+        });
+
         llHelp.setOnClickListener(v -> {
             try{
                 Intent selectorIntent = new Intent(Intent.ACTION_SENDTO);

@@ -76,11 +76,11 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 if(b) selectedCount += 1;
             }
             if(!selectionTracker.get(index)) {
-                if(selectedCount < 5){
+                if(selectedCount < 9){
                     selectionTracker.set(index, true);
                     selectedCount++;
                 } else {
-                    Toast.makeText(context, "You can share 5 apps synchronized only.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getResources().getQuantityString(R.plurals.msg_selection_limit, 0, 9), Toast.LENGTH_SHORT).show();
                 }
             } else {
                 selectionTracker.set(index, false);

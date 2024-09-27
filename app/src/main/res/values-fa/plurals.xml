@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
+    <plurals name="msg_selection_limit">
+        <item quantity="one">شما فقط می توانید %d برنامه را به طور همزمان به اشتراک بگذارید.</item>
+        <item quantity="other">شما فقط می توانید %d برنامه را به طور همزمان به اشتراک بگذارید.</item>
+    </plurals>
+    <plurals name="search_result_count">
+        <item quantity="one">برای «%s»، %d مورد پیدا شد:</item>
+        <item quantity="other">برای «%s»، %d مورد پیدا شد:</item>
+    </plurals>
+    <plurals name="msg_not_found">
+        <item quantity="other">نمی توان برای «%s» موردی پیدا کرد! چیز دیگری را امتحان کنید.</item>
+    </plurals>
+</resources>

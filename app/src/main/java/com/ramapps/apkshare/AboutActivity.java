@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
@@ -36,6 +37,20 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         init();
         addListeners();
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.about), (v, insets) -> {
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            findViewById(R.id.aboutNestedScrollView).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.aboutNestedScrollView).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.aboutNestedScrollView).getPaddingBottom());
+            toolbar.setPadding(
+                    displayCutouts.left,
+                    toolbar.getPaddingTop(),
+                    displayCutouts.right,
+                    toolbar.getPaddingBottom());
+            return insets;
+        });
     }
 
     private void addListeners() {
