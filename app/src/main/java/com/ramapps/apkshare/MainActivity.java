@@ -168,20 +168,22 @@ public class MainActivity extends AppCompatActivity {
         searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                searchedPackagesInfo = searchForApps(v.getText().toString());
-                selectionTrackerForSearchResults = new ArrayList<>();
-                for (PackageInfo info : searchedPackagesInfo) {
-                    selectionTrackerForSearchResults.add(false);
+                if (!v.getText().toString().isEmpty()) {
+                    searchedPackagesInfo = searchForApps(v.getText().toString());
+                    selectionTrackerForSearchResults = new ArrayList<>();
+                    for (PackageInfo info : searchedPackagesInfo) {
+                        selectionTrackerForSearchResults.add(false);
+                    }
+                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setAdapter(adapter);
+                    if (adapter.getItemCount() > 0) {
+                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
+                    } else {
+                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
+                    }
+                    textViewSearchResultCount.setVisibility(View.VISIBLE);
                 }
-                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                recyclerViewSearchResults.setAdapter(adapter);
-                if (adapter.getItemCount() > 0) {
-                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
-                } else {
-                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
-                }
-                textViewSearchResultCount.setVisibility(View.VISIBLE);
                 return true;
             }
         });
