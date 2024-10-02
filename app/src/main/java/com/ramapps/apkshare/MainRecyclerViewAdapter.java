@@ -1,6 +1,8 @@
 package com.ramapps.apkshare;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -81,6 +84,18 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     selectedCount++;
                 } else {
                     Toast.makeText(context, context.getResources().getQuantityString(R.plurals.msg_selection_limit, 0, 9), Toast.LENGTH_SHORT).show();
+
+                    ObjectAnimator oa1 = ObjectAnimator.ofFloat(holder.getCardViewContainer(), View.X, 0, context.getResources().getDisplayMetrics().density * -12);
+                    oa1.setDuration(40);
+
+                    ObjectAnimator oa2 = ObjectAnimator.ofFloat(holder.getCardViewContainer(), View.X,0, context.getResources().getDisplayMetrics().density * -12, 0);
+                    oa1.setDuration(120);
+                    oa2.setStartDelay(80);
+                    oa2.setInterpolator(new OvershootInterpolator(4));
+
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    animatorSet.playTogether(oa1, oa2);
+                    animatorSet.start();
                 }
             } else {
                 selectionTracker.set(index, false);
