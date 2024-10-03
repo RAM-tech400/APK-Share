@@ -13,6 +13,8 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -96,6 +98,15 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     AnimatorSet animatorSet = new AnimatorSet();
                     animatorSet.playTogether(oa1, oa2);
                     animatorSet.start();
+                    // TODO: Add vibration control in settings
+//                    if (context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATE)) {
+                        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            vibrator.vibrate(VibrationEffect.createOneShot(86, VibrationEffect.DEFAULT_AMPLITUDE));
+                        } else {
+                            vibrator.vibrate(86);
+                        }
+//                    }
                 }
             } else {
                 selectionTracker.set(index, false);
