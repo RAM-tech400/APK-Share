@@ -2,6 +2,7 @@ package com.ramapps.apkshare;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -29,8 +30,12 @@ public class PermissionsListModalBottomSheet extends BottomSheetDialogFragment {
         RelativeLayout relativeLayoutStoragePermission = view.findViewById(R.id.permissionsBottomSheetRelativeLayoutStoragePermission);
         relativeLayoutStoragePermission.setOnClickListener(v -> {
             Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            intent.setData(Uri.fromParts("package", getContext().getPackageName(), null));
+            intent.setAction(
+                    Build.VERSION.SDK_INT >= 30?
+                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION :
+                            Settings.ACTION_APPLICATION_SETTINGS
+            );
+            intent.setData(Uri.fromParts("package", requireContext().getPackageName(), null));
             startActivity(intent);
         });
 
