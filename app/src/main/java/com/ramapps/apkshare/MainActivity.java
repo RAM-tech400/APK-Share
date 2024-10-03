@@ -49,29 +49,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String PREFERENCES_SETTINGS = "Settings";
-    public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
-    public static final String PREFERENCES_SETTINGS_REVERSE_SORT = "Reverse sort";
-    public static final String PREFERENCES_SETTINGS_VIBRATION = "Vibrate";
-    public static final String PREFERENCES_SETTINGS_COLUMN_COUNT = "Column count";
-    public static final String PREFERENCES_SETTINGS_LONG_PRESS_ACTON = "Long press action";
-    public static final String PREFERENCES_SETTINGS_QUICK_INFO = "Quick info";
-    public static final String PREFERENCES_SETTINGS_LANGUAGE = "Language";
-    public static final String PREFERENCES_SETTINGS_NIGHT_MODE = "Night mode";
-    public static final String PREFERENCES_SETTINGS_THEME = "App theme";
-
-    public static final int FLAG_SORT_BY_NAME = 0;
-    public static final int FLAG_SORT_BY_INSTALL_DATE = 1;
-    public static final int FLAG_SORT_BY_SIZE = 2;
-
-    public static Insets systemBars;
-    public static Insets imeInsets;
-    public static Insets displayCutouts;
-
     private SearchBar searchBar;
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
-    public static FloatingActionButton fabSend, fabSendSearchView;
     private TextView textViewSearchResultCount;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
@@ -85,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // set language
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            String langCode = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "");
+            String langCode = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "");
             Configuration configuration = getResources().getConfiguration();
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             if (langCode.isEmpty()) {
@@ -96,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
             getResources().updateConfiguration(configuration, displayMetrics);
         }
         //set app theme
-        if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);
         }
         //set nightMode
-        AppCompatDelegate.setDefaultNightMode(getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
+        AppCompatDelegate.setDefaultNightMode(getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         EdgeToEdge.enable(this);
 
@@ -111,29 +91,29 @@ public class MainActivity extends AppCompatActivity {
         addListeners();
         setSupportActionBar(findViewById(R.id.mainSearchBar));
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            GlobalVariables.systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            GlobalVariables.displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            GlobalVariables.imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
             findViewById(R.id.mainAppBarLayout).setPadding(
-                    displayCutouts.left,
+                    GlobalVariables.displayCutouts.left,
                     findViewById(R.id.mainAppBarLayout).getPaddingTop(),
-                    displayCutouts.right,
+                    GlobalVariables.displayCutouts.right,
                     findViewById(R.id.mainAppBarLayout).getPaddingBottom());
             recyclerView.setPadding(
-                    displayCutouts.left,
+                    GlobalVariables.displayCutouts.left,
                     recyclerView.getPaddingTop(),
-                    displayCutouts.right,
+                    GlobalVariables.displayCutouts.right,
                     recyclerView.getPaddingBottom());
-            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
+            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), GlobalVariables.imeInsets.bottom);
             return insets;
         });
-        if (Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)) {
+        if (Objects.equals(getIntent().getAction(), GlobalVariables.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
     }
 
     private void addListeners() {
-        fabSend.setOnClickListener(v -> {
+        GlobalVariables.fabSend.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < installedPackagesInfo.size(); i++) {
@@ -145,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             Utils.shareCachedApks(MainActivity.this);
         });
 
-        fabSendSearchView.setOnClickListener(v -> {
+        GlobalVariables.fabSendSearchView.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < searchedPackagesInfo.size(); i++) {
@@ -167,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         selectionTrackerForSearchResults.add(false);
                     }
                     MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     if (adapter.getItemCount() > 0) {
                         textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
@@ -195,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 searchedPackagesInfo = new ArrayList<PackageInfo>();
                 MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerViewSearchResults.setAdapter(adapter);
             }
         });
@@ -207,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
                     searchedPackagesInfo = new ArrayList<>();
                     selectionTrackerForSearchResults = new ArrayList<>();
                     MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
-                    fabSendSearchView.hide();
+                    GlobalVariables.fabSendSearchView.hide();
                     textViewSearchResultCount.setVisibility(View.GONE);
                 }
             }
@@ -240,24 +220,24 @@ public class MainActivity extends AppCompatActivity {
         getInstalledApps();
         sortPackageInfoList();
         showAppsOnScreen();
-        fabSend.hide();
+        GlobalVariables.fabSend.hide();
         Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
     }
 
     private void sortPackageInfoList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            boolean reverseSort = preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false);
+            boolean reverseSort = preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, false);
             installedPackagesInfo.sort((o1, o2) -> {
-                int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
-                if (sortType == FLAG_SORT_BY_NAME) {
+                int sortType = preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME);
+                if (sortType == GlobalVariables.FLAG_SORT_BY_NAME) {
                     String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
                     String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
                     return reverseSort ? name2.compareTo(name1) : name1.compareTo(name2);
-                } else if (sortType == FLAG_SORT_BY_INSTALL_DATE) {
+                } else if (sortType == GlobalVariables.FLAG_SORT_BY_INSTALL_DATE) {
                     String date1 = o1.firstInstallTime + "";
                     String date2 = o2.firstInstallTime + "";
                     return reverseSort ? date2.compareTo(date1) : date1.compareTo(date2);
-                } else if (sortType == FLAG_SORT_BY_SIZE) {
+                } else if (sortType == GlobalVariables.FLAG_SORT_BY_SIZE) {
                     String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
                     String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
                     return reverseSort ? size2.compareTo(size1) : size1.compareTo(size2);
@@ -269,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAppsOnScreen() {
         MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }
 
@@ -285,20 +265,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
+        preferences = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE);
 
         searchBar = findViewById(R.id.mainSearchBar);
         searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
-        fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
-        fabSend = findViewById(R.id.mainFloatingActionBarSend);
+        GlobalVariables.fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
+        GlobalVariables.fabSend = findViewById(R.id.mainFloatingActionBarSend);
         textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
         @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         int navigationBarHeight = navigationBarHeightId > 0 ? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) GlobalVariables.fabSend.getLayoutParams();
         layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
     }
 
@@ -307,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         ((MenuBuilder) menu).setOptionalIconsVisible(true);
-        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+        if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
             menu.getItem(2).setIcon(R.drawable.ic_list);
         } else {
             menu.getItem(2).setIcon(R.drawable.ic_grid_view);
@@ -318,20 +298,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.mainMenuItemSort) {
-            AtomicInteger choice = new AtomicInteger(preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME));
+            AtomicInteger choice = new AtomicInteger(preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME));
             CheckBox cbReverseSort = new CheckBox(this);
             cbReverseSort.setText(R.string.reverse_sort);
-            cbReverseSort.setChecked(preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false));
+            cbReverseSort.setChecked(preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, false));
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.sort_by)
-                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> {
+                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME), (dialog1, which) -> {
                         choice.set(which);
                     })
                     .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
-                            preferences.edit().putBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
+                            preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
+                            preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
                             sortPackageInfoList();
                             showAppsOnScreen();
                             dialog.dismiss();
@@ -346,12 +326,12 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.column_count)
-                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
-                        preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
+                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
+                        preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
                         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
                         recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
                         dialog12.dismiss();
-                        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+                        if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
                         } else {
                             item.setIcon(R.drawable.ic_grid_view);

@@ -35,8 +35,6 @@ import java.util.List;
 
 public class Utils {
 
-    public static final String ACTION_RESHARE = "com.ramapps.apkshare.Utils.ACTION_RESHARE";
-
     public static void copyFile(File source, File destination) {
         try {
             if (!destination.getParentFile().exists()) destination.getParentFile().mkdir();

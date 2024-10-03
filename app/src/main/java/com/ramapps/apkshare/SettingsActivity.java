@@ -47,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //set app theme
-        if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);
@@ -74,8 +74,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSettings() {
-        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
-        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
+        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
+        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
 
         int lang = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -86,9 +86,9 @@ public class SettingsActivity extends AppCompatActivity {
                 lang = 2;
             }
         } else {
-            if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+            if (preferences.getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
                 lang = 1;
-            } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+            } else if (preferences.getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
                 lang = 2;
             }
         }
@@ -96,23 +96,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         int night = 0;
 
-        if (preferences.getInt(MainActivity.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
+        if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
             night = 1;
-        } else if (preferences.getInt(MainActivity.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
+        } else if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
             night = 2;
         }
         textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
-        textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[preferences.getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0)]);
+        textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0)]);
 
         toolbar.setNavigationOnClickListener(v -> {
             finish();
         });
 
-        switchVibration.setChecked(preferences.getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, true));
+        switchVibration.setChecked(preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, true));
     }
 
     private void init() {
-        preferences = getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE);
+        preferences = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE);
 
         llLongPressAction = findViewById(R.id.settingsLinearLayoutLonPressAction);
         llQuickInfo = findViewById(R.id.settingsLinearLayoutQuickInfo);
@@ -147,9 +147,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
                     .setTitle(R.string.long_press_action)
-                    .setSingleChoiceItems(R.array.longPressActionOptions, preferences.getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0), (dialog1, which) -> {
+                    .setSingleChoiceItems(R.array.longPressActionOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0), (dialog1, which) -> {
                         textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[which]);
-                        preferences.edit().putInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, which).apply();
+                        preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, which).apply();
                         dialog1.dismiss();
                     })
                     .create();
@@ -159,9 +159,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
                     .setTitle(R.string.quick_info)
-                    .setSingleChoiceItems(R.array.quickInfoOptions, preferences.getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1), (dialog12, which) -> {
+                    .setSingleChoiceItems(R.array.quickInfoOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1), (dialog12, which) -> {
                         textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[which]);
-                        preferences.edit().putInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, which).apply();
+                        preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, which).apply();
                         dialog12.dismiss();
                     })
                     .create();
@@ -177,9 +177,9 @@ public class SettingsActivity extends AppCompatActivity {
                     selected = 2;
                 }
             } else {
-                if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+                if (preferences.getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
                     selected = 1;
-                } else if (preferences.getString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+                } else if (preferences.getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
                     selected = 2;
                 }
             }
@@ -193,7 +193,7 @@ public class SettingsActivity extends AppCompatActivity {
                             LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(locales[which]);
                             AppCompatDelegate.setApplicationLocales(appLocale);
                         } else {
-                            preferences.edit().putString(MainActivity.PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
+                            preferences.edit().putString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
                             dialog13.dismiss();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         }
@@ -204,9 +204,9 @@ public class SettingsActivity extends AppCompatActivity {
         llNightMode.setOnClickListener(v -> {
             int selected = 0;
 
-            if (preferences.getInt(MainActivity.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
+            if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
                 selected = 1;
-            } else if (preferences.getInt(MainActivity.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
+            } else if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
                 selected = 2;
             }
 
@@ -221,7 +221,7 @@ public class SettingsActivity extends AppCompatActivity {
                             mode = AppCompatDelegate.MODE_NIGHT_NO;
                         }
 
-                        preferences.edit().putInt(MainActivity.PREFERENCES_SETTINGS_NIGHT_MODE, mode).apply();
+                        preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, mode).apply();
                         AppCompatDelegate.setDefaultNightMode(mode);
                         dialog14.dismiss();
                     })
@@ -232,9 +232,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(SettingsActivity.this);
             dialogBuilder.setTitle(R.string.app_theme);
-            dialogBuilder.setSingleChoiceItems(R.array.themeOptions, preferences.getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0), (dialog, which) -> {
+            dialogBuilder.setSingleChoiceItems(R.array.themeOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0), (dialog, which) -> {
                 textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[which]);
-                preferences.edit().putInt(MainActivity.PREFERENCES_SETTINGS_THEME, which).apply();
+                preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, which).apply();
                 dialog.dismiss();
                 startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             });
@@ -267,7 +267,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         rlVibration.setOnClickListener(v -> {
             switchVibration.toggle();
-            preferences.edit().putBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, switchVibration.isChecked()).apply();
+            preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, switchVibration.isChecked()).apply();
             if (switchVibration.isChecked()) {
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

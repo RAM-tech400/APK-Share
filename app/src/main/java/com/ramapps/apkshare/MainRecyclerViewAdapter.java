@@ -55,7 +55,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         this.context = context;
         this.packagesInfo = packagesInfo;
         this.selectionTracker = selectionTracker;
-        columnCount = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
+        columnCount = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
 
     @NonNull
@@ -96,7 +96,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     animatorSet.playTogether(oa1, oa2);
                     animatorSet.start();
 
-                    if (context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, true)) {
+                    if (context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, true)) {
                         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             vibrator.vibrate(VibrationEffect.createOneShot(86, VibrationEffect.DEFAULT_AMPLITUDE));
@@ -110,16 +110,16 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 selectedCount--;
             }
             if (selectedCount > 0) {
-                MainActivity.fabSend.show();
-                MainActivity.fabSendSearchView.show();
+                GlobalVariables.fabSend.show();
+                GlobalVariables.fabSendSearchView.show();
             } else {
-                MainActivity.fabSend.hide();
-                MainActivity.fabSendSearchView.hide();
+                GlobalVariables.fabSend.hide();
+                GlobalVariables.fabSendSearchView.hide();
             }
             ((MaterialCardView) v).setChecked(selectionTracker.get(index));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
-            int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+            int action = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
@@ -238,7 +238,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         layoutParams.leftMargin,
                         layoutParams.topMargin,
                         layoutParams.rightMargin,
-                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
+                        layoutParams.bottomMargin + GlobalVariables.systemBars.bottom
                 );
             }
         } else {
@@ -248,14 +248,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         layoutParams.leftMargin,
                         layoutParams.topMargin,
                         layoutParams.rightMargin,
-                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
+                        layoutParams.bottomMargin + GlobalVariables.systemBars.bottom
                 );
             }
         }
     }
 
     private void showSuccessfulBackupMessage() {
-        Snackbar.make(MainActivity.fabSend, R.string.msg_creating_backup_file_successful, Snackbar.LENGTH_SHORT)
+        Snackbar.make(GlobalVariables.fabSend, R.string.msg_creating_backup_file_successful, Snackbar.LENGTH_SHORT)
                 .setAction(R.string.view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -297,7 +297,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             try {
                 imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));
                 textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
-                int quickInfoSettings = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1);
+                int quickInfoSettings = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1);
                 if (quickInfoSettings == 1) {
                     textViewAppDetail.setText(packageInfo.packageName);
                 } else if (quickInfoSettings == 2) {

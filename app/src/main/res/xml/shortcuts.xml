@@ -8,7 +8,7 @@
         android:shortcutLongLabel="@string/shortcut_long_label_reshare"
         android:shortcutDisabledMessage="@string/reshare_shortcut_disabled">
         <intent
-            android:action="com.ramapps.apkshare.Utils.ACTION_RESHARE"
+            android:action="com.ramapps.apkshare.ACTION_RESHARE"
             android:targetPackage="com.ramapps.apkshare"
             android:targetClass="com.ramapps.apkshare.MainActivity" />
     </shortcut>
