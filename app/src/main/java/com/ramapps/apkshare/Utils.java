@@ -12,12 +12,14 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.NonNull;
@@ -32,12 +34,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Utils {
 
     public static void copyFile(File source, File destination) {
         try {
-            if (!destination.getParentFile().exists()) destination.getParentFile().mkdir();
+            // Making directory for the destination file if it is not exist and logging the result.
+            if (!Objects.requireNonNull(destination.getParentFile()).exists()) {
+                Log.d(
+                        ".Utils" ,
+                        "Making <" + destination.getParent() + "> directory was "
+                                + (destination.getParentFile().mkdir()? "successful" : "failed"));
+            }
+
             InputStream inputStream = new FileInputStream(source);
             OutputStream outputStream = new FileOutputStream(destination);
             int length;
@@ -49,21 +59,26 @@ public class Utils {
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(".Utils", "There is a problem with Input/Output stream! More error details: \n" + e);
         }
     }
 
+    /**
+     * This method will start a sharing process for the all apk files that saved in the app cache directory.
+     **/
     public static void shareCachedApks(Context context) {
         File cachedApksDir = new File(context.getCacheDir() + "/ApkFiles/");
         List<Uri> cachedApksUri = new ArrayList<>();
         if (cachedApksDir.listFiles() != null) {
-            for (File file : cachedApksDir.listFiles()) {
+            for (File file : Objects.requireNonNull(cachedApksDir.listFiles())) {
                 Uri uri = FileProvider.getUriForFile(context, ".provider", file);
                 cachedApksUri.add(uri);
             }
+
             Intent intent = new Intent();
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setType("text/plain");
+
             if (cachedApksUri.size() == 1) {
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(Intent.EXTRA_STREAM, cachedApksUri.get(0));
@@ -71,22 +86,26 @@ public class Utils {
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE);
                 intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, (ArrayList<? extends Parcelable>) cachedApksUri);
             }
+
             context.startActivity(intent);
         }
     }
 
     public static void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles())
+            for (File child : Objects.requireNonNull(fileOrDirectory.listFiles()))
                 deleteRecursive(child);
 
-        fileOrDirectory.delete();
+        Log.d(".Utils", fileOrDirectory.delete()?
+                fileOrDirectory.getAbsolutePath() + "successfully deleted!" :
+                "Deleting " + fileOrDirectory.getAbsolutePath() + " was failed!"
+        );
     }
 
     public static class AnimatedGradientDrawable extends Drawable {
 
-        private int[] colors = new int[] {0xffff8000, 0xff00ff00, 0xff0080ff, 0xffff00ff};
-        private PointF point1 = new PointF(0,0);
+        private final int[] colors = new int[] {0xffff8000, 0xff00ff00, 0xff0080ff, 0xffff00ff};
+        private final PointF point1 = new PointF(0,0);
         private Rect bounds;
         private int alpha = 100;
         private ColorFilter colorFilter;
@@ -96,7 +115,6 @@ public class Utils {
         public void draw(@NonNull Canvas canvas) {
             PointF startSpot = new PointF(point1.x, point1.y);
             PointF endSpot = new PointF(point1.x - bounds.width(), point1.y - bounds.height());
-            PointF center = new PointF(bounds.width() / 2, bounds.height() / 2);
             LinearGradient gradient = new LinearGradient(
                     startSpot.x,
                     startSpot.y,
@@ -104,7 +122,8 @@ public class Utils {
                     endSpot.y,
                     colors,
                     null,
-                    Shader.TileMode.MIRROR);
+                    Shader.TileMode.MIRROR
+            );
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setShader(gradient);
@@ -128,13 +147,10 @@ public class Utils {
             animator.setInterpolator(new LinearInterpolator());
             animator.setRepeatMode(ValueAnimator.RESTART);
             animator.setRepeatCount(ValueAnimator.INFINITE);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(@NonNull ValueAnimator animation) {
-                    point1.x = (float) animation.getAnimatedValue();
-                    point1.y = (float) animation.getAnimatedValue();
-                    invalidateSelf();
-                }
+            animator.addUpdateListener(animation -> {
+                point1.x = (float) animation.getAnimatedValue();
+                point1.y = (float) animation.getAnimatedValue();
+                invalidateSelf();
             });
         }
 
@@ -151,7 +167,7 @@ public class Utils {
 
         @Override
         public int getOpacity() {
-            return 0;
+            return PixelFormat.UNKNOWN;
         }
     }
 }
