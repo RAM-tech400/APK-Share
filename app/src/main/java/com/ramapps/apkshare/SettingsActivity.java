@@ -2,15 +2,18 @@ package com.ramapps.apkshare;
 
 import android.app.LocaleManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
-import android.util.Log;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +29,13 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
+    private RelativeLayout rlVibration;
+    private MaterialSwitch switchVibration;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
     private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
@@ -101,6 +107,8 @@ public class SettingsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             finish();
         });
+
+        switchVibration.setChecked(preferences.getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, true));
     }
 
     private void init() {
@@ -114,6 +122,10 @@ public class SettingsActivity extends AppCompatActivity {
         llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
         llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
         llAbout = findViewById(R.id.settingsLinearLayoutAbout);
+
+        rlVibration = findViewById(R.id.settingsRelativeLayoutVibration);
+
+        switchVibration = findViewById(R.id.settingsSwitchVibration);
 
         textViewLongPressAction = findViewById(R.id.settingsTextViewLongPressActionPreview);
         textViewQuickInfo = findViewById(R.id.settingsTextViewQuickInfoPreview);
@@ -252,5 +264,18 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
+
+        rlVibration.setOnClickListener(v -> {
+            switchVibration.toggle();
+            preferences.edit().putBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, switchVibration.isChecked()).apply();
+            if (switchVibration.isChecked()) {
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    vibrator.vibrate(100);
+                }
+            }
+        });
     }
 }

@@ -60,4 +60,5 @@
     <string name="storage_permission_description">(OPTIONAL) This permission used for creating backup files into download directory.</string>
     <string name="app_permissions">App pernissions</string>
     <string name="app_version_name">2.0.0</string>
+    <string name="vibration">Vibration</string>
 </resources>

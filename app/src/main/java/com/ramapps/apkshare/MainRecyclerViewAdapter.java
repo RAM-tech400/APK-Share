@@ -9,18 +9,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,9 +27,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -98,15 +92,15 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     AnimatorSet animatorSet = new AnimatorSet();
                     animatorSet.playTogether(oa1, oa2);
                     animatorSet.start();
-                    // TODO: Add vibration control in settings
-//                    if (context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATE)) {
+                    
+                    if (context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, true)) {
                         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             vibrator.vibrate(VibrationEffect.createOneShot(86, VibrationEffect.DEFAULT_AMPLITUDE));
                         } else {
                             vibrator.vibrate(86);
                         }
-//                    }
+                    }
                 }
             } else {
                 selectionTracker.set(index, false);

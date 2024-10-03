@@ -1,7 +1,6 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
-import android.app.LocaleManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,13 +30,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.graphics.Insets;
-import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.search.SearchBar;
@@ -56,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREFERENCES_SETTINGS = "Settings";
     public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
     public static final String PREFERENCES_SETTINGS_REVERSE_SORT = "Reverse sort";
+    public static final String PREFERENCES_SETTINGS_VIBRATION = "Vibrate";
     public static final String PREFERENCES_SETTINGS_COLUMN_COUNT = "Column count";
     public static final String PREFERENCES_SETTINGS_LONG_PRESS_ACTON = "Long press action";
     public static final String PREFERENCES_SETTINGS_QUICK_INFO = "Quick info";

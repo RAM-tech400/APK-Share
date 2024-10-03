@@ -58,4 +58,5 @@
     <string name="size">اندازه</string>
     <string name="storage_permission_description">(اختیاری) این دسترسی برای ایجاد فایل‌های پشتیبان در پوشه دانلودها استفاده می‌شود.</string>
     <string name="app_permissions">دسترسی‌های برنامه</string>
+    <string name="vibration">لرزش</string>
 </resources>
