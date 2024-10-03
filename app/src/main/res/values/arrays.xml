@@ -14,6 +14,7 @@
     </array>
 
     <array name="longPressActionOptions">
+        <item>@string/show_popup_menu</item>
         <item>@string/open_application</item>
         <item>@string/uninstall_application</item>
         <item>@string/direct_share</item>

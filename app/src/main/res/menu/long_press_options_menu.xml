@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/itemLongPressOpen"
+        android:title="@string/open_application"
+        android:icon="@drawable/outline_play_arrow_24" />
+
+    <item
+        android:id="@+id/itemLongPressUninstall"
+        android:title="@string/uninstall_application"
+        android:icon="@drawable/outline_delete_24" />
+
+    <item
+        android:id="@+id/itemLongPressDirectShare"
+        android:title="@string/direct_share"
+        android:icon="@drawable/ic_send" />
+
+    <item
+        android:id="@+id/itemLongPressCreateBackup"
+        android:title="@string/create_backup_file"
+        android:icon="@drawable/outline_package_2_24" />
+
+</menu>

@@ -16,6 +16,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +57,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         this.selectionTracker = selectionTracker;
         columnCount = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
+
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -72,10 +75,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.getCardViewContainer().setOnClickListener(v -> {
             int selectedCount = 0;
             for (Boolean b : selectionTracker) {
-                if(b) selectedCount += 1;
+                if (b) selectedCount += 1;
             }
-            if(!selectionTracker.get(index)) {
-                if(selectedCount < 9){
+            if (!selectionTracker.get(index)) {
+                if (selectedCount < 9) {
                     selectionTracker.set(index, true);
                     selectedCount++;
                 } else {
@@ -84,7 +87,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     ObjectAnimator oa1 = ObjectAnimator.ofFloat(holder.getCardViewContainer(), View.X, 0, context.getResources().getDisplayMetrics().density * -12);
                     oa1.setDuration(40);
 
-                    ObjectAnimator oa2 = ObjectAnimator.ofFloat(holder.getCardViewContainer(), View.X,0, context.getResources().getDisplayMetrics().density * -12, 0);
+                    ObjectAnimator oa2 = ObjectAnimator.ofFloat(holder.getCardViewContainer(), View.X, 0, context.getResources().getDisplayMetrics().density * -12, 0);
                     oa1.setDuration(120);
                     oa2.setStartDelay(80);
                     oa2.setInterpolator(new OvershootInterpolator(4));
@@ -92,7 +95,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     AnimatorSet animatorSet = new AnimatorSet();
                     animatorSet.playTogether(oa1, oa2);
                     animatorSet.start();
-                    
+
                     if (context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.PREFERENCES_SETTINGS_VIBRATION, true)) {
                         Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -106,7 +109,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 selectionTracker.set(index, false);
                 selectedCount--;
             }
-            if(selectedCount > 0) {
+            if (selectedCount > 0) {
                 MainActivity.fabSend.show();
                 MainActivity.fabSendSearchView.show();
             } else {
@@ -118,78 +121,108 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.getCardViewContainer().setOnLongClickListener(v -> {
             int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
-                if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
-                    Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_DELETE);
-                    intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
-                    context.startActivity(intent);
-                }
-            } else if (action == 2) {
-                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
-                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
-                Utils.deleteRecursive(cacheApkFile.getParentFile());
-                Utils.copyFile(file, cacheApkFile);
-                Utils.shareCachedApks(context);
-            } else if (action == 3) {
-                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
-                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
-                if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (Environment.isExternalStorageManager()) {
-                        Utils.copyFile(file, backupFile);
-                        showSuccessfulBackupMessage();
-                    } else {
-                        Intent intentGetAccessAllFiles = new Intent();
-                        intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                        intentGetAccessAllFiles.setData(Uri.fromParts("package", context.getPackageName(), null));
-                        context.startActivity(intentGetAccessAllFiles);
-                    }
-                } else {
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        Utils.copyFile(file, backupFile);
-                        showSuccessfulBackupMessage();
-                    } else {
-                        Dexter.withContext(context)
-                                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                .withListener(new PermissionListener() {
-                                    @Override
-                                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                        Utils.copyFile(file, backupFile);
-                                        showSuccessfulBackupMessage();
-                                    }
-
-                                    @Override
-                                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-                                        Toast.makeText(context, R.string.msg_app_needs_storage_permission, Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    @Override
-                                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
-                                        AlertDialog alertDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                                                .setIcon(R.drawable.outline_folder_24)
-                                                .setTitle(R.string.storage_permission)
-                                                .setMessage(R.string.msg_app_needs_storage_permission)
-                                                .setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        permissionToken.continuePermissionRequest();
-                                                    }
-                                                })
-                                                .setNegativeButton(R.string.deny, null)
-                                                .create();
-                                        alertDialog.show();
-                                    }
-                                }).check();
-                    }
-                }
-            } else {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
                 } catch (NullPointerException e) {
                     Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
                 }
-            }
+            } else if (action == 2) {
+                    if (packagesInfo.get(index).packageName.equals(context.getPackageName())) {
+                        Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_DELETE);
+                        intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                        context.startActivity(intent);
+                    }
+            } else if (action == 3) {
+                    File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                    File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                    Utils.deleteRecursive(cacheApkFile.getParentFile());
+                    Utils.copyFile(file, cacheApkFile);
+                    Utils.shareCachedApks(context);
+            } else if (action == 4) {
+                    File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                    File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                    if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (Environment.isExternalStorageManager()) {
+                            Utils.copyFile(file, backupFile);
+                            showSuccessfulBackupMessage();
+                        } else {
+                            Intent intentGetAccessAllFiles = new Intent();
+                            intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                            intentGetAccessAllFiles.setData(Uri.fromParts("package", context.getPackageName(), null));
+                            context.startActivity(intentGetAccessAllFiles);
+                        }
+                    } else {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                            Utils.copyFile(file, backupFile);
+                            showSuccessfulBackupMessage();
+                        } else {
+                            Dexter.withContext(context)
+                                    .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    .withListener(new PermissionListener() {
+                                        @Override
+                                        public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                                            Utils.copyFile(file, backupFile);
+                                            showSuccessfulBackupMessage();
+                                        }
+
+                                        @Override
+                                        public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                                            Toast.makeText(context, R.string.msg_app_needs_storage_permission, Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                                            AlertDialog alertDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                                                    .setIcon(R.drawable.outline_folder_24)
+                                                    .setTitle(R.string.storage_permission)
+                                                    .setMessage(R.string.msg_app_needs_storage_permission)
+                                                    .setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            permissionToken.continuePermissionRequest();
+                                                        }
+                                                    })
+                                                    .setNegativeButton(R.string.deny, null)
+                                                    .create();
+                                            alertDialog.show();
+                                        }
+                                    }).check();
+                        }
+                    }
+                } else {
+                    PopupMenu popupMenu = new PopupMenu(context, holder.getCardViewContainer());
+                    popupMenu.getMenuInflater().inflate(R.menu.long_press_options_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(item -> {
+                        if (item.getItemId() == R.id.itemLongPressOpen) {
+                            try {
+                                context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
+                            } catch (NullPointerException e) {
+                                Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
+                            }
+                            return true;
+                        } else if (item.getItemId() == R.id.itemLongPressUninstall) {
+                            Intent intent = new Intent(Intent.ACTION_DELETE);
+                            intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                            context.startActivity(intent);
+                            return true;
+                        } else if (item.getItemId() == R.id.itemLongPressDirectShare) {
+                            File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                            File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                            Utils.deleteRecursive(cacheApkFile.getParentFile());
+                            Utils.copyFile(file, cacheApkFile);
+                            Utils.shareCachedApks(context);
+                            return true;
+                        } else if (item.getItemId() == R.id.itemLongPressCreateBackup) {
+                            Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        return false;
+                    });
+                    popupMenu.show();
+                }
             return false;
         });
         if (packagesInfo.get(index).packageName.equals(context.getPackageName())) {
@@ -259,7 +292,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         }
 
         @SuppressLint("SetTextI18n")
-        public void bind(PackageInfo packageInfo){
+        public void bind(PackageInfo packageInfo) {
             textViewAppName.setSelected(true);
             try {
                 imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));

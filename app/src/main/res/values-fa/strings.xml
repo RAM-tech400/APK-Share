@@ -59,4 +59,5 @@
     <string name="storage_permission_description">(اختیاری) این دسترسی برای ایجاد فایل‌های پشتیبان در پوشه دانلودها استفاده می‌شود.</string>
     <string name="app_permissions">دسترسی‌های برنامه</string>
     <string name="vibration">لرزش</string>
+    <string name="show_popup_menu">نمایش منوی شناور</string>
 </resources>
