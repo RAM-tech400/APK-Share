@@ -26,7 +26,6 @@ import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -37,48 +36,45 @@ public class SettingsActivity extends AppCompatActivity {
     private RelativeLayout rlVibration;
     private MaterialSwitch switchVibration;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
-    private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
 
     private SharedPreferences preferences;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //set app theme
+
+        // Load theme settings and set that for activity.
         if (getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);
         }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
-            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            findViewById(R.id.settingsNestedScrollView).setPadding(
-                    displayCutouts.left,
-                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
-                    displayCutouts.right,
-                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
-            toolbar.setPadding(
-                    displayCutouts.left,
-                    toolbar.getPaddingTop(),
-                    displayCutouts.right,
-                    toolbar.getPaddingBottom());
-            return insets;
-        });
         addListeners();
         loadSettings();
+
+        //Check for dynamic colors.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
+            llAppTheme.setVisibility(View.GONE);
+        }
     }
 
+    /**
+     * This method does load app settings from shared preferences for show to user.
+     * e.g. Get the app language and show that to user in language section.
+     */
     private void loadSettings() {
         textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
         textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
 
+        // Show the app language
         int lang = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Support for app language feature in android 13+
             LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
             if ((currentLocales.get(0) + "").toLowerCase().contains("en")) {
                 lang = 1;
@@ -94,20 +90,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
         textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[lang]);
 
+        // Show the night mode status
         int night = 0;
-
         if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
             night = 1;
         } else if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
             night = 2;
         }
         textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
+
+        // Show the app theme (Dynamic colors for android 12+ or default theme)
         textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0)]);
 
-        toolbar.setNavigationOnClickListener(v -> {
-            finish();
-        });
-
+        // Show the status of vibration
         switchVibration.setChecked(preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, true));
     }
 
@@ -133,16 +128,31 @@ public class SettingsActivity extends AppCompatActivity {
         textViewNightMode = findViewById(R.id.settingsTextViewNightModePreview);
         textViewAppTheme = findViewById(R.id.settingsTextViewThemePreview);
 
-        appBarLayout = findViewById(R.id.settingsAppBarLayout);
         toolbar = findViewById(R.id.settingsToolbar);
-
-        //Check for dynamic colors.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
-            llAppTheme.setVisibility(View.GONE);
-        }
     }
 
     private void addListeners() {
+        // Implement safe area for display cutouts
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+
+            findViewById(R.id.settingsNestedScrollView).setPadding(
+                    displayCutouts.left,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
+                    displayCutouts.right,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
+
+            toolbar.setPadding(
+                    displayCutouts.left,
+                    toolbar.getPaddingTop(),
+                    displayCutouts.right,
+                    toolbar.getPaddingBottom());
+
+            return insets;
+        });
+
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         llLongPressAction.setOnClickListener(v -> {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
@@ -155,6 +165,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
         llQuickInfo.setOnClickListener(v -> {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
@@ -167,6 +178,20 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
+        rlVibration.setOnClickListener(v -> {
+            switchVibration.toggle();
+            preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, switchVibration.isChecked()).apply();
+            if (switchVibration.isChecked()) {
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    vibrator.vibrate(100);
+                }
+            }
+        });
+
         llLanguage.setOnClickListener(v -> {
             int selected = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -201,6 +226,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
         llNightMode.setOnClickListener(v -> {
             int selected = 0;
 
@@ -228,6 +254,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
+
         llAppTheme.setOnClickListener(v -> {
 
             MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(SettingsActivity.this);
@@ -263,19 +290,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.activity_not_found_error_msg), Toast.LENGTH_SHORT).show();
             }
         });
-        llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
 
-        rlVibration.setOnClickListener(v -> {
-            switchVibration.toggle();
-            preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_VIBRATION, switchVibration.isChecked()).apply();
-            if (switchVibration.isChecked()) {
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    vibrator.vibrate(100);
-                }
-            }
-        });
+        llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
     }
 }
