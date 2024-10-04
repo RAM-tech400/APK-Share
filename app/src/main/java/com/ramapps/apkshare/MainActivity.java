@@ -1,7 +1,6 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -14,7 +13,6 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,20 +22,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import java.io.File;
@@ -49,7 +45,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SearchBar searchBar;
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
     private TextView textViewSearchResultCount;
@@ -57,13 +52,13 @@ public class MainActivity extends AppCompatActivity {
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
     private SharedPreferences preferences;
-
     private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // set language
+
+        // Getting language settings and set it for android 12 and below. In the Android 13+ this setting automatically (App language feature).
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             String langCode = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getString(GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE, "");
             Configuration configuration = getResources().getConfiguration();
@@ -75,13 +70,15 @@ public class MainActivity extends AppCompatActivity {
             }
             getResources().updateConfiguration(configuration, displayMetrics);
         }
-        //set app theme
+
+        // Load theme settings and set that for activity.
         if (getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);
         }
-        //set nightMode
+
+        // Load night mode settings and set that for app.
         AppCompatDelegate.setDefaultNightMode(getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         EdgeToEdge.enable(this);
@@ -90,29 +87,44 @@ public class MainActivity extends AppCompatActivity {
         init();
         addListeners();
         setSupportActionBar(findViewById(R.id.mainSearchBar));
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            GlobalVariables.systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            GlobalVariables.displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            GlobalVariables.imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
-            findViewById(R.id.mainAppBarLayout).setPadding(
-                    GlobalVariables.displayCutouts.left,
-                    findViewById(R.id.mainAppBarLayout).getPaddingTop(),
-                    GlobalVariables.displayCutouts.right,
-                    findViewById(R.id.mainAppBarLayout).getPaddingBottom());
-            recyclerView.setPadding(
-                    GlobalVariables.displayCutouts.left,
-                    recyclerView.getPaddingTop(),
-                    GlobalVariables.displayCutouts.right,
-                    recyclerView.getPaddingBottom());
-            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), GlobalVariables.imeInsets.bottom);
-            return insets;
-        });
+
+        // Check for reshare shortcut ond share cached apk files
         if (Objects.equals(getIntent().getAction(), GlobalVariables.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
     }
 
     private void addListeners() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            GlobalVariables.systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            GlobalVariables.displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            GlobalVariables.imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+
+            findViewById(R.id.mainAppBarLayout).setPadding(
+                    GlobalVariables.displayCutouts.left,
+                    findViewById(R.id.mainAppBarLayout).getPaddingTop(),
+                    GlobalVariables.displayCutouts.right,
+                    findViewById(R.id.mainAppBarLayout).getPaddingBottom());
+
+            recyclerView.setPadding(
+                    GlobalVariables.displayCutouts.left,
+                    recyclerView.getPaddingTop(),
+                    GlobalVariables.displayCutouts.right,
+                    recyclerView.getPaddingBottom());
+
+            searchView.setPadding(
+                    searchView.getPaddingLeft(),
+                    searchView.getPaddingTop(),
+                    searchView.getPaddingRight(),
+                    GlobalVariables.imeInsets.bottom);
+
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) GlobalVariables.fabSend.getLayoutParams();
+            layoutParams.bottomMargin = layoutParams.bottomMargin + GlobalVariables.systemBars.bottom;
+
+
+            return insets;
+        });
+
         GlobalVariables.fabSend.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
@@ -137,60 +149,59 @@ public class MainActivity extends AppCompatActivity {
             Utils.shareCachedApks(MainActivity.this);
         });
 
-        searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (!v.getText().toString().isEmpty()) {
-                    searchedPackagesInfo = searchForApps(v.getText().toString());
-                    selectionTrackerForSearchResults = new ArrayList<>();
-                    for (PackageInfo info : searchedPackagesInfo) {
-                        selectionTrackerForSearchResults.add(false);
-                    }
-                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                    recyclerViewSearchResults.setAdapter(adapter);
-                    if (adapter.getItemCount() > 0) {
-                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
-                    } else {
-                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
-                    }
-                    textViewSearchResultCount.setVisibility(View.VISIBLE);
+        // Search when enter key press
+        searchView.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (!v.getText().toString().isEmpty()) {
+                searchedPackagesInfo = searchForApps(v.getText().toString());
+                selectionTrackerForSearchResults = new ArrayList<>();
+                for (PackageInfo ignored : searchedPackagesInfo) {
+                    selectionTrackerForSearchResults.add(false);
                 }
-                return true;
+
+                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+
+                if (!searchedPackagesInfo.isEmpty()) {
+                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, searchedPackagesInfo.size(), v.getText(), searchedPackagesInfo.size()));
+                } else {
+                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, searchedPackagesInfo.size(), v.getText()));
+                }
+                textViewSearchResultCount.setVisibility(View.VISIBLE);
             }
+            return true;
         });
 
+        // Clear search results when search keyword change
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* Implementing this method not needed */}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {/* Implementing this method not needed */}
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchedPackagesInfo = new ArrayList<PackageInfo>();
-                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                recyclerViewSearchResults.setAdapter(adapter);
+                searchedPackagesInfo = new ArrayList<>();
+                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
             }
         });
 
-        searchView.addTransitionListener(new SearchView.TransitionListener() {
+        searchView.addTransitionListener((searchView, transitionState, transitionState1) -> {
+            if (transitionState == SearchView.TransitionState.SHOWN) {
+                searchedPackagesInfo = new ArrayList<>();
+                selectionTrackerForSearchResults = new ArrayList<>();
+                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+                GlobalVariables.fabSendSearchView.hide();
+                textViewSearchResultCount.setVisibility(View.GONE);
+            }
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
-            public void onStateChanged(@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) {
-                if (transitionState == SearchView.TransitionState.SHOWN) {
-                    searchedPackagesInfo = new ArrayList<>();
-                    selectionTrackerForSearchResults = new ArrayList<>();
-                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                    recyclerViewSearchResults.setAdapter(adapter);
-                    GlobalVariables.fabSendSearchView.hide();
-                    textViewSearchResultCount.setVisibility(View.GONE);
+            public void handleOnBackPressed() {
+                if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
+                    searchView.hide();
+                } else {
+                    finish();
                 }
             }
         });
@@ -217,9 +228,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         getInstalledApps();
         sortPackageInfoList();
-        showAppsOnScreen();
+        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
         GlobalVariables.fabSend.hide();
         Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
     }
@@ -227,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
     private void sortPackageInfoList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             boolean reverseSort = preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, false);
+
             installedPackagesInfo.sort((o1, o2) -> {
                 int sortType = preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME);
                 if (sortType == GlobalVariables.FLAG_SORT_BY_NAME) {
@@ -247,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showAppsOnScreen() {
+    private void showAppsInRecyclerView(RecyclerView recyclerView, List<PackageInfo> installedPackagesInfo, List<Boolean> selectionTracker) {
         MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
         recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
@@ -267,19 +280,13 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         preferences = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE);
 
-        searchBar = findViewById(R.id.mainSearchBar);
+        GlobalVariables.fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
+        GlobalVariables.fabSend = findViewById(R.id.mainFloatingActionBarSend);
+
         searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
-        GlobalVariables.fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
-        GlobalVariables.fabSend = findViewById(R.id.mainFloatingActionBarSend);
         textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
-        // Set FAB bottom margin
-        int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
-        @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        int navigationBarHeight = navigationBarHeightId > 0 ? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) GlobalVariables.fabSend.getLayoutParams();
-        layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
     }
 
     @SuppressLint("RestrictedApi")
@@ -304,18 +311,13 @@ public class MainActivity extends AppCompatActivity {
             cbReverseSort.setChecked(preferences.getBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, false));
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.sort_by)
-                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME), (dialog1, which) -> {
-                        choice.set(which);
-                    })
-                    .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
-                            preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
-                            sortPackageInfoList();
-                            showAppsOnScreen();
-                            dialog.dismiss();
-                        }
+                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME), (dialog1, which) -> choice.set(which))
+                    .setPositiveButton(R.string.apply, (dialog13, which) -> {
+                        preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
+                        preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
+                        sortPackageInfoList();
+                        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
+                        dialog13.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .setView(cbReverseSort)
@@ -328,8 +330,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.column_count)
                     .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
                         preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
-                        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
-                        recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
+                        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
                         dialog12.dismiss();
                         if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
@@ -343,14 +344,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         }
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
-            searchView.hide();
-        } else {
-            super.onBackPressed();
-        }
     }
 }
