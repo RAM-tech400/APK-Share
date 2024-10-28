@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.LocaleList;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -163,6 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog1.dismiss();
                     })
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -176,6 +178,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog12.dismiss();
                     })
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -224,6 +227,7 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     })
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -252,6 +256,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog14.dismiss();
                     })
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -267,6 +272,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
             AlertDialog dialog = dialogBuilder
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 

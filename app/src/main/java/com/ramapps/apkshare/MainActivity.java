@@ -13,9 +13,11 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -322,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton(R.string.cancel, null)
                     .setView(cbReverseSort)
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemType) {
             Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show();
@@ -339,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     })
                     .create();
+            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemSettings) {
             startActivity(new Intent(this, SettingsActivity.class));
