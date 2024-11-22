@@ -4,12 +4,13 @@ plugins {
 
 android {
     namespace = "com.ramapps.apkshare"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ramapps.apkshare"
         minSdk = 21
-        targetSdk = 34
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 35
         versionCode = 200
         versionName = "2.0.0"
 
