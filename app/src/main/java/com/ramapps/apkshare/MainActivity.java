@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -17,7 +18,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.search.SearchView;
 
 import java.io.File;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
     private TextView textViewSearchResultCount;
+    private CircularProgressIndicator loadingIndicator;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
@@ -231,11 +233,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        getInstalledApps();
-        sortPackageInfoList();
-        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
-        GlobalVariables.fabSend.hide();
-        Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        getInstalledAppsAsync async = new getInstalledAppsAsync();
+        async.execute();
     }
 
     private void sortPackageInfoList() {
@@ -268,17 +267,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void getInstalledApps() {
-        installedPackagesInfo = new ArrayList<>();
-        selectionTracker = new ArrayList<>();
-        for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
-            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
-                installedPackagesInfo.add(pi);
-                selectionTracker.add(false);
-            }
-        }
-    }
-
     private void init() {
         preferences = getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, MODE_PRIVATE);
 
@@ -289,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
         textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
+        loadingIndicator = findViewById(R.id.mainCircularIndicatorLoading);
     }
 
     @SuppressLint("RestrictedApi")
@@ -348,5 +337,38 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         }
         return true;
+    }
+
+    private class getInstalledAppsAsync extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingIndicator.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            installedPackagesInfo = new ArrayList<>();
+            selectionTracker = new ArrayList<>();
+            for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
+                if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
+                    installedPackagesInfo.add(pi);
+                    selectionTracker.add(false);
+                }
+            }
+            return "Success";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            sortPackageInfoList();
+            showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
+            GlobalVariables.fabSend.hide();
+            loadingIndicator.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        }
     }
 }
