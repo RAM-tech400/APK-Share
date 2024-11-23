@@ -312,21 +312,17 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         @SuppressLint("SetTextI18n")
         public void bind(@NonNull PackageInfo packageInfo) {
             textViewAppName.setSelected(true);
-            try {
-                imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));
-                textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
-                int quickInfoSettings = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1);
-                if (quickInfoSettings == 1) {
-                    textViewAppDetail.setText(packageInfo.packageName);
-                } else if (quickInfoSettings == 2) {
-                    textViewAppDetail.setText(packageInfo.versionCode + "");
-                } else if (quickInfoSettings == 3) {
-                    textViewAppDetail.setText(packageInfo.versionName);
-                } else {
-                    textViewAppDetail.setVisibility(View.GONE);
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException(e);
+            imageViewIcon.setImageDrawable(GlobalVariables.appIcons.get(packageInfo.packageName));
+            textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
+            int quickInfoSettings = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1);
+            if (quickInfoSettings == 1) {
+                textViewAppDetail.setText(packageInfo.packageName);
+            } else if (quickInfoSettings == 2) {
+                textViewAppDetail.setText(packageInfo.versionCode + "");
+            } else if (quickInfoSettings == 3) {
+                textViewAppDetail.setText(packageInfo.versionName);
+            } else {
+                textViewAppDetail.setVisibility(View.GONE);
             }
         }
 

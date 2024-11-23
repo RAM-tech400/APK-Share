@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +43,7 @@ import com.google.android.material.search.SearchView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -354,6 +357,14 @@ public class MainActivity extends AppCompatActivity {
             for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
                 if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
                     installedPackagesInfo.add(pi);
+                    String appId = pi.packageName;
+                    try {
+                        Drawable appIcon = getPackageManager().getApplicationIcon(appId);
+                        GlobalVariables.appIcons.put(appId, appIcon);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        GlobalVariables.appIcons.put(appId, getResources().getDrawable(R.drawable.outline_apk_document_24));
+                        Log.e("GetInstalledAppsAsync", "ERROR: Cannot get application icon for package: " + appId + ".");
+                    }
                     selectionTracker.add(false);
                 }
             }

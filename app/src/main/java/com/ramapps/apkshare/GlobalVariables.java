@@ -1,8 +1,12 @@
 package com.ramapps.apkshare;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.core.graphics.Insets;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.HashMap;
 
 public class GlobalVariables {
     public static final String PREFERENCES_SETTINGS = "Settings";
@@ -27,4 +31,6 @@ public class GlobalVariables {
     public static Insets displayCutouts;
 
     public static FloatingActionButton fabSend, fabSendSearchView;
+
+    public static HashMap<String, Drawable> appIcons = new HashMap<>();
 }
