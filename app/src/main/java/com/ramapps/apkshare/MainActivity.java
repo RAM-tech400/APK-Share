@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -156,29 +157,32 @@ public class MainActivity extends AppCompatActivity {
             Utils.shareCachedApks(MainActivity.this);
         });
 
-        // Search when enter key press
-        searchView.getEditText().setOnEditorActionListener((v, actionId, event) -> {
-            if (!v.getText().toString().isEmpty()) {
-                searchedPackagesInfo = searchForApps(v.getText().toString());
-                selectionTrackerForSearchResults = new ArrayList<>();
-                for (PackageInfo ignored : searchedPackagesInfo) {
-                    selectionTrackerForSearchResults.add(false);
-                }
-
-                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
-
-                if (!searchedPackagesInfo.isEmpty()) {
-                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, searchedPackagesInfo.size(), v.getText(), searchedPackagesInfo.size()));
-                } else {
-                    textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, searchedPackagesInfo.size(), v.getText()));
-                }
-                textViewSearchResultCount.setVisibility(View.VISIBLE);
-            }
-            return true;
-        });
-
         // Clear search results when search keyword change
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    String s = searchView.getText().toString();
+                    if (!s.toString().isEmpty()) {
+                        searchedPackagesInfo = searchForApps(s.toString());
+                        selectionTrackerForSearchResults = new ArrayList<>();
+                        for (PackageInfo ignored : searchedPackagesInfo) {
+                            selectionTrackerForSearchResults.add(false);
+                        }
+
+                        showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+
+                        if (!searchedPackagesInfo.isEmpty()) {
+                            textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, searchedPackagesInfo.size(), s, searchedPackagesInfo.size()));
+                        } else {
+                            textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, searchedPackagesInfo.size(), s));
+                        }
+                        textViewSearchResultCount.setVisibility(View.VISIBLE);
+                    }
+                }
+            };
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* Implementing this method not needed */}
 
@@ -187,8 +191,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchedPackagesInfo = new ArrayList<>();
-                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+                if (handler != null && runnable != null) {
+                    handler.removeCallbacks(runnable);
+                    handler.postDelayed(runnable, 500);
+                }
             }
         });
 
