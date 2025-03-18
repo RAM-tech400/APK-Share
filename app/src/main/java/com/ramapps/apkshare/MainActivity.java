@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private CircularProgressIndicator loadingIndicator;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
-    private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
     private SharedPreferences preferences;
     private Parcelable recyclerViewState;
 
@@ -137,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < installedPackagesInfo.size(); i++) {
-                if (selectionTracker.get(i)) {
+                if (((MainRecyclerViewAdapter) recyclerView.getAdapter()).isSelected(i)) {
                     File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
                     Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
                 }
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < searchedPackagesInfo.size(); i++) {
-                if (selectionTrackerForSearchResults.get(i)) {
+                if (((MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter()).isSelected(i)) {
                     File file = new File(searchedPackagesInfo.get(i).applicationInfo.publicSourceDir);
                     Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
                 }
@@ -166,12 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     String s = searchView.getText().toString();
                     if (!s.toString().isEmpty()) {
                         searchedPackagesInfo = searchForApps(s.toString());
-                        selectionTrackerForSearchResults = new ArrayList<>();
-                        for (PackageInfo ignored : searchedPackagesInfo) {
-                            selectionTrackerForSearchResults.add(false);
-                        }
-
-                        showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+                        showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo);
                         ((MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter()).setSearchKeyword(searchView.getText().toString());
 
                         if (!searchedPackagesInfo.isEmpty()) {
@@ -202,8 +196,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.addTransitionListener((searchView, transitionState, transitionState1) -> {
             if (transitionState == SearchView.TransitionState.SHOWN) {
                 searchedPackagesInfo = new ArrayList<>();
-                selectionTrackerForSearchResults = new ArrayList<>();
-                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+                showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo);
                 GlobalVariables.fabSendSearchView.hide();
                 textViewSearchResultCount.setVisibility(View.GONE);
             }
@@ -275,8 +268,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showAppsInRecyclerView(RecyclerView recyclerView, List<PackageInfo> installedPackagesInfo, List<Boolean> selectionTracker) {
-        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
+    private void showAppsInRecyclerView(RecyclerView recyclerView, List<PackageInfo> installedPackagesInfo) {
+        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo);
         recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }
@@ -321,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                         preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
                         preferences.edit().putBoolean(GlobalVariables.PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
                         sortPackageInfoList();
-                        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
+                        showAppsInRecyclerView(recyclerView, installedPackagesInfo);
                         dialog13.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, null)
@@ -336,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.column_count)
                     .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
                         preferences.edit().putInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
-                        showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
+                        showAppsInRecyclerView(recyclerView, installedPackagesInfo);
                         dialog12.dismiss();
                         if (preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
@@ -364,7 +357,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             installedPackagesInfo = new ArrayList<>();
-            selectionTracker = new ArrayList<>();
             for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
                 if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
                     installedPackagesInfo.add(pi);
@@ -376,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
                         GlobalVariables.appIcons.put(appId, getResources().getDrawable(R.drawable.outline_apk_document_24));
                         Log.e("GetInstalledAppsAsync", "ERROR: Cannot get application icon for package: " + appId + ".");
                     }
-                    selectionTracker.add(false);
                 }
             }
             return "Success";
@@ -386,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             sortPackageInfoList();
-            showAppsInRecyclerView(recyclerView, installedPackagesInfo, selectionTracker);
+            showAppsInRecyclerView(recyclerView, installedPackagesInfo);
             GlobalVariables.fabSend.hide();
             loadingIndicator.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);

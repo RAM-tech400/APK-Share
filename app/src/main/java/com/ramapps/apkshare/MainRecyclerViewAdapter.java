@@ -47,6 +47,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -57,14 +58,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     private final Context context;
     private final List<PackageInfo> packagesInfo;
-    private final List<Boolean> selectionTracker;
     private final int columnCount;
+    private final List<Integer> selectedItemsPositions = new ArrayList<>();
+
     private String searchKeyword;
 
-    public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo, List<Boolean> selectionTracker) {
+    public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo) {
         this.context = context;
         this.packagesInfo = packagesInfo;
-        this.selectionTracker = selectionTracker;
         columnCount = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
 
@@ -81,7 +82,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
         final int index = position;
         holder.bind(packagesInfo.get(index));
-        holder.getCardViewContainer().setChecked(selectionTracker.get(index));
+        holder.getCardViewContainer().setChecked(selectedItemsPositions.contains(index));
         addHolderComponentsListeners(holder, position);
         if (packagesInfo.get(index).packageName.equals(context.getPackageName())) {
             Utils.AnimatedGradientDrawable animatedSpotGradientDrawable = new Utils.AnimatedGradientDrawable();
@@ -114,15 +115,9 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     private void addHolderComponentsListeners(CustomViewHolder holder, int holderPosition) {
         holder.getCardViewContainer().setOnClickListener(v -> {
-            int selectedCount = 0;
-            for (Boolean b : selectionTracker) {
-                if (b) selectedCount += 1;
-            }
-
-            if (!selectionTracker.get(holderPosition)) {
-                if (selectedCount < 9) {
-                    selectionTracker.set(holderPosition, true);
-                    selectedCount++;
+            if (!selectedItemsPositions.contains(holderPosition)) {
+                if (selectedItemsPositions.size() < 9) {
+                    selectedItemsPositions.add(holderPosition);
                 } else {
                     // Notice user to selection limit by toast text, animation and vibration (If vibration is enabled in settings)
                     Toast.makeText(context, context.getResources().getQuantityString(R.plurals.msg_selection_limit, 0, 9), Toast.LENGTH_SHORT).show();
@@ -150,11 +145,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                 }
             } else {
-                selectionTracker.set(holderPosition, false);
-                selectedCount--;
+                selectedItemsPositions.remove((Object) holderPosition);
             }
 
-            if (selectedCount > 0) {
+            if (selectedItemsPositions.size() > 0) {
                 GlobalVariables.fabSend.show();
                 GlobalVariables.fabSendSearchView.show();
             } else {
@@ -162,7 +156,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 GlobalVariables.fabSendSearchView.hide();
             }
 
-            ((MaterialCardView) v).setChecked(selectionTracker.get(holderPosition));
+            ((MaterialCardView) v).setChecked(selectedItemsPositions.contains(holderPosition));
         });
 
         holder.getCardViewContainer().setOnLongClickListener(v -> {
@@ -296,6 +290,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     @Override
     public int getItemCount() {
         return packagesInfo.size();
+    }
+
+    public boolean isSelected(int itemPosition) {
+        return selectedItemsPositions.contains(itemPosition);
     }
 
     public void setSearchKeyword(String searchKeyword) {
