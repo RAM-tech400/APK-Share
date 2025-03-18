@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo, selectionTrackerForSearchResults);
+                        ((MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter()).setSearchKeyword(searchView.getText().toString());
 
                         if (!searchedPackagesInfo.isEmpty()) {
                             textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, searchedPackagesInfo.size(), s, searchedPackagesInfo.size()));
@@ -235,7 +236,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
+        try {
+            recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
+        } catch (Exception e) {
+            Log.e("MainActivity.onPause", e.toString());
+        }
     }
 
     @Override

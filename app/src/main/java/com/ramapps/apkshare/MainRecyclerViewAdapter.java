@@ -8,12 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +50,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
 
@@ -51,6 +59,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     private final List<PackageInfo> packagesInfo;
     private final List<Boolean> selectionTracker;
     private final int columnCount;
+    private String searchKeyword;
 
     public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo, List<Boolean> selectionTracker) {
         this.context = context;
@@ -289,6 +298,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         return packagesInfo.size();
     }
 
+    public void setSearchKeyword(String searchKeyword) {
+        this.searchKeyword = searchKeyword;
+    }
+
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
         private final MaterialCardView cardViewContainer;
@@ -311,9 +324,18 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
          */
         @SuppressLint("SetTextI18n")
         public void bind(@NonNull PackageInfo packageInfo) {
+            SpannableString spannableString = new SpannableString(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
+            if (searchKeyword != null && !searchKeyword.isEmpty()) {
+                Matcher matcher = Pattern.compile(searchKeyword, Pattern.CASE_INSENSITIVE).matcher(spannableString);
+                while (matcher.find()) {
+                    spannableString.setSpan(new ForegroundColorSpan(context.getResources().getColor(android.R.color.system_accent1_500)), matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableString.setSpan(new StyleSpan(Typeface.BOLD), matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
             textViewAppName.setSelected(true);
+            textViewAppName.setText(spannableString);
+
             imageViewIcon.setImageDrawable(GlobalVariables.appIcons.get(packageInfo.packageName));
-            textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
             int quickInfoSettings = context.getSharedPreferences(GlobalVariables.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(GlobalVariables.PREFERENCES_SETTINGS_QUICK_INFO, 1);
             if (quickInfoSettings == 1) {
                 textViewAppDetail.setText(packageInfo.packageName);
