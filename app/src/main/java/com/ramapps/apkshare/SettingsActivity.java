@@ -31,6 +31,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import java.util.Objects;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
@@ -164,7 +166,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog1.dismiss();
                     })
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -178,7 +180,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog12.dismiss();
                     })
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -227,7 +229,7 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     })
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -256,7 +258,7 @@ public class SettingsActivity extends AppCompatActivity {
                         dialog14.dismiss();
                     })
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 
@@ -272,7 +274,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
             AlertDialog dialog = dialogBuilder
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         });
 

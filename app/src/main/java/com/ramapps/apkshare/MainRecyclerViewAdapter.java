@@ -1,26 +1,21 @@
 package com.ramapps.apkshare;
 
-import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +28,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
@@ -50,7 +43,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,9 +72,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
-        final int index = position;
-        holder.bind(packagesInfo.get(index));
-        holder.getCardViewContainer().setChecked(selectedItemsPositions.contains(index));
+        holder.bind(packagesInfo.get(position));
+        holder.getCardViewContainer().setChecked(selectedItemsPositions.contains(position));
         addHolderComponentsListeners(holder, position);
         // Adding navigationBar size margin to the last items
         if (packagesInfo.size() % columnCount == 0) {
@@ -143,7 +134,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 selectedItemsPositions.remove((Object) holderPosition);
             }
 
-            if (selectedItemsPositions.size() > 0) {
+            if (!selectedItemsPositions.isEmpty()) {
                 GlobalVariables.fabSend.show();
                 GlobalVariables.fabSendSearchView.show();
             } else {
@@ -172,14 +163,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     Utils.uninstallApplication(context, packagesInfo.get(holderPosition).packageName);
                 }
             } else if (action == 3) {
-                File file = new File(packagesInfo.get(holderPosition).applicationInfo.publicSourceDir);
-                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(holderPosition).applicationInfo) + ".apk");
+                File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
+                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                 Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
                 Utils.copyFile(file, cacheApkFile);
                 Utils.shareCachedApks(context);
             } else if (action == 4) {
-                File file = new File(packagesInfo.get(holderPosition).applicationInfo.publicSourceDir);
-                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(holderPosition).applicationInfo) + ".apk");
+                File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
+                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                 if (Utils.checkExternalStoragePermission(context)) {
                     Utils.copyFile(file, backupFile);
                     showSuccessfulBackupMessage();
@@ -220,15 +211,15 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         Utils.uninstallApplication(context, packagesInfo.get(holderPosition).packageName);
                         return true;
                     } else if (item.getItemId() == R.id.itemLongPressDirectShare) {
-                        File file = new File(packagesInfo.get(holderPosition).applicationInfo.publicSourceDir);
-                        File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(holderPosition).applicationInfo) + ".apk");
+                        File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
+                        File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                         Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
                         Utils.copyFile(file, cacheApkFile);
                         Utils.shareCachedApks(context);
                         return true;
                     } else if (item.getItemId() == R.id.itemLongPressCreateBackup) {
-                        File file = new File(packagesInfo.get(holderPosition).applicationInfo.publicSourceDir);
-                        File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(holderPosition).applicationInfo) + ".apk");
+                        File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
+                        File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                         if (Utils.checkExternalStoragePermission(context)) {
                             Utils.copyFile(file, backupFile);
                             showSuccessfulBackupMessage();
@@ -317,7 +308,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
          */
         @SuppressLint("SetTextI18n")
         public void bind(@NonNull PackageInfo packageInfo) {
-            SpannableString spannableString = new SpannableString(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
+            SpannableString spannableString = new SpannableString(context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packageInfo.applicationInfo)));
             if (searchKeyword != null && !searchKeyword.isEmpty()) {
                 Matcher matcher = Pattern.compile(searchKeyword, Pattern.CASE_INSENSITIVE).matcher(spannableString);
                 while (matcher.find()) {

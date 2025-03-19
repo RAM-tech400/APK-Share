@@ -44,7 +44,6 @@ import com.google.android.material.search.SearchView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -136,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < installedPackagesInfo.size(); i++) {
-                if (((MainRecyclerViewAdapter) recyclerView.getAdapter()).isSelected(i)) {
-                    File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                if (((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerView.getAdapter())).isSelected(i)) {
+                    File file = new File(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo).publicSourceDir);
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo)) + ".apk"));
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
@@ -148,9 +147,9 @@ public class MainActivity extends AppCompatActivity {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < searchedPackagesInfo.size(); i++) {
-                if (((MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter()).isSelected(i)) {
-                    File file = new File(searchedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                if (((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerViewSearchResults.getAdapter())).isSelected(i)) {
+                    File file = new File(Objects.requireNonNull(searchedPackagesInfo.get(i).applicationInfo).publicSourceDir);
+                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(Objects.requireNonNull(searchedPackagesInfo.get(i).applicationInfo)) + ".apk"));
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
@@ -158,15 +157,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Clear search results when search keyword change
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
-            Handler handler = new Handler();
-            Runnable runnable = new Runnable() {
+            final Handler handler = new Handler();
+            final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
                     String s = searchView.getText().toString();
-                    if (!s.toString().isEmpty()) {
-                        searchedPackagesInfo = searchForApps(s.toString());
+                    if (!s.isEmpty()) {
+                        searchedPackagesInfo = searchForApps(s);
                         showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo);
-                        ((MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter()).setSearchKeyword(searchView.getText().toString());
+                        ((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerViewSearchResults.getAdapter())).setSearchKeyword(searchView.getText().toString());
 
                         if (!searchedPackagesInfo.isEmpty()) {
                             textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, searchedPackagesInfo.size(), s, searchedPackagesInfo.size()));
@@ -186,10 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (handler != null && runnable != null) {
-                    handler.removeCallbacks(runnable);
-                    handler.postDelayed(runnable, 500);
-                }
+                handler.removeCallbacks(runnable);
+                handler.postDelayed(runnable, 500);
             }
         });
 
@@ -218,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         List<PackageInfo> results = new ArrayList<>();
 
         for (PackageInfo packageInfo : installedPackagesInfo) {
-            String appName = getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
+            String appName = getPackageManager().getApplicationLabel(Objects.requireNonNull(packageInfo.applicationInfo)).toString();
             if (appName.toLowerCase().contains(keyword.toLowerCase()))
                 results.add(packageInfo);
         }
@@ -251,15 +248,17 @@ public class MainActivity extends AppCompatActivity {
             installedPackagesInfo.sort((o1, o2) -> {
                 int sortType = preferences.getInt(GlobalVariables.PREFERENCES_SETTINGS_SORT_BY, GlobalVariables.FLAG_SORT_BY_NAME);
                 if (sortType == GlobalVariables.FLAG_SORT_BY_NAME) {
-                    String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
-                    String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
+                    String name1 = getPackageManager().getApplicationLabel(Objects.requireNonNull(o1.applicationInfo)) + "";
+                    String name2 = getPackageManager().getApplicationLabel(Objects.requireNonNull(o2.applicationInfo)) + "";
                     return reverseSort ? name2.compareTo(name1) : name1.compareTo(name2);
                 } else if (sortType == GlobalVariables.FLAG_SORT_BY_INSTALL_DATE) {
                     String date1 = o1.firstInstallTime + "";
                     String date2 = o2.firstInstallTime + "";
                     return reverseSort ? date2.compareTo(date1) : date1.compareTo(date2);
                 } else if (sortType == GlobalVariables.FLAG_SORT_BY_SIZE) {
+                    assert o1.applicationInfo != null;
                     String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
+                    assert o2.applicationInfo != null;
                     String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
                     return reverseSort ? size2.compareTo(size1) : size1.compareTo(size2);
                 }
@@ -320,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton(R.string.cancel, null)
                     .setView(cbReverseSort)
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemType) {
             Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show();
@@ -338,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     })
                     .create();
-            dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
+            Objects.requireNonNull(dialog.getWindow()).getAttributes().gravity = Gravity.BOTTOM;
             dialog.show();
         } else if (item.getItemId() == R.id.mainMenuItemSettings) {
             startActivity(new Intent(this, SettingsActivity.class));
