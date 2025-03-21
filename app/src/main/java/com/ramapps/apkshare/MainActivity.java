@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private SharedPreferences preferences;
     private Parcelable recyclerViewState;
+    private ReceiverPackageAddOrRemove receiverPackageAddOrRemove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +111,16 @@ public class MainActivity extends AppCompatActivity {
         intentFilterPackageAddOrRemove.addAction(Intent.ACTION_PACKAGE_ADDED);
         intentFilterPackageAddOrRemove.addAction(Intent.ACTION_PACKAGE_REMOVED);
         intentFilterPackageAddOrRemove.addDataScheme("package");
-        registerReceiver(new ReceiverPackageAddOrRemove(), intentFilterPackageAddOrRemove);
+        receiverPackageAddOrRemove = new ReceiverPackageAddOrRemove();
+        registerReceiver(receiverPackageAddOrRemove, intentFilterPackageAddOrRemove);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(new ReceiverPackageAddOrRemove());
+        if (receiverPackageAddOrRemove != null) {
+            unregisterReceiver(receiverPackageAddOrRemove);
+        }
     }
 
     private void addListeners() {
