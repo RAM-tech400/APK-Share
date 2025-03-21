@@ -253,6 +253,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                     return false;
                 });
+                popupMenu.setForceShowIcon(true);
                 popupMenu.show();
             }
             return false;
