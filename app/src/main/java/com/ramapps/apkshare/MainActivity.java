@@ -192,6 +192,10 @@ public class MainActivity extends AppCompatActivity {
                             textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, searchedPackagesInfo.size(), s));
                         }
                         textViewSearchResultCount.setVisibility(View.VISIBLE);
+                    } else {
+                        searchedPackagesInfo = new ArrayList<>();
+                        showAppsInRecyclerView(recyclerViewSearchResults, searchedPackagesInfo);
+                        textViewSearchResultCount.setVisibility(View.GONE);
                     }
                 }
             };
