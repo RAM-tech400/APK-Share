@@ -1,7 +1,10 @@
 package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -47,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
@@ -98,6 +102,21 @@ public class MainActivity extends AppCompatActivity {
         if (Objects.equals(getIntent().getAction(), GlobalVariables.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
+
+        getInstalledAppsAsync async = new getInstalledAppsAsync();
+        async.executeOnExecutor(Executors.newSingleThreadExecutor());
+
+        IntentFilter intentFilterPackageAddOrRemove = new IntentFilter();
+        intentFilterPackageAddOrRemove.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilterPackageAddOrRemove.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilterPackageAddOrRemove.addDataScheme("package");
+        registerReceiver(new ReceiverPackageAddOrRemove(), intentFilterPackageAddOrRemove);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(new ReceiverPackageAddOrRemove());
     }
 
     private void addListeners() {
@@ -231,14 +250,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("MainActivity.onPause", e.toString());
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        getInstalledAppsAsync async = new getInstalledAppsAsync();
-        async.execute();
     }
 
     private void sortPackageInfoList() {
@@ -381,6 +392,16 @@ public class MainActivity extends AppCompatActivity {
             loadingIndicator.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        }
+    }
+
+    public class ReceiverPackageAddOrRemove extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("ReceiverPackageChange", intent.getAction() + " | " + intent.getData());
+            MainActivity.getInstalledAppsAsync async = new MainActivity.getInstalledAppsAsync();
+            async.executeOnExecutor(Executors.newSingleThreadExecutor());
         }
     }
 }
