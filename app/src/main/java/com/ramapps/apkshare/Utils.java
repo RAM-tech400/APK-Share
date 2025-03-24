@@ -7,19 +7,27 @@ package com.ramapps.apkshare;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.single.PermissionListener;
 
@@ -135,5 +143,79 @@ public class Utils {
                 fileOrDirectory.getAbsolutePath() + "successfully deleted!" :
                 "Deleting " + fileOrDirectory.getAbsolutePath() + " was failed!"
         );
+    }
+    
+    public static class CopyFilesAsync extends AsyncTask<Void, Integer, Void> {
+        private final Context context;
+        private AlertDialog progressDialog;
+        private List<File> files;
+        private List<String> filesName;
+        private File destinationDirectory;
+        private Runnable afterWorkCodes;
+
+        private LinearProgressIndicator progressIndicator;
+        private TextView textViewProgressPercentage, textViewProgressCounting;
+
+        public CopyFilesAsync(Context context, List<File> files, List<String> filesName, File destinationDirectory, Runnable afterWorkCodes) {
+            this.context = context;
+            this.files = files;
+            this.filesName = filesName;
+            this.destinationDirectory = destinationDirectory;
+            this.afterWorkCodes = afterWorkCodes;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            View viewProgressDialog = LayoutInflater.from(context).inflate(R.layout.view_progress_dialog, null);
+
+            progressIndicator = viewProgressDialog.findViewById(R.id.viewProgressDialogProgressIndicator);
+            textViewProgressPercentage = viewProgressDialog.findViewById(R.id.viewProgressDialogTextViewProgress);
+            textViewProgressCounting = viewProgressDialog.findViewById(R.id.viewProgressDialogTextViewCounting);
+
+            textViewProgressPercentage.setText(String.format("%d%%", 0));
+            textViewProgressCounting.setText(String.format("%d/%d", 0, files.size()));
+
+            progressDialog = new MaterialAlertDialogBuilder(context)
+                    .setTitle(context.getString(R.string.copy_apk_files))
+                    .setCancelable(false)
+                    .setMessage(context.getString(R.string.msg_copy_apk_files_into_cache))
+                    .setView(viewProgressDialog)
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            cancel(true);
+                        }
+                    })
+                    .create();
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            int i = 0;
+            for (File f : files) {
+                if (isCancelled()) return null;
+                copyFile(f, new File(destinationDirectory + "/" + filesName.get(i)));
+                publishProgress(++i);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            progressDialog.dismiss();
+            if (!isCancelled()) afterWorkCodes.run();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            int percentage = values[0] * (100 / files.size());
+            progressIndicator.setProgress(percentage);
+            textViewProgressPercentage.setText(String.format("%d%%", percentage));
+            textViewProgressCounting.setText(String.format("%d/%d", values[0], files.size()));
+        }
     }
 }

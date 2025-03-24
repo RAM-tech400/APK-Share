@@ -41,6 +41,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -166,20 +167,35 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
                 File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                 Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
-                Utils.copyFile(file, cacheApkFile);
-                Utils.shareCachedApks(context);
+                Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(cacheApkFile.getName()), cacheApkFile.getParentFile(), new Runnable() {
+                    @Override
+                    public void run() {
+                        Utils.shareCachedApks(context);
+                    }
+                });
+                copyFilesAsync.execute();
             } else if (action == 4) {
                 File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                 if (Utils.checkExternalStoragePermission(context)) {
-                    Utils.copyFile(file, backupFile);
-                    showSuccessfulBackupMessage();
+                    Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(backupFile.getName()), backupFile.getParentFile(), new Runnable() {
+                        @Override
+                        public void run() {
+                            showSuccessfulBackupMessage();
+                        }
+                    });
+                    copyFilesAsync.execute();
                 } else {
                     Utils.requestForExternalStoragePermission(context, new PermissionListener() {
                         @Override
                         public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                            Utils.copyFile(file, backupFile);
-                            showSuccessfulBackupMessage();
+                            Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(backupFile.getName()), backupFile.getParentFile(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    showSuccessfulBackupMessage();
+                                }
+                            });
+                            copyFilesAsync.execute();
                         }
 
                         @Override
@@ -214,21 +230,36 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                         File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
                         File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                         Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
-                        Utils.copyFile(file, cacheApkFile);
-                        Utils.shareCachedApks(context);
+                        Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(cacheApkFile.getName()), cacheApkFile.getParentFile(), new Runnable() {
+                            @Override
+                            public void run() {
+                                Utils.shareCachedApks(context);
+                            }
+                        });
+                        copyFilesAsync.execute();
                         return true;
                     } else if (item.getItemId() == R.id.itemLongPressCreateBackup) {
                         File file = new File(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo).publicSourceDir);
                         File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesInfo.get(holderPosition).applicationInfo)) + ".apk");
                         if (Utils.checkExternalStoragePermission(context)) {
-                            Utils.copyFile(file, backupFile);
-                            showSuccessfulBackupMessage();
+                            Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(backupFile.getName()), backupFile.getParentFile(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    showSuccessfulBackupMessage();
+                                }
+                            });
+                            copyFilesAsync.execute();
                         } else {
                             Utils.requestForExternalStoragePermission(context, new PermissionListener() {
                                 @Override
                                 public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                    Utils.copyFile(file, backupFile);
-                                    showSuccessfulBackupMessage();
+                                    Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(context, Arrays.asList(file), Arrays.asList(backupFile.getName()), backupFile.getParentFile(), new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showSuccessfulBackupMessage();
+                                        }
+                                    });
+                                    copyFilesAsync.execute();
                                 }
 
                                 @Override

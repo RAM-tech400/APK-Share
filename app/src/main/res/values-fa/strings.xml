@@ -60,4 +60,6 @@
     <string name="app_permissions">دسترسی‌های برنامه</string>
     <string name="vibration">لرزش</string>
     <string name="show_popup_menu">نمایش منوی شناور</string>
+    <string name="msg_copy_apk_files_into_cache">برای بهتر کردن فرایند دریافت اطلاعات فایل‌های نصب، ما باید آنها را در حافظه پنهان کپی کنیم. ممکن است چند دقیقه طول بکشد. لطفاً منتظر بمانید.</string>
+    <string name="copy_apk_files">کپی فایل‌های نصب</string>
 </resources>

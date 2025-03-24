@@ -157,25 +157,45 @@ public class MainActivity extends AppCompatActivity {
         GlobalVariables.fabSend.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
+            List<File> files = new ArrayList<>();
+            List<String> filesName = new ArrayList<>();
             for (int i = 0; i < installedPackagesInfo.size(); i++) {
                 if (((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerView.getAdapter())).isSelected(i)) {
                     File file = new File(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo).publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo)) + ".apk"));
+                    files.add(file);
+                    filesName.add(getPackageManager().getApplicationLabel(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo)).toString());
                 }
             }
-            Utils.shareCachedApks(MainActivity.this);
+            Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(MainActivity.this, files, filesName, new File(getCacheDir() + "/ApkFiles/"), new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Reza", "This code was run!");
+                    Utils.shareCachedApks(MainActivity.this);
+                }
+            });
+            copyFilesAsync.execute();
         });
 
         GlobalVariables.fabSendSearchView.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
+            List<File> files = new ArrayList<>();
+            List<String> filesName = new ArrayList<>();
             for (int i = 0; i < searchedPackagesInfo.size(); i++) {
                 if (((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerViewSearchResults.getAdapter())).isSelected(i)) {
                     File file = new File(Objects.requireNonNull(searchedPackagesInfo.get(i).applicationInfo).publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(Objects.requireNonNull(searchedPackagesInfo.get(i).applicationInfo)) + ".apk"));
+                    files.add(file);
+                    filesName.add(getPackageManager().getApplicationLabel(Objects.requireNonNull(installedPackagesInfo.get(i).applicationInfo)).toString());
                 }
             }
-            Utils.shareCachedApks(MainActivity.this);
+            Utils.CopyFilesAsync copyFilesAsync = new Utils.CopyFilesAsync(MainActivity.this, files, filesName, new File(getCacheDir() + "/ApkFiles/"), new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Reza", "This code was run!");
+                    Utils.shareCachedApks(MainActivity.this);
+                }
+            });
+            copyFilesAsync.execute();
         });
 
         // Clear search results when search keyword change
