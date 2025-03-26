@@ -59,7 +59,7 @@
     <string name="size">Size</string>
     <string name="storage_permission_description">(OPTIONAL) This permission used for creating backup files into download directory.</string>
     <string name="app_permissions">App pernissions</string>
-    <string name="app_version_name">2.0.0</string>
+    <string name="app_version_name">2.6.0</string>
     <string name="vibration">Vibration</string>
     <string name="show_popup_menu">Show pop-up menu</string>
     <string name="msg_copy_apk_files_into_cache">For making better retriving apk files information, we should copy them into cache storage. This may take a few minutes. Please wait!</string>
