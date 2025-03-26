@@ -16,6 +16,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,11 +137,17 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             }
 
             if (!selectedItemsPositions.isEmpty()) {
-                GlobalVariables.fabSend.show();
-                GlobalVariables.fabSendSearchView.show();
+                if (searchKeyword == null){
+                    GlobalVariables.fabSend.show();
+                } else {
+                    GlobalVariables.fabSendSearchView.show();
+                }
             } else {
-                GlobalVariables.fabSend.hide();
-                GlobalVariables.fabSendSearchView.hide();
+                if (searchKeyword == null){
+                    GlobalVariables.fabSend.hide();
+                } else {
+                    GlobalVariables.fabSendSearchView.hide();
+                }
             }
 
             ((MaterialCardView) v).setChecked(selectedItemsPositions.contains(holderPosition));
