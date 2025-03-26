@@ -31,6 +31,7 @@ public class GlobalVariables {
     public static Insets displayCutouts;
 
     public static FloatingActionButton fabSend, fabSendSearchView;
+    public static int fabBottomMargin = 0; // This is for preventing adding bottom margin everytime.
 
     public static HashMap<String, Drawable> appIcons = new HashMap<>();
 }

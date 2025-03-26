@@ -148,8 +148,10 @@ public class MainActivity extends AppCompatActivity {
                     GlobalVariables.imeInsets.bottom);
 
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) GlobalVariables.fabSend.getLayoutParams();
-            layoutParams.bottomMargin = layoutParams.bottomMargin + GlobalVariables.systemBars.bottom;
-
+            if(GlobalVariables.fabBottomMargin == 0){
+                GlobalVariables.fabBottomMargin = layoutParams.bottomMargin + GlobalVariables.systemBars.bottom;
+            }
+            layoutParams.bottomMargin = GlobalVariables.fabBottomMargin;
 
             return insets;
         });
