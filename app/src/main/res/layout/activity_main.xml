@@ -104,6 +104,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="24dp"
+                android:visibility="invisible"
                 android:contentDescription="@string/send"/>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
