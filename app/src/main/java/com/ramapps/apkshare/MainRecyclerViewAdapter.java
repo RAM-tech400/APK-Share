@@ -96,14 +96,41 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             ((MaterialCardView) v).setChecked(selectionTracker.get(index));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
-            int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+            //int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+
+            // Hard coded action to 1 to test uninstall
+            int action = 1;
             if (action == 1) {
                 if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(Intent.ACTION_DELETE);
-                    intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
-                    context.startActivity(intent);
+                    //Intent intent = new Intent(Intent.ACTION_DELETE);
+                    //intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                    //context.startActivity(intent);
+
+                    new AlertDialog.Builder(context)
+                            .setTitle("What would you like to do?")
+                            .setMessage("Choose an action for this app:")
+                            .setNegativeButton("Uninstall", (dialog, which) -> {
+                                //Uninstall the app
+                                Intent intent = new Intent(Intent.ACTION_DELETE);
+                                intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                                context.startActivity(intent);
+                            })
+                            .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
+                                //Backup the APK and uninstall
+                                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                                File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
+                                        context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                                Utils.copyFile(file, backupFile);
+                                Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
+                                        Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(Intent.ACTION_DELETE);
+                                intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                                context.startActivity(intent);
+                            })
+                            .setNeutralButton("Cancel", null)
+                            .show();
                 }
             } else if (action == 2) {
                 File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
