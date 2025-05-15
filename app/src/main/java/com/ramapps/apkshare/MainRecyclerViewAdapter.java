@@ -96,18 +96,11 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             ((MaterialCardView) v).setChecked(selectionTracker.get(index));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
-            //int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
-
-            // Hard coded action to 1 to test uninstall
-            int action = 1;
+            int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
                 if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
-                    //Intent intent = new Intent(Intent.ACTION_DELETE);
-                    //intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
-                    //context.startActivity(intent);
-
                     new AlertDialog.Builder(context)
                             .setTitle("What would you like to do?")
                             .setMessage("Choose an action for this app:")
