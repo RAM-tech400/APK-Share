@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -222,6 +224,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
+                    searchView.hide();
+                } else {
+                    finish();
+                }
+            }
+        });
+
     }
 
     private List<PackageInfo> searchForApps(String keyword) {
@@ -373,12 +387,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
-            searchView.hide();
-        } else {
-            super.onBackPressed();
-        }
-    }
 }
