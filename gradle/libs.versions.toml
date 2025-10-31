@@ -1,12 +1,12 @@
 [versions]
-agp = "8.4.0"
+agp = "8.13.0"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
 appcompat = "1.6.1"
 material = "1.11.0"
-activity = "1.9.0"
-constraintlayout = "2.1.4"
+activity = "1.11.0"
+constraintlayout = "2.2.1"
 dotlottieAndroid = "0.3.0"
 lottie = "6.4.1"
 dexter = "6.2.3"
@@ -15,8 +15,8 @@ dexter = "6.2.3"
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
-material = { group = "com.google.android.material", name = "material", version = "1.12.0" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.1" }
+material = { group = "com.google.android.material", name = "material", version = "1.13.0" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 dotlottie-android = { group = "com.github.LottieFiles", name = "dotlottie-android", version.ref = "dotlottieAndroid" }
