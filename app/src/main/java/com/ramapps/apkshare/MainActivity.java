@@ -2,8 +2,11 @@ package com.ramapps.apkshare;
 
 import android.annotation.SuppressLint;
 import android.app.LocaleManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -16,6 +19,7 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +37,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
@@ -54,6 +59,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = "MainActivity";
 
     public static final String PREFERENCES_SETTINGS = "Settings";
     public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
@@ -140,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         if (Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
+        initReceivers();
+        loadPackagesList();
     }
 
     private void addListeners() {
@@ -238,6 +247,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void initReceivers() {
+        IntentFilter packageChangesIntentFilter = new IntentFilter();
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        packageChangesIntentFilter.addDataScheme("package");
+        BroadcastReceiver packageChangesReceiver = new PackageDatabaseChangedReceiver();
+        ContextCompat.registerReceiver(MainActivity.this, packageChangesReceiver, packageChangesIntentFilter, ContextCompat.RECEIVER_EXPORTED);
+    }
+
     private List<PackageInfo> searchForApps(String keyword) {
         List<PackageInfo> results = new ArrayList<>();
 
@@ -254,16 +275,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getInstalledApps();
-        sortPackageInfoList();
-        showAppsOnScreen();
-        fabSend.hide();
-        Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
     }
 
     private void sortPackageInfoList() {
@@ -385,6 +396,48 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         }
         return true;
+    }
+
+    private void loadPackagesList() {
+        getInstalledApps();
+        sortPackageInfoList();
+        showAppsOnScreen();
+        fabSend.hide();
+        Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+    }
+
+    class PackageDatabaseChangedReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "PackageDatabaseChangedReceiver was received somethings...");
+            if (Objects.isNull(intent)) {
+                Log.e(TAG, "The intent provided by onReceive() is null!");
+            }
+            if (Objects.isNull(intent.getAction()) || Objects.equals(intent.getAction(), "")) {
+                Log.e(TAG, "The intent action that provided by onReceive() is null or empty!");
+            }
+            switch (intent.getAction()) {
+                case Intent.ACTION_PACKAGE_ADDED:
+                    Log.d(TAG, "A package added: " + intent.getData());
+                    loadPackagesList();
+                    break;
+                case Intent.ACTION_PACKAGE_REMOVED:
+                    Log.d(TAG, "A package removed: " + intent.getData());
+                    loadPackagesList();
+                    break;
+                case Intent.ACTION_PACKAGE_FULLY_REMOVED:
+                    Log.d(TAG, "A package fully removed: " + intent.getData());
+                    loadPackagesList();
+                    break;
+                case Intent.ACTION_PACKAGE_CHANGED:
+                    Log.d(TAG, "A package changed: " + intent.getData());
+                    loadPackagesList();
+                    break;
+                default:
+                    Log.w(TAG, "The provided intent action is not match to any expected cases: " + intent.getAction());
+            }
+        }
     }
 
 }
