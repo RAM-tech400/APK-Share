@@ -192,11 +192,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             }
             return false;
         });
-        if (packagesInfo.get(index).packageName.equals(context.getPackageName())) {
-            Utils.AnimatedGradientDrawable animatedSpotGradientDrawable = new Utils.AnimatedGradientDrawable();
-            animatedSpotGradientDrawable.setAlpha(36);
-            holder.getCardViewContainer().getChildAt(0).setBackground(animatedSpotGradientDrawable);
-        }
         // Adding navigationBar size margin to the last items
         if (packagesInfo.size() % columnCount == 0) {
             if (position >= packagesInfo.size() - columnCount) {
