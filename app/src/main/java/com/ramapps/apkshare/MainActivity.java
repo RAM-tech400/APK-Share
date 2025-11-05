@@ -1,5 +1,7 @@
 package com.ramapps.apkshare;
 
+import static com.ramapps.apkshare.GlobalVariables.*;
+
 import android.annotation.SuppressLint;
 import android.app.LocaleManager;
 import android.content.BroadcastReceiver;
@@ -69,20 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
-    public static final String PREFERENCES_SETTINGS = "Settings";
-    public static final String PREFERENCES_SETTINGS_SORT_BY = "Sort by";
-    public static final String PREFERENCES_SETTINGS_REVERSE_SORT = "Reverse sort";
-    public static final String PREFERENCES_SETTINGS_COLUMN_COUNT = "Column count";
-    public static final String PREFERENCES_SETTINGS_LONG_PRESS_ACTON = "Long press action";
-    public static final String PREFERENCES_SETTINGS_QUICK_INFO = "Quick info";
-    public static final String PREFERENCES_SETTINGS_LANGUAGE = "Language";
-    public static final String PREFERENCES_SETTINGS_NIGHT_MODE = "Night mode";
-    public static final String PREFERENCES_SETTINGS_THEME = "App theme";
-
-    public static final int FLAG_SORT_BY_NAME = 0;
-    public static final int FLAG_SORT_BY_INSTALL_DATE = 1;
-    public static final int FLAG_SORT_BY_SIZE = 2;
-
     public static Insets systemBars;
     public static Insets imeInsets;
     public static Insets displayCutouts;
@@ -121,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             getResources().updateConfiguration(configuration, displayMetrics);
         }
         //set app theme
-        if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);

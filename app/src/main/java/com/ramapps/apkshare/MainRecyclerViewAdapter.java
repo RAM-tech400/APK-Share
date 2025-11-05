@@ -1,5 +1,7 @@
 package com.ramapps.apkshare;
 
+import static com.ramapps.apkshare.GlobalVariables.*;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -54,7 +56,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         this.context = context;
         this.packagesInfo = packagesInfo;
         this.selectionTracker = selectionTracker;
-        columnCount = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
+        columnCount = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
     @NonNull
     @Override
@@ -96,7 +98,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             ((MaterialCardView) v).setChecked(selectionTracker.get(index));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
-            int action = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+            int action = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
                 if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
@@ -259,7 +261,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             try {
                 imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));
                 textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
-                int quickInfoSettings = context.getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_QUICK_INFO, 1);
+                int quickInfoSettings = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1);
                 if (quickInfoSettings == 1) {
                     textViewAppDetail.setText(packageInfo.packageName);
                 } else if (quickInfoSettings == 2) {

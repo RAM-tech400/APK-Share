@@ -1,5 +1,7 @@
 package com.ramapps.apkshare;
 
+import static com.ramapps.apkshare.GlobalVariables.*;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -28,7 +30,7 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //set app theme
-        if (getSharedPreferences(MainActivity.PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(MainActivity.PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             setTheme(R.style.dynamic_color_theme);
         } else {
             setTheme(R.style.AppTheme);
