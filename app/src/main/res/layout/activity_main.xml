@@ -92,7 +92,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
@@ -104,5 +104,11 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="24dp"
                 android:contentDescription="@string/send"/>
+
+        <com.google.android.material.loadingindicator.LoadingIndicator
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/mainLoadingIndicator"
+            android:layout_centerInParent="true"/>
         </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

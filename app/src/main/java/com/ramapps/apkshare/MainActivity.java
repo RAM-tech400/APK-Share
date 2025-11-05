@@ -12,9 +12,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.LocaleList;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,14 +51,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.loadingindicator.LoadingIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView, recyclerViewSearchResults;
     public static FloatingActionButton fabSend, fabSendSearchView;
     private TextView textViewSearchResultCount;
+    private LoadingIndicator loadingIndicator;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
     private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
@@ -148,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
             Utils.shareCachedApks(this);
         }
         initReceivers();
-        loadPackagesList();
+        loadPackagesListAsync();
     }
 
     private void addListeners() {
@@ -327,6 +335,8 @@ public class MainActivity extends AppCompatActivity {
         fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
         fabSend = findViewById(R.id.mainFloatingActionBarSend);
         textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
+        loadingIndicator = findViewById(R.id.mainLoadingIndicator);
+
         // Set FAB bottom margin
         int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
         @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
@@ -398,12 +408,24 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void loadPackagesList() {
-        getInstalledApps();
-        sortPackageInfoList();
-        showAppsOnScreen();
+    private void loadPackagesListAsync() {
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        recyclerView.setAdapter(null);
+        loadingIndicator.setVisibility(View.VISIBLE);
         fabSend.hide();
-        Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        executor.execute(() -> {
+            getInstalledApps();
+            sortPackageInfoList();
+//          showAppsOnScreen(); another implementation in below:
+            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo, selectionTracker);
+            handler.post(() -> {
+                recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                recyclerView.setAdapter(adapter);
+                Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+                loadingIndicator.setVisibility(View.GONE);
+            });
+        });
     }
 
     class PackageDatabaseChangedReceiver extends BroadcastReceiver {
@@ -420,19 +442,19 @@ public class MainActivity extends AppCompatActivity {
             switch (intent.getAction()) {
                 case Intent.ACTION_PACKAGE_ADDED:
                     Log.d(TAG, "A package added: " + intent.getData());
-                    loadPackagesList();
+                    loadPackagesListAsync();
                     break;
                 case Intent.ACTION_PACKAGE_REMOVED:
                     Log.d(TAG, "A package removed: " + intent.getData());
-                    loadPackagesList();
+                    loadPackagesListAsync();
                     break;
                 case Intent.ACTION_PACKAGE_FULLY_REMOVED:
                     Log.d(TAG, "A package fully removed: " + intent.getData());
-                    loadPackagesList();
+                    loadPackagesListAsync();
                     break;
                 case Intent.ACTION_PACKAGE_CHANGED:
                     Log.d(TAG, "A package changed: " + intent.getData());
-                    loadPackagesList();
+                    loadPackagesListAsync();
                     break;
                 default:
                     Log.w(TAG, "The provided intent action is not match to any expected cases: " + intent.getAction());
