@@ -47,6 +47,7 @@ import java.util.List;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
 
+    private static final String TAG = "MainRecyclerViewAdapter";
     private final Context context;
     private final List<PackageInfo> packagesInfo;
     private final List<Boolean> selectionTracker;
@@ -190,6 +191,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
                 } catch (NullPointerException e) {
                     Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Null Pointer Exception Error: " + e);
                 }
             }
             return false;
@@ -242,6 +244,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
+        private static final String TAG = "CustomViewHolder";
+
         private final MaterialCardView cardViewContainer;
         private final ImageView imageViewIcon;
         private final TextView textViewAppName;
@@ -272,7 +276,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     textViewAppDetail.setVisibility(View.GONE);
                 }
             } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "ERROR: Package name <" + packageInfo.packageName + "> is not found! Error details: " + e);
             }
         }
 

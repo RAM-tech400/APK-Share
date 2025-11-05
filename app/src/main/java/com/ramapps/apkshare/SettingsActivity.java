@@ -30,6 +30,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
+    private static final String TAG = "SettingsActivity";
 
     private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
@@ -251,6 +252,7 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(emailIntent, "Send mail"));
             } catch (ActivityNotFoundException e){
                 Toast.makeText(this, getString(R.string.activity_not_found_error_msg), Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Not Found Error: The activity looking for is not found! Details: " + e);
             }
         });
         llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));

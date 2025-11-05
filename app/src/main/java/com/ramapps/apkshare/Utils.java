@@ -18,6 +18,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
+    private static final String TAG = "Utils";
 
     public static final String ACTION_RESHARE = "com.ramapps.apkshare.Utils.ACTION_RESHARE";
 
@@ -51,7 +53,7 @@ public class Utils {
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "I/O Excepted Error: " + e);
         }
     }
 

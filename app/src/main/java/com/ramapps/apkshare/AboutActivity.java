@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton;
 
 public class AboutActivity extends AppCompatActivity {
 
+    private static final String TAG = "AboutActivity";
     private AppBarLayout appBarLayout;
     private MaterialButton btnGithub;
     private MaterialToolbar toolbar;

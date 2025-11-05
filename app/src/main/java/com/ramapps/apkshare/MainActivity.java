@@ -270,7 +270,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
+        try {
+            recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        } catch (Exception e) {
+            Log.e(TAG, "There is occurred an exception error! Details: " + e);
+        }
     }
 
     private void sortPackageInfoList() {
