@@ -13,6 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
         android:scrollbarThumbVertical="@drawable/scroll_thumb"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 
@@ -72,7 +75,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/mainRecyclerViewSearchResults"
-                android:layout_below="@id/mainSearchViewTextViewResultCount"/>
+                android:layout_below="@id/mainSearchViewTextViewResultCount"
+                android:paddingBottom="12dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"

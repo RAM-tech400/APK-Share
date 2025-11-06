@@ -71,10 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
-    public static Insets systemBars;
-    public static Insets imeInsets;
-    public static Insets displayCutouts;
-
     private SearchBar searchBar;
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
@@ -124,18 +120,24 @@ public class MainActivity extends AppCompatActivity {
         addListeners();
         setSupportActionBar(findViewById(R.id.mainSearchBar));
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+
+            int leftInset = Math.max(systemBars.left, displayCutouts.left);
+            int topInset = Math.max(systemBars.top, displayCutouts.top);
+            int rightInset = Math.max(systemBars.right, displayCutouts.right);
+            int bottomInset = Math.max(systemBars.bottom, displayCutouts.bottom);
+
             findViewById(R.id.mainAppBarLayout).setPadding(
-                    displayCutouts.left,
+                    leftInset,
                     findViewById(R.id.mainAppBarLayout).getPaddingTop(),
-                    displayCutouts.right,
+                    rightInset,
                     findViewById(R.id.mainAppBarLayout).getPaddingBottom());
             recyclerView.setPadding(
-                    displayCutouts.left,
+                    leftInset,
                     recyclerView.getPaddingTop(),
-                    displayCutouts.right,
+                    rightInset,
                     recyclerView.getPaddingBottom());
             searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
             return insets;

@@ -196,28 +196,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             }
             return false;
         });
-        // Adding navigationBar size margin to the last items
-        if (packagesInfo.size() % columnCount == 0) {
-            if (position >= packagesInfo.size() - columnCount) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.getCardViewContainer().getLayoutParams();
-                layoutParams.setMargins(
-                        layoutParams.leftMargin,
-                        layoutParams.topMargin,
-                        layoutParams.rightMargin,
-                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
-                );
-            }
-        } else {
-            if (position >= packagesInfo.size() - (packagesInfo.size() % columnCount)) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.getCardViewContainer().getLayoutParams();
-                layoutParams.setMargins(
-                        layoutParams.leftMargin,
-                        layoutParams.topMargin,
-                        layoutParams.rightMargin,
-                        layoutParams.bottomMargin + MainActivity.systemBars.bottom
-                );
-            }
-        }
     }
 
     private void showSuccessfulBackupMessage() {
