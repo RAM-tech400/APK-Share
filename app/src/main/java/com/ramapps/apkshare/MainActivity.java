@@ -68,7 +68,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
-
     public static final String TAG = "MainActivity";
 
     private SearchBar searchBar;
@@ -87,44 +86,73 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_main);
-        init();
-        addListeners();
+        initViews();
+        initReceivers();
         setSupportActionBar(findViewById(R.id.mainSearchBar));
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
-
-            int leftInset = Math.max(systemBars.left, displayCutouts.left);
-            int topInset = Math.max(systemBars.top, displayCutouts.top);
-            int rightInset = Math.max(systemBars.right, displayCutouts.right);
-            int bottomInset = Math.max(systemBars.bottom, displayCutouts.bottom);
-
-            findViewById(R.id.mainAppBarLayout).setPadding(
-                    leftInset,
-                    findViewById(R.id.mainAppBarLayout).getPaddingTop(),
-                    rightInset,
-                    findViewById(R.id.mainAppBarLayout).getPaddingBottom());
-            recyclerView.setPadding(
-                    leftInset,
-                    recyclerView.getPaddingTop(),
-                    rightInset,
-                    recyclerView.getPaddingBottom());
-            searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
-            return insets;
-        });
+        addListeners();
+        loadPackagesListAsync();
         if (Objects.equals(getIntent().getAction(), Utils.ACTION_RESHARE)) {
             Utils.shareCachedApks(this);
         }
-        initReceivers();
-        loadPackagesListAsync();
+    }
+
+    private void initViews() {
+        // TODO: Move preferences into the Utils class.
+        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
+
+        searchBar = findViewById(R.id.mainSearchBar);
+        searchView = findViewById(R.id.mainSearchView);
+        recyclerView = findViewById(R.id.mainRecyclerView);
+        recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
+        fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
+        fabSend = findViewById(R.id.mainFloatingActionBarSend);
+        textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
+        loadingIndicator = findViewById(R.id.mainLoadingIndicator);
+
+        // Set FAB bottom margin
+        int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        int navigationBarHeight = navigationBarHeightId > 0 ? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
+        layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
+    }
+
+    private void initReceivers() {
+        // Initialize BroadcastReceiver for the notice when a package got changed.
+        IntentFilter packageChangesIntentFilter = new IntentFilter();
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
+        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        packageChangesIntentFilter.addDataScheme("package");
+        BroadcastReceiver packageChangesReceiver = new PackageDatabaseChangedReceiver();
+        ContextCompat.registerReceiver(MainActivity.this, packageChangesReceiver, packageChangesIntentFilter, ContextCompat.RECEIVER_EXPORTED);
     }
 
     private void addListeners() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+                Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+
+                int leftInset = Math.max(systemBars.left, displayCutouts.left);
+                int rightInset = Math.max(systemBars.right, displayCutouts.right);
+
+                findViewById(R.id.mainAppBarLayout).setPadding(
+                        leftInset,
+                        findViewById(R.id.mainAppBarLayout).getPaddingTop(),
+                        rightInset,
+                        findViewById(R.id.mainAppBarLayout).getPaddingBottom());
+                recyclerView.setPadding(
+                        leftInset,
+                        recyclerView.getPaddingTop(),
+                        rightInset,
+                        recyclerView.getPaddingBottom());
+                searchView.setPadding(searchView.getPaddingLeft(), searchView.getPaddingTop(), searchView.getPaddingRight(), imeInsets.bottom);
+                return insets;
+            });
         fabSend.setOnClickListener(v -> {
             File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
             Utils.deleteRecursive(cachedApksDir);
@@ -220,37 +248,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    private void initReceivers() {
-        IntentFilter packageChangesIntentFilter = new IntentFilter();
-        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
-        packageChangesIntentFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        packageChangesIntentFilter.addDataScheme("package");
-        BroadcastReceiver packageChangesReceiver = new PackageDatabaseChangedReceiver();
-        ContextCompat.registerReceiver(MainActivity.this, packageChangesReceiver, packageChangesIntentFilter, ContextCompat.RECEIVER_EXPORTED);
-    }
-
     private List<PackageInfo> searchForApps(String keyword) {
         List<PackageInfo> results = new ArrayList<>();
-
         for (PackageInfo packageInfo : installedPackagesInfo) {
             String appName = getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
             if (appName.toLowerCase().contains(keyword.toLowerCase()))
                 results.add(packageInfo);
         }
-
         return results;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
-        } catch (Exception e) {
-            Log.e(TAG, "There is occurred an exception error! Details: " + e);
+    private void loadPackagesListAsync() {
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        recyclerView.setAdapter(null);
+        loadingIndicator.setVisibility(View.VISIBLE);
+        fabSend.hide();
+        executor.execute(() -> {
+            getInstalledApps();
+            sortPackageInfoList();
+//          showAppsOnScreen(); another implementation in below:
+            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo, selectionTracker);
+            handler.post(() -> {
+                recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                recyclerView.setAdapter(adapter);
+                loadingIndicator.setVisibility(View.GONE);
+            });
+        });
+    }
+
+    private void getInstalledApps() {
+        installedPackagesInfo = new ArrayList<>();
+        selectionTracker = new ArrayList<>();
+        for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
+            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
+                installedPackagesInfo.add(pi);
+                selectionTracker.add(false);
+            }
         }
     }
 
@@ -277,41 +311,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showAppsOnScreen() {
-        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-        recyclerView.setAdapter(adapter);
-    }
-
-    private void getInstalledApps() {
-        installedPackagesInfo = new ArrayList<>();
-        selectionTracker = new ArrayList<>();
-        for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
-            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
-                installedPackagesInfo.add(pi);
-                selectionTracker.add(false);
-            }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        } catch (Exception e) {
+            Log.e(TAG, "There is occurred an exception error! Details: " + e);
         }
-    }
-
-    private void init() {
-        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
-
-        searchBar = findViewById(R.id.mainSearchBar);
-        searchView = findViewById(R.id.mainSearchView);
-        recyclerView = findViewById(R.id.mainRecyclerView);
-        recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
-        fabSendSearchView = findViewById(R.id.mainSearchViewFloatingActionBarSend);
-        fabSend = findViewById(R.id.mainFloatingActionBarSend);
-        textViewSearchResultCount = findViewById(R.id.mainSearchViewTextViewResultCount);
-        loadingIndicator = findViewById(R.id.mainLoadingIndicator);
-
-        // Set FAB bottom margin
-        int fabBottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
-        @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) int navigationBarHeightId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        int navigationBarHeight = navigationBarHeightId > 0 ? getResources().getDimensionPixelOffset(navigationBarHeightId) : 0;
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) fabSend.getLayoutParams();
-        layoutParams.bottomMargin = fabBottomMargin + navigationBarHeight;
     }
 
     @SuppressLint("RestrictedApi")
@@ -377,28 +384,23 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void loadPackagesListAsync() {
-        Executor executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        recyclerView.setAdapter(null);
-        loadingIndicator.setVisibility(View.VISIBLE);
-        fabSend.hide();
-        executor.execute(() -> {
-            getInstalledApps();
-            sortPackageInfoList();
-//          showAppsOnScreen(); another implementation in below:
-            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo, selectionTracker);
-            handler.post(() -> {
-                recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                recyclerView.setAdapter(adapter);
-                Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
-                loadingIndicator.setVisibility(View.GONE);
-            });
-        });
+    private void showAppsOnScreen() {
+        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        } catch (Exception e) {
+            Log.e(TAG, "There is occurred an exception error! Details: " + e);
+        }
     }
 
     class PackageDatabaseChangedReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "PackageDatabaseChangedReceiver was received somethings...");
@@ -430,5 +432,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
