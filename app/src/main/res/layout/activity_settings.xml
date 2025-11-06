@@ -176,35 +176,6 @@
 
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutTheme"
-                android:padding="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/app_theme"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/settingsTextViewThemePreview"
-                    android:text="@string/dynamic_colors"
-                    android:textAppearance="?textAppearanceBodyMedium"/>
-
-            </LinearLayout>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

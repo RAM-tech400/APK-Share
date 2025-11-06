@@ -30,12 +30,6 @@ public class AboutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //set app theme
-        if (getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setTheme(R.style.dynamic_color_theme);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_about);
         init();

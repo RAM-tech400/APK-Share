@@ -32,8 +32,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
 
-    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llAppTheme, llPermissions, llHelp, llAbout;
-    private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode, textViewAppTheme;
+    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llPermissions, llHelp, llAbout;
+    private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode;
     private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
 
@@ -43,12 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //set app theme
-        if (getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setTheme(R.style.dynamic_color_theme);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
         init();
@@ -99,7 +93,6 @@ public class SettingsActivity extends AppCompatActivity {
             night = 2;
         }
         textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
-        textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[preferences.getInt(PREFERENCES_SETTINGS_THEME, 0)]);
 
         toolbar.setNavigationOnClickListener(v -> {
             finish();
@@ -113,7 +106,6 @@ public class SettingsActivity extends AppCompatActivity {
         llQuickInfo = findViewById(R.id.settingsLinearLayoutQuickInfo);
         llLanguage = findViewById(R.id.settingsLinearLayoutLanguage);
         llNightMode = findViewById(R.id.settingsLinearLayoutNightMode);
-        llAppTheme = findViewById(R.id.settingsLinearLayoutTheme);
         llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
         llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
         llAbout = findViewById(R.id.settingsLinearLayoutAbout);
@@ -122,15 +114,10 @@ public class SettingsActivity extends AppCompatActivity {
         textViewQuickInfo = findViewById(R.id.settingsTextViewQuickInfoPreview);
         textViewLanguage = findViewById(R.id.settingsTextViewLanguagePreview);
         textViewNightMode = findViewById(R.id.settingsTextViewNightModePreview);
-        textViewAppTheme = findViewById(R.id.settingsTextViewThemePreview);
 
         appBarLayout = findViewById(R.id.settingsAppBarLayout);
         toolbar = findViewById(R.id.settingsToolbar);
 
-        //Check for dynamic colors.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
-            llAppTheme.setVisibility(View.GONE);
-        }
     }
 
     private void addListeners() {
@@ -216,20 +203,6 @@ public class SettingsActivity extends AppCompatActivity {
                         AppCompatDelegate.setDefaultNightMode(mode);
                         dialog14.dismiss();
                     })
-                    .create();
-            dialog.show();
-        });
-        llAppTheme.setOnClickListener(v -> {
-
-            MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(SettingsActivity.this);
-            dialogBuilder.setTitle(R.string.app_theme);
-            dialogBuilder.setSingleChoiceItems(R.array.themeOptions, preferences.getInt(PREFERENCES_SETTINGS_THEME, 0), (dialog, which) -> {
-                textViewAppTheme.setText(getResources().getStringArray(R.array.themeOptions)[which]);
-                preferences.edit().putInt(PREFERENCES_SETTINGS_THEME, which).apply();
-                dialog.dismiss();
-                startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-            });
-            AlertDialog dialog = dialogBuilder
                     .create();
             dialog.show();
         });

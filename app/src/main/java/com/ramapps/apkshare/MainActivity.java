@@ -87,31 +87,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // set language
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
-            if (!currentLocales.isEmpty()) {
-                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(currentLocales.get(0).toString()));
-            }
-        } else {
-            String langCode = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getString(PREFERENCES_SETTINGS_LANGUAGE, "");
-            Configuration configuration = getResources().getConfiguration();
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            if (langCode.isEmpty()) {
-                configuration.setLocale(Locale.getDefault());
-            } else {
-                configuration.setLocale(new Locale(langCode));
-            }
-            getResources().updateConfiguration(configuration, displayMetrics);
-        }
-        //set app theme
-        if (getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_THEME, 0) == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setTheme(R.style.dynamic_color_theme);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
-        //set nightMode
-        AppCompatDelegate.setDefaultNightMode(getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
 
         EdgeToEdge.enable(this);
 
