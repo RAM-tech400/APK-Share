@@ -25,83 +25,28 @@ import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
-
     private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llPermissions, llHelp, llAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode;
-    private AppBarLayout appBarLayout;
     private MaterialToolbar toolbar;
-
     private SharedPreferences preferences;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
-        init();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
-            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
-            findViewById(R.id.settingsNestedScrollView).setPadding(
-                    displayCutouts.left,
-                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
-                    displayCutouts.right,
-                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
-            toolbar.setPadding(
-                    displayCutouts.left,
-                    toolbar.getPaddingTop(),
-                    displayCutouts.right,
-                    toolbar.getPaddingBottom());
-            return insets;
-        });
+        initViews();
         addListeners();
         loadSettings();
     }
 
-    private void loadSettings() {
-        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
-        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
-
-        int lang = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
-            if ((currentLocales.get(0) + "").toLowerCase().contains("en")) {
-                lang = 1;
-            } else if ((currentLocales.get(0) + "").toLowerCase().contains("fa")) {
-                lang = 2;
-            }
-        } else {
-            if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
-                lang = 1;
-            } else if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
-                lang = 2;
-            }
-        }
-        textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[lang]);
-
-        int night = 0;
-
-        if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
-            night = 1;
-        } else if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
-            night = 2;
-        }
-        textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
-
-        toolbar.setNavigationOnClickListener(v -> {
-            finish();
-        });
-    }
-
-    private void init() {
+    private void initViews() {
         preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
-
         llLongPressAction = findViewById(R.id.settingsLinearLayoutLonPressAction);
         llQuickInfo = findViewById(R.id.settingsLinearLayoutQuickInfo);
         llLanguage = findViewById(R.id.settingsLinearLayoutLanguage);
@@ -109,18 +54,32 @@ public class SettingsActivity extends AppCompatActivity {
         llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
         llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
         llAbout = findViewById(R.id.settingsLinearLayoutAbout);
-
         textViewLongPressAction = findViewById(R.id.settingsTextViewLongPressActionPreview);
         textViewQuickInfo = findViewById(R.id.settingsTextViewQuickInfoPreview);
         textViewLanguage = findViewById(R.id.settingsTextViewLanguagePreview);
         textViewNightMode = findViewById(R.id.settingsTextViewNightModePreview);
-
-        appBarLayout = findViewById(R.id.settingsAppBarLayout);
         toolbar = findViewById(R.id.settingsToolbar);
 
     }
 
     private void addListeners() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets displayCutouts = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+            int leftInset = Math.max(systemBars.left, displayCutouts.left);
+            int rightInset = Math.max(systemBars.right, displayCutouts.right);
+            findViewById(R.id.settingsNestedScrollView).setPadding(
+                    leftInset,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingTop(),
+                    rightInset,
+                    findViewById(R.id.settingsNestedScrollView).getPaddingBottom());
+            toolbar.setPadding(
+                    leftInset,
+                    toolbar.getPaddingTop(),
+                    rightInset,
+                    toolbar.getPaddingBottom());
+            return insets;
+        });
         llLongPressAction.setOnClickListener(v -> {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
@@ -229,5 +188,38 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
+    }
+
+    private void loadSettings() {
+        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
+        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
+
+        int lang = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
+            if ((currentLocales.get(0) + "").toLowerCase().contains("en")) {
+                lang = 1;
+            } else if ((currentLocales.get(0) + "").toLowerCase().contains("fa")) {
+                lang = 2;
+            }
+        } else {
+            if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+                lang = 1;
+            } else if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+                lang = 2;
+            }
+        }
+        textViewLanguage.setText(getResources().getStringArray(R.array.languageOptions)[lang]);
+
+        int night = 0;
+
+        if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
+            night = 1;
+        } else if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
+            night = 2;
+        }
+        textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
+
+        toolbar.setNavigationOnClickListener((View v) -> finish());
     }
 }
