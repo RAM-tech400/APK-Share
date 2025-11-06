@@ -3,7 +3,6 @@ package com.ramapps.apkshare;
 import static com.ramapps.apkshare.GlobalVariables.*;
 
 import android.annotation.SuppressLint;
-import android.app.LocaleManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,17 +12,13 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.LocaleList;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -36,32 +31,25 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
-import androidx.core.os.LocaleListCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.loadingindicator.LoadingIndicator;
-import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -70,7 +58,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
 
-    private SearchBar searchBar;
     private SearchView searchView;
     private RecyclerView recyclerView, recyclerViewSearchResults;
     public static FloatingActionButton fabSend, fabSendSearchView;
@@ -102,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Move preferences into the Utils class.
         preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
 
-        searchBar = findViewById(R.id.mainSearchBar);
         searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
@@ -158,8 +144,12 @@ public class MainActivity extends AppCompatActivity {
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < installedPackagesInfo.size(); i++) {
                 if (selectionTracker.get(i)) {
-                    File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    try {
+                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
+                        Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + installedPackagesInfo.get(i) + ">: " + e);
+                    }
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
@@ -170,16 +160,18 @@ public class MainActivity extends AppCompatActivity {
             Utils.deleteRecursive(cachedApksDir);
             for (int i = 0; i < searchedPackagesInfo.size(); i++) {
                 if (selectionTrackerForSearchResults.get(i)) {
-                    File file = new File(searchedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                    Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(searchedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    try {
+                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
+                        Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + installedPackagesInfo.get(i) + ">: " + e);
+                    }
                 }
             }
             Utils.shareCachedApks(MainActivity.this);
         });
 
-        searchView.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        searchView.getEditText().setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
                 if (!v.getText().toString().isEmpty()) {
                     searchedPackagesInfo = searchForApps(v.getText().toString());
                     selectionTrackerForSearchResults = new ArrayList<>();
@@ -197,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
                     textViewSearchResultCount.setVisibility(View.VISIBLE);
                 }
                 return true;
-            }
         });
 
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
@@ -213,16 +204,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchedPackagesInfo = new ArrayList<PackageInfo>();
+                searchedPackagesInfo = new ArrayList<>();
                 MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
                 recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerViewSearchResults.setAdapter(adapter);
             }
         });
 
-        searchView.addTransitionListener(new SearchView.TransitionListener() {
-            @Override
-            public void onStateChanged(@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) {
+        searchView.addTransitionListener((@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) -> {
                 if (transitionState == SearchView.TransitionState.SHOWN) {
                     searchedPackagesInfo = new ArrayList<>();
                     selectionTrackerForSearchResults = new ArrayList<>();
@@ -232,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                     fabSendSearchView.hide();
                     textViewSearchResultCount.setVisibility(View.GONE);
                 }
-            }
         });
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
@@ -251,6 +239,10 @@ public class MainActivity extends AppCompatActivity {
     private List<PackageInfo> searchForApps(String keyword) {
         List<PackageInfo> results = new ArrayList<>();
         for (PackageInfo packageInfo : installedPackagesInfo) {
+            if (Objects.isNull(packageInfo.applicationInfo)) {
+                Log.e(TAG, "Null ApplicationInfo object error for: " + packageInfo.packageName);
+                continue;
+            }
             String appName = getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
             if (appName.toLowerCase().contains(keyword.toLowerCase()))
                 results.add(packageInfo);
@@ -281,9 +273,13 @@ public class MainActivity extends AppCompatActivity {
         installedPackagesInfo = new ArrayList<>();
         selectionTracker = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
-            if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
-                installedPackagesInfo.add(pi);
-                selectionTracker.add(false);
+            try {
+                if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
+                    installedPackagesInfo.add(pi);
+                    selectionTracker.add(false);
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Null pointer error occurred when getting an ApplicationInfo object for: " + pi.packageName);
             }
         }
     }
@@ -316,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         try {
             Objects.requireNonNull(recyclerView.getLayoutManager()).onRestoreInstanceState(recyclerViewState);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Null pointer exception error for saving the state instance for recycler view: " + e);
         } catch (Exception e) {
             Log.e(TAG, "There is occurred an exception error! Details: " + e);
         }
@@ -343,19 +341,14 @@ public class MainActivity extends AppCompatActivity {
             cbReverseSort.setChecked(preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false));
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.sort_by)
-                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> {
-                        choice.set(which);
-                    })
-                    .setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> choice.set(which))
+                    .setPositiveButton(R.string.apply, (DialogInterface dia, int which) -> {
                             preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
                             preferences.edit().putBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
                             sortPackageInfoList();
                             showAppsOnScreen();
-                            dialog.dismiss();
-                        }
-                    })
+                            dia.dismiss();
+                        })
                     .setNegativeButton(R.string.cancel, null)
                     .setView(cbReverseSort)
                     .create();
@@ -395,6 +388,8 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         try {
             recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Null pointer exception error for saving the state instance for recycler view: " + e);
         } catch (Exception e) {
             Log.e(TAG, "There is occurred an exception error! Details: " + e);
         }
