@@ -46,7 +46,6 @@ import java.io.File;
 import java.util.List;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
-
     private static final String TAG = "MainRecyclerViewAdapter";
     private final Context context;
     private final List<PackageInfo> packagesInfo;
@@ -59,6 +58,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         this.selectionTracker = selectionTracker;
         columnCount = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
+
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -173,12 +173,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                                                 .setIcon(R.drawable.outline_folder_24)
                                                 .setTitle(R.string.storage_permission)
                                                 .setMessage(R.string.msg_app_needs_storage_permission)
-                                                .setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        permissionToken.continuePermissionRequest();
-                                                    }
-                                                })
+                                                .setPositiveButton(R.string.grant, (DialogInterface dialog, int which) -> permissionToken.continuePermissionRequest())
                                                 .setNegativeButton(R.string.deny, null)
                                                 .create();
                                         alertDialog.show();
@@ -200,9 +195,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     private void showSuccessfulBackupMessage() {
         Snackbar.make(MainActivity.fabSend, R.string.msg_creating_backup_file_successful, Snackbar.LENGTH_SHORT)
-                .setAction(R.string.view, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                .setAction(R.string.view, (View v) -> {
                         Intent intentOpenBackupFolder = new Intent();
                         intentOpenBackupFolder.setAction(Intent.ACTION_GET_CONTENT);
                         intentOpenBackupFolder.setDataAndType(Uri.parse(
@@ -210,7 +203,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                                         + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/"
                         ), "*/*");
                         context.startActivity(intentOpenBackupFolder);
-                    }
                 })
                 .show();
     }
@@ -221,9 +213,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-
         private static final String TAG = "CustomViewHolder";
-
         private final MaterialCardView cardViewContainer;
         private final ImageView imageViewIcon;
         private final TextView textViewAppName;
