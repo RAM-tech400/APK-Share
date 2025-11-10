@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private LoadingIndicator loadingIndicator;
 
     private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
-    private List<Boolean> selectionTracker, selectionTrackerForSearchResults;
     private SharedPreferences preferences;
 
     private Parcelable recyclerViewState;
@@ -140,45 +139,27 @@ public class MainActivity extends AppCompatActivity {
                 return insets;
             });
         fabSend.setOnClickListener(v -> {
-            File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
-            Utils.deleteRecursive(cachedApksDir);
-            for (int i = 0; i < installedPackagesInfo.size(); i++) {
-                if (selectionTracker.get(i)) {
-                    try {
-                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                        Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + installedPackagesInfo.get(i) + ">: " + e);
-                    }
-                }
+            MainRecyclerViewAdapter adapter = (MainRecyclerViewAdapter) recyclerView.getAdapter();
+            if (adapter == null) {
+                Log.e(TAG, "The recycler view provide null as its adapter!");
+                return;
             }
-            Utils.shareCachedApks(MainActivity.this);
+            shareSelectedPackages(adapter.getSelectedItems());
         });
 
         fabSendSearchView.setOnClickListener(v -> {
-            File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
-            Utils.deleteRecursive(cachedApksDir);
-            for (int i = 0; i < searchedPackagesInfo.size(); i++) {
-                if (selectionTrackerForSearchResults.get(i)) {
-                    try {
-                        File file = new File(installedPackagesInfo.get(i).applicationInfo.publicSourceDir);
-                        Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(installedPackagesInfo.get(i).applicationInfo) + ".apk"));
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + installedPackagesInfo.get(i) + ">: " + e);
-                    }
-                }
+            MainRecyclerViewAdapter adapter = (MainRecyclerViewAdapter) recyclerViewSearchResults.getAdapter();
+            if (adapter == null) {
+                Log.e(TAG, "The recycler view (At search view section) provide null as its adapter!");
+                return;
             }
-            Utils.shareCachedApks(MainActivity.this);
+            shareSelectedPackages(adapter.getSelectedItems());
         });
 
         searchView.getEditText().setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
                 if (!v.getText().toString().isEmpty()) {
                     searchedPackagesInfo = searchForApps(v.getText().toString());
-                    selectionTrackerForSearchResults = new ArrayList<>();
-                    for (PackageInfo info : searchedPackagesInfo) {
-                        selectionTrackerForSearchResults.add(false);
-                    }
-                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
                     recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     if (adapter.getItemCount() > 0) {
@@ -205,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 searchedPackagesInfo = new ArrayList<>();
-                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
                 recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerViewSearchResults.setAdapter(adapter);
             }
@@ -214,8 +195,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.addTransitionListener((@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) -> {
                 if (transitionState == SearchView.TransitionState.SHOWN) {
                     searchedPackagesInfo = new ArrayList<>();
-                    selectionTrackerForSearchResults = new ArrayList<>();
-                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo, selectionTrackerForSearchResults);
+                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
                     recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     fabSendSearchView.hide();
@@ -234,6 +214,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void shareSelectedPackages(List<PackageInfo> selectedPackages) {
+        File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
+        Utils.deleteRecursive(cachedApksDir);
+        for (PackageInfo packageInfo : selectedPackages) {
+            try {
+                File file = new File(packageInfo.applicationInfo.publicSourceDir);
+                Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk"));
+            } catch (NullPointerException e) {
+                Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + packageInfo + ">: " + e);
+            }
+        }
+        Utils.shareCachedApks(MainActivity.this);
     }
 
     private List<PackageInfo> searchForApps(String keyword) {
@@ -260,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
             getInstalledApps();
             sortPackageInfoList();
 //          showAppsOnScreen(); another implementation in below:
-            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo, selectionTracker);
+            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo);
             handler.post(() -> {
                 recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerView.setAdapter(adapter);
@@ -271,12 +265,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void getInstalledApps() {
         installedPackagesInfo = new ArrayList<>();
-        selectionTracker = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             try {
                 if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
                     installedPackagesInfo.add(pi);
-                    selectionTracker.add(false);
                 }
             } catch (NullPointerException e) {
                 Log.e(TAG, "Null pointer error occurred when getting an ApplicationInfo object for: " + pi.packageName);
@@ -361,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                     .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
                         preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
                         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
-                        recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo, selectionTracker));
+                        recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo));
                         dialog12.dismiss();
                         if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
@@ -378,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAppsOnScreen() {
-        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo, selectionTracker);
+        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo);
         recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }

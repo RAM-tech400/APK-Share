@@ -43,19 +43,20 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "MainRecyclerViewAdapter";
     private final Context context;
     private final List<PackageInfo> packagesInfo;
-    private final List<Boolean> selectionTracker;
+    private List<Integer> selectionTracker = new ArrayList<>();
     private final int columnCount;
 
-    public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo, List<Boolean> selectionTracker) {
+    public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo) {
         this.context = context;
         this.packagesInfo = packagesInfo;
-        this.selectionTracker = selectionTracker;
         columnCount = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
 
@@ -69,39 +70,33 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
-        final int index = position;
-        holder.bind(packagesInfo.get(index));
-        holder.getCardViewContainer().setChecked(selectionTracker.get(index));
+    public void onBindViewHolder(@NonNull CustomViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        holder.bind(packagesInfo.get(position));
+        holder.getCardViewContainer().setChecked(selectionTracker.contains(position));
         holder.getCardViewContainer().setOnClickListener(v -> {
-            int selectedCount = 0;
-            for (Boolean b : selectionTracker) {
-                if(b) selectedCount += 1;
-            }
-            if(!selectionTracker.get(index)) {
-                if(selectedCount < 9){
-                    selectionTracker.set(index, true);
-                    selectedCount++;
+            if(!selectionTracker.contains(position)) {
+                if(selectionTracker.size() < 9){
+                    selectionTracker.add(position);
                 } else {
                     Toast.makeText(context, context.getResources().getQuantityString(R.plurals.msg_selection_limit, 0, 9), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                selectionTracker.set(index, false);
-                selectedCount--;
+                // Use the Integer object to avoid using the remove(int index) and using remove(Object item) instead.
+                selectionTracker.remove(Integer.valueOf(position));
             }
-            if(selectedCount > 0) {
+            if(!selectionTracker.isEmpty()) {
                 MainActivity.fabSend.show();
                 MainActivity.fabSendSearchView.show();
             } else {
                 MainActivity.fabSend.hide();
                 MainActivity.fabSendSearchView.hide();
             }
-            ((MaterialCardView) v).setChecked(selectionTracker.get(index));
+            ((MaterialCardView) v).setChecked(selectionTracker.contains(position));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
             int action = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
-                if (packagesInfo.get(index).packageName.equals(context.getPackageName())){
+                if (packagesInfo.get(position).packageName.equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
                     new AlertDialog.Builder(context)
@@ -110,33 +105,33 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                             .setNegativeButton("Uninstall", (dialog, which) -> {
                                 //Uninstall the app
                                 Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                                intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
                                 context.startActivity(intent);
                             })
                             .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
                                 //Backup the APK and uninstall
-                                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
+                                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
                                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
-                                        context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                                        context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
                                 Utils.copyFile(file, backupFile);
                                 Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
                                         Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packagesInfo.get(index).packageName, null));
+                                intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
                                 context.startActivity(intent);
                             })
                             .setNeutralButton("Cancel", null)
                             .show();
                 }
             } else if (action == 2) {
-                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
-                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
+                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
                 Utils.copyFile(file, cacheApkFile);
                 Utils.shareCachedApks(context);
             } else if (action == 3) {
-                File file = new File(packagesInfo.get(index).applicationInfo.publicSourceDir);
-                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(index).applicationInfo) + ".apk");
+                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
+                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
                 if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
@@ -183,7 +178,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 }
             } else {
                 try {
-                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(index).packageName));
+                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(position).packageName));
                 } catch (NullPointerException e) {
                     Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Null Pointer Exception Error: " + e);
@@ -210,6 +205,15 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     @Override
     public int getItemCount() {
         return packagesInfo.size();
+    }
+
+    public List<PackageInfo> getSelectedItems() {
+        List<PackageInfo> selectedItems = new ArrayList<>();
+        for (int i :
+                selectionTracker) {
+            selectedItems.add(packagesInfo.get(i));
+        }
+        return selectedItems;
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
