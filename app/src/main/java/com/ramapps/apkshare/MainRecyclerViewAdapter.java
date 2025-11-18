@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -188,13 +189,19 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     private void showSuccessfulBackupMessage() {
         Snackbar.make(MainActivity.fabSend, R.string.msg_creating_backup_file_successful, Snackbar.LENGTH_SHORT)
                 .setAction(R.string.view, (View v) -> {
-                        Intent intentOpenBackupFolder = new Intent();
-                        intentOpenBackupFolder.setAction(Intent.ACTION_GET_CONTENT);
-                        intentOpenBackupFolder.setDataAndType(Uri.parse(
-                                Environment.getExternalStorageDirectory() + File.separator
-                                        + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/"
-                        ), "*/*");
+                    Log.d(TAG, "Opening the backup directory to see backed-up files...");
+                    String folderName = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/";
+                    Uri uri = Uri.parse(folderName);
+                    Intent intentOpenBackupFolder = new Intent(Intent.ACTION_VIEW);
+                    intentOpenBackupFolder.setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR);
+                    intentOpenBackupFolder.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    if (intentOpenBackupFolder.resolveActivityInfo(context.getPackageManager(), 0) != null) {
+                        Log.d(TAG, "Opening the backup folder...");
                         context.startActivity(intentOpenBackupFolder);
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.msg_no_any_app_for_intent), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "There is no any application or activity that can do opening this folder!");
+                    }
                 })
                 .show();
     }

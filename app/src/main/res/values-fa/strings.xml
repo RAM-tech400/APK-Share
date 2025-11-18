@@ -60,4 +60,5 @@
     <string name="app_permissions">دسترسی‌های برنامه</string>
     <string name="copy_files">همانندسازی فایل‌ها…</string>
     <string name="formatable_msg_copy_files_progress">همانندسازی %s در .../حافظه پنهان/%s  • %d٪ تکمیل شده  • درحال کار...</string>
+    <string name="msg_no_any_app_for_intent">هیچ برنامه‌ای نیست که بتواند چنین کاری را انجام دهد!</string>
 </resources>
