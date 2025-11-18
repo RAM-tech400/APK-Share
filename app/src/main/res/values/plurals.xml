@@ -11,4 +11,8 @@
     <plurals name="msg_not_found">
         <item quantity="other">Can\'t found any items for \"%s\"! Trying something else.</item>
     </plurals>
+    <plurals name="copy_proccess_files_count">
+        <item quantity="one">Preparing to copy %d file…</item>
+        <item quantity="other">Preparing to copy %d files…</item>
+    </plurals>
 </resources>

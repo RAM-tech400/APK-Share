@@ -11,4 +11,7 @@
     <plurals name="msg_not_found">
         <item quantity="other">نمی توان برای «%s» موردی پیدا کرد! چیز دیگری را امتحان کنید.</item>
     </plurals>
+    <plurals name="copy_proccess_files_count">
+        <item quantity="other">آماده‌سازی %d فایل برای همانندسازی…</item>
+    </plurals>
 </resources>

@@ -5,34 +5,35 @@ package com.ramapps.apkshare;
  * All methods in this class should be public and static.
  */
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.animation.LinearInterpolator;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Utils {
     private static final String TAG = "Utils";
@@ -79,12 +80,111 @@ public class Utils {
         }
     }
 
+    public static void copyFileAsyncOnUi(Context context, File sourceFile, File destinationFile, String destinationFileName, Runnable postWorks) {
+        List<File> sourceFileList = new ArrayList<>();
+        List<String> destinationFileNamesList = new ArrayList<>();
+        sourceFileList.add(sourceFile);
+        destinationFileNamesList.add(
+                destinationFileName == null?
+                        destinationFile.getName() :
+                        destinationFileName
+        );
+        copyFilesAsyncOnUi(context, sourceFileList, destinationFileNamesList, destinationFile.getParentFile(), postWorks);
+    }
+
+    public static void copyFilesAsyncOnUi(Context context, List<File> filesList, List<String> destinationDirectoryNames, File destinationDirectory, Runnable postWorks) {
+        AtomicBoolean isContinue = new AtomicBoolean(true);
+        LinearProgressIndicator progressIndicator = new LinearProgressIndicator(context);
+        progressIndicator.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        progressIndicator.setWaveAmplitude(pixelToDp(context, 4));
+        progressIndicator.setWavelength(pixelToDp(context, 28));
+        progressIndicator.setIndicatorTrackGapSize(pixelToDp(context, 4));
+        FrameLayout frameLayout = new FrameLayout(context);
+        frameLayout.setPadding(pixelToDp(context, 24), pixelToDp(context, 12), pixelToDp(context, 24), pixelToDp(context, 12));
+        frameLayout.addView(progressIndicator);
+        AlertDialog progressDialog = new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.copy_files)
+                .setMessage(context.getResources().getQuantityString(R.plurals.copy_proccess_files_count, filesList.size(), filesList.size()))
+                .setPositiveButton(R.string.cancel, (dia, witch) -> {
+                    isContinue.set(false);
+                    dia.dismiss();
+                })
+                .setCancelable(false)
+                .create();
+        progressDialog.setView(frameLayout);
+        progressDialog.show();
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        final long[] progress = {0};
+        executor.execute(() -> {
+            if (!destinationDirectory.exists()) {
+                Log.w(TAG, "The directory that we want to copy files into it is not exists! Making it...");
+                boolean result = destinationDirectory.mkdir();
+                if (result) {
+                    Log.d(TAG, "Destination directory successfully created!");
+                } else {
+                    Log.e(TAG, "Destination directory creation goes failed!");
+                    return;
+                }
+            }
+            int i = 0;
+            for (File file : filesList) {
+                try {
+                    InputStream inputStream = new FileInputStream(file);
+                    File destinationFile = new File(destinationDirectory + "/" + destinationDirectoryNames.get(i));
+                    OutputStream outputStream = new FileOutputStream(destinationFile);
+                    Log.d(TAG, "Beginning copy source file: " + file + " to: " + destinationFile);
+                    byte[] buffer = new byte[1024 * 64];
+                    int length = 0;
+                    while ((length = inputStream.read(buffer)) != -1) {
+                        if (!isContinue.get()) break;
+                        outputStream.write(buffer, 0, length);
+                        progress[0] += length;
+                        handler.post(() -> {
+                            int percentage = (int) ((float) progress[0] / (float) getFilesSize(filesList) * 100);
+                            Log.d(TAG, "Setting the progress of copying files to: " + progress[0] + " | Formatted to: " + percentage);
+                            progressDialog.setMessage(String.format(context.getString(R.string.formatable_msg_copy_files_progress), file.getName(), destinationFile.getName(), percentage));
+                            progressIndicator.setProgress(percentage);
+                        });
+                    }
+                    if (isContinue.get()) outputStream.flush();
+                    inputStream.close();
+                    outputStream.close();
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "File not found! Error details: " + e);
+                } catch (IOException e) {
+                    Log.e(TAG, "There is an I/O exception while copying file! Error details: " + e);
+                }
+                i += 1;
+            }
+            if (isContinue.get()) handler.post(() -> {
+                progressDialog.dismiss();
+                Log.d(TAG, "The cached apk files: " + Arrays.toString(new File(context.getCacheDir() + "/ApkFiles/").listFiles()));
+                postWorks.run();
+            });
+        });
+    }
+
+    private static long getFilesSize(List<File> fileList) {
+        long filesSize = 0;
+        for (File file :
+                fileList) {
+            filesSize += file.length();
+        }
+        Log.d(TAG, "All files size: " + filesSize);
+        return filesSize;
+    }
+
     public static void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
                 deleteRecursive(child);
 
         fileOrDirectory.delete();
+    }
+
+    public static int pixelToDp(Context context, int pixelSize) {
+        return (int) (pixelSize * context.getResources().getDisplayMetrics().density);
     }
 
 }

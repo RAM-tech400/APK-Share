@@ -113,12 +113,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                                 File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
                                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
                                         context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
-                                Utils.copyFile(file, backupFile);
-                                Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
-                                        Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
-                                context.startActivity(intent);
+                                Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> {
+                                    Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
+                                            Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(Intent.ACTION_DELETE);
+                                    intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
+                                    context.startActivity(intent);
+                                });
                             })
                             .setNeutralButton("Cancel", null)
                             .show();
@@ -127,16 +128,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
                 File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
-                Utils.copyFile(file, cacheApkFile);
-                Utils.shareCachedApks(context);
+                Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
             } else if (action == 3) {
                 File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
                 if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
-                        Utils.copyFile(file, backupFile);
-                        showSuccessfulBackupMessage();
+                        Utils.copyFileAsyncOnUi(context, file, backupFile, null, this::showSuccessfulBackupMessage);
                     } else {
                         Intent intentGetAccessAllFiles = new Intent();
                         intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
@@ -145,16 +144,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                 } else {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        Utils.copyFile(file, backupFile);
-                        showSuccessfulBackupMessage();
+                        Utils.copyFileAsyncOnUi(context, file, backupFile, null, this::showSuccessfulBackupMessage);
                     } else {
                         Dexter.withContext(context)
                                 .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 .withListener(new PermissionListener() {
                                     @Override
                                     public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                        Utils.copyFile(file, backupFile);
-                                        showSuccessfulBackupMessage();
+                                        Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> showSuccessfulBackupMessage());
                                     }
 
                                     @Override

@@ -219,15 +219,37 @@ public class MainActivity extends AppCompatActivity {
     private void shareSelectedPackages(List<PackageInfo> selectedPackages) {
         File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
         Utils.deleteRecursive(cachedApksDir);
-        for (PackageInfo packageInfo : selectedPackages) {
-            try {
-                File file = new File(packageInfo.applicationInfo.publicSourceDir);
-                Utils.copyFile(file, new File(cachedApksDir.getPath() + "/" + getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk"));
-            } catch (NullPointerException e) {
-                Log.e(TAG, "There is occurred a null pointer exception error when getting application info object for <" + packageInfo + ">: " + e);
+        Utils.copyFilesAsyncOnUi(
+                MainActivity.this,
+                getApkFilesFromPackageInfoList(selectedPackages),
+                getApkNamedFilesFromPackageInfoList(selectedPackages),
+                cachedApksDir,
+                () -> Utils.shareCachedApks(MainActivity.this)
+        );
+    }
+
+    private List<File> getApkFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
+        List<File> apkFiles = new ArrayList<>();
+        for (PackageInfo packageInfo : packageInfos) {
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "This package info provides a null application info object!");
+                continue;
             }
+            apkFiles.add(new File(packageInfo.applicationInfo.publicSourceDir));
         }
-        Utils.shareCachedApks(MainActivity.this);
+        return apkFiles;
+    }
+
+    private List<String> getApkNamedFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
+        List<String> apkNamedFiles = new ArrayList<>();
+        for (PackageInfo packageInfo : packageInfos) {
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "This package info provides a null application info object!");
+                continue;
+            }
+            apkNamedFiles.add(getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
+        }
+        return apkNamedFiles;
     }
 
     private List<PackageInfo> searchForApps(String keyword) {
