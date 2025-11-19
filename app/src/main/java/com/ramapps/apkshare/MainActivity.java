@@ -206,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
             public void handleOnBackPressed() {
                 if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
                     searchView.hide();
+                } else if (!((MainRecyclerViewAdapter) recyclerView.getAdapter()).getSelectedItems().isEmpty()) {
+                    recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo));
                 } else {
                     finish();
                 }
