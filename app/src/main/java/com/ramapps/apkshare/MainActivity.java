@@ -156,39 +156,37 @@ public class MainActivity extends AppCompatActivity {
             shareSelectedPackages(adapter.getSelectedItems());
         });
 
-        searchView.getEditText().setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
-                if (!v.getText().toString().isEmpty()) {
-                    searchedPackagesInfo = searchForApps(v.getText().toString());
-                    MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                    recyclerViewSearchResults.setAdapter(adapter);
-                    if (adapter.getItemCount() > 0) {
-                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.search_result_count, adapter.getItemCount(), v.getText(), adapter.getItemCount()));
-                    } else {
-                        textViewSearchResultCount.setText(getResources().getQuantityString(R.plurals.msg_not_found, adapter.getItemCount(), v.getText()));
-                    }
-                    textViewSearchResultCount.setVisibility(View.VISIBLE);
-                }
-                return true;
-        });
-
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchedPackagesInfo = new ArrayList<>();
-                MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
-                recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                recyclerViewSearchResults.setAdapter(adapter);
+                Runnable doSearchingRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        String keyword = s.toString();
+                        if (keyword == null) {
+                            Log.e(TAG, "NullPointerError: The search keyword is null!");
+                            return;
+                        }
+                        if (keyword.trim().equals("")) {
+                            Log.w(TAG, "The search keyword is empty (the search field was cleared!).");
+                            recyclerViewSearchResults.setAdapter(null);
+                            return;
+                        }
+                        MainRecyclerViewAdapter searchResultAdapter = new MainRecyclerViewAdapter(MainActivity.this, searchForApps(keyword));
+                        recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                        recyclerViewSearchResults.setAdapter(searchResultAdapter);
+                    }
+                };
+                Handler waitForEditHandler = new Handler();
+                waitForEditHandler.removeCallbacks(doSearchingRunnable);
+                waitForEditHandler.postDelayed(doSearchingRunnable, 300);
             }
         });
 
