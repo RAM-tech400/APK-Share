@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
@@ -31,9 +32,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -203,6 +212,23 @@ public class Utils {
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "The given package not found for getting it's permissions! Returning an empty list instead...");
             return new ArrayList<String>();
+        }
+    }
+
+    public static String epocTimeToHumanReadableFormat(Long milliseconds) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant instant = Instant.ofEpochMilli(milliseconds);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.MEDIUM);
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+            String formattedTime = zonedDateTime.format(dateTimeFormatter);
+            Log.d(TAG, "Formatting <" + milliseconds + "> in epoc into <" + formattedTime + "> human-readable on API version O and higher!");
+            return formattedTime;
+        } else {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE MMM dd yyyy HH:mm:ss", Locale.getDefault());
+            simpleDateFormat.toLocalizedPattern();
+            String formattedTime = simpleDateFormat.format(new Date(milliseconds));
+            Log.d(TAG, "Formatting <" + milliseconds + "> in epoc into <" + formattedTime + "> human-readable on API version lower than O!");
+            return formattedTime;
         }
     }
 
