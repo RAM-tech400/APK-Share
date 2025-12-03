@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -174,6 +175,9 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                                 }).check();
                     }
                 }
+            } else if (action == 4) {
+                ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet();
+                apkDetailsModalBottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), ApkDetailsModalBottomSheet.TAG);
             } else {
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(position).packageName));

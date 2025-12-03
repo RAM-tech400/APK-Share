@@ -67,4 +67,5 @@
     <string name="permissions">Permissions</string>
     <string name="last_update_time">Last update time</string>
     <string name="installation_time">Installation time</string>
+    <string name="show_detailed_information">Show detailed information</string>
 </resources>

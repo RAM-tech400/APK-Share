@@ -18,6 +18,7 @@
         <item>@string/uninstall_application</item>
         <item>@string/direct_share</item>
         <item>@string/create_backup_file</item>
+        <item>@string/show_detailed_information</item>
     </array>
     <array name="quickInfoOptions">
         <item>@string/none</item>

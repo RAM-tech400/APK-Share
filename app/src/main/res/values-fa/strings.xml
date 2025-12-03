@@ -65,4 +65,5 @@
     <string name="permissions">اجازه‌ها</string>
     <string name="last_update_time">زمان آخرین بروزرسانی</string>
     <string name="installation_time">زمان نصب</string>
+    <string name="show_detailed_information">نمایش جزئیات</string>
 </resources>
