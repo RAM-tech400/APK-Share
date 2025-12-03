@@ -208,15 +208,15 @@ public class Utils {
         Log.d(TAG, "Get the list of the permissions for this package: " + packageName);
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
-            if (packageInfo == null) {
-                Log.e(TAG, "The provided PackageInfo object for <" + packageName + "> is null! Returning an empty list instead...");
-            }
             List<String> permissionsList = new ArrayList<>(Arrays.asList(packageInfo.requestedPermissions));
             Log.d(TAG, permissionsList.size() + " permissions did found: " + permissionsList.toString());
             return permissionsList;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "The given package not found for getting it's permissions! Returning an empty list instead...");
-            return new ArrayList<String>();
+            return new ArrayList<>();
+        } catch (NullPointerException e) {
+            Log.e(TAG, "NullPointerError for <" + packageName + "> is null! Returning an empty list instead...");
+            return new ArrayList<>();
         }
     }
 
