@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -19,9 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -47,18 +41,17 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "MainRecyclerViewAdapter";
     private final Context context;
-    private final List<PackageInfo> packagesInfo;
+    private final List<AndroidPackageSimpleModel> packagesList;
     private List<Integer> selectionTracker = new ArrayList<>();
     private final int columnCount;
 
-    public MainRecyclerViewAdapter(Context context, List<PackageInfo> packagesInfo) {
+    public MainRecyclerViewAdapter(Context context, List<AndroidPackageSimpleModel> packagesList) {
         this.context = context;
-        this.packagesInfo = packagesInfo;
+        this.packagesList = packagesList;
         columnCount = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
 
@@ -73,7 +66,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.bind(packagesInfo.get(position));
+        holder.bind(packagesList.get(position));
         holder.getCardViewContainer().setChecked(selectionTracker.contains(position));
         holder.getCardViewContainer().setOnClickListener(v -> {
             if(!selectionTracker.contains(position)) {
@@ -98,7 +91,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.getCardViewContainer().setOnLongClickListener(v -> {
             int action = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
-                if (packagesInfo.get(position).packageName.equals(context.getPackageName())){
+                if (packagesList.get(position).getPackageName().equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
                     new AlertDialog.Builder(context)
@@ -107,19 +100,19 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                             .setNegativeButton("Uninstall", (dialog, which) -> {
                                 //Uninstall the app
                                 Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
+                                intent.setData(Uri.fromParts("package", packagesList.get(position).getPackageName(), null));
                                 context.startActivity(intent);
                             })
                             .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
                                 //Backup the APK and uninstall
-                                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
+                                File file = packagesList.get(position).getApkFile();
                                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
-                                        context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
+                                        context.getPackageManager().getApplicationLabel(packagesList.get(position).getApplicationInfo()) + ".apk");
                                 Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> {
                                     Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
                                             Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent(Intent.ACTION_DELETE);
-                                    intent.setData(Uri.fromParts("package", packagesInfo.get(position).packageName, null));
+                                    intent.setData(Uri.fromParts("package", packagesList.get(position).getPackageName(), null));
                                     context.startActivity(intent);
                                 });
                             })
@@ -127,13 +120,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                             .show();
                 }
             } else if (action == 2) {
-                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
-                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
+                File file = packagesList.get(position).getApkFile();
+                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + packagesList.get(position).getLabel() + ".apk");
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
                 Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
             } else if (action == 3) {
-                File file = new File(packagesInfo.get(position).applicationInfo.publicSourceDir);
-                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packagesInfo.get(position).applicationInfo) + ".apk");
+                File file = packagesList.get(position).getApkFile();
+                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + packagesList.get(position).getLabel() + ".apk");
                 if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
@@ -176,11 +169,11 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                 }
             } else if (action == 4) {
-                ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesInfo.get(position));
+                ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesList.get(position).getPackageInfo());
                 apkDetailsModalBottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), ApkDetailsModalBottomSheet.TAG);
             } else {
                 try {
-                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesInfo.get(position).packageName));
+                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesList.get(position).getPackageName()));
                 } catch (NullPointerException e) {
                     Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Null Pointer Exception Error: " + e);
@@ -212,14 +205,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
     @Override
     public int getItemCount() {
-        return packagesInfo.size();
+        return packagesList.size();
     }
 
     public List<PackageInfo> getSelectedItems() {
         List<PackageInfo> selectedItems = new ArrayList<>();
         for (int i :
                 selectionTracker) {
-            selectedItems.add(packagesInfo.get(i));
+            selectedItems.add(packagesList.get(i).getPackageInfo());
         }
         return selectedItems;
     }
@@ -240,23 +233,19 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         }
 
         @SuppressLint("SetTextI18n")
-        public void bind(PackageInfo packageInfo){
+        public void bind(AndroidPackageSimpleModel androidPackageSimpleModel){
             textViewAppName.setSelected(true);
-            try {
-                imageViewIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.packageName));
-                textViewAppName.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
-                int quickInfoSettings = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1);
-                if (quickInfoSettings == 1) {
-                    textViewAppDetail.setText(packageInfo.packageName);
-                } else if (quickInfoSettings == 2) {
-                    textViewAppDetail.setText(packageInfo.versionCode + "");
-                } else if (quickInfoSettings == 3) {
-                    textViewAppDetail.setText(packageInfo.versionName);
-                } else {
-                    textViewAppDetail.setVisibility(View.GONE);
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "ERROR: Package name <" + packageInfo.packageName + "> is not found! Error details: " + e);
+            imageViewIcon.setImageDrawable(androidPackageSimpleModel.getIcon());
+            textViewAppName.setText(androidPackageSimpleModel.getLabel());
+            int quickInfoSettings = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1);
+            if (quickInfoSettings == 1) {
+                textViewAppDetail.setText(androidPackageSimpleModel.getPackageName());
+            } else if (quickInfoSettings == 2) {
+                textViewAppDetail.setText(androidPackageSimpleModel.getPackageInfo().versionCode + "");
+            } else if (quickInfoSettings == 3) {
+                textViewAppDetail.setText(androidPackageSimpleModel.getPackageInfo().versionName);
+            } else {
+                textViewAppDetail.setVisibility(View.GONE);
             }
         }
 

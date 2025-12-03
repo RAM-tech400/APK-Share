@@ -20,7 +20,6 @@ import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewSearchResultCount;
     private LoadingIndicator loadingIndicator;
 
-    private List<PackageInfo> installedPackagesInfo, searchedPackagesInfo;
+    private List<AndroidPackageSimpleModel> installedPackagesList, searchedPackagesInfo;
     private SharedPreferences preferences;
 
     private Parcelable recyclerViewState;
@@ -207,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
                     searchView.hide();
                 } else if (!((MainRecyclerViewAdapter) recyclerView.getAdapter()).getSelectedItems().isEmpty()) {
-                    recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo));
+                    recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList));
                 } else {
                     finish();
                 }
@@ -252,16 +251,15 @@ public class MainActivity extends AppCompatActivity {
         return apkNamedFiles;
     }
 
-    private List<PackageInfo> searchForApps(String keyword) {
-        List<PackageInfo> results = new ArrayList<>();
-        for (PackageInfo packageInfo : installedPackagesInfo) {
-            if (Objects.isNull(packageInfo.applicationInfo)) {
-                Log.e(TAG, "Null ApplicationInfo object error for: " + packageInfo.packageName);
+    private List<AndroidPackageSimpleModel> searchForApps(String keyword) {
+        List<AndroidPackageSimpleModel> results = new ArrayList<>();
+        for (AndroidPackageSimpleModel androidPackageSimpleModel : installedPackagesList) {
+            if (Objects.isNull(androidPackageSimpleModel.getApplicationInfo())) {
+                Log.e(TAG, "Null ApplicationInfo object error for: " + androidPackageSimpleModel.getPackageName());
                 continue;
             }
-            String appName = getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
-            if (appName.toLowerCase().contains(keyword.toLowerCase()))
-                results.add(packageInfo);
+            if (androidPackageSimpleModel.getLabel().toLowerCase().contains(keyword.toLowerCase()))
+                results.add(androidPackageSimpleModel);
         }
         return results;
     }
@@ -276,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             getInstalledApps();
             sortPackageInfoList();
 //          showAppsOnScreen(); another implementation in below:
-            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesInfo);
+            MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList);
             handler.post(() -> {
                 recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerView.setAdapter(adapter);
@@ -286,11 +284,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getInstalledApps() {
-        installedPackagesInfo = new ArrayList<>();
+        installedPackagesList = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             try {
                 if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
-                    installedPackagesInfo.add(pi);
+                    AndroidPackageSimpleModel androidPackageSimpleModel = new AndroidPackageSimpleModel(this);
+                    androidPackageSimpleModel.setPackageName(pi.packageName);
+                    androidPackageSimpleModel.setLabel(getPackageManager().getApplicationLabel(pi.applicationInfo).toString());
+                    androidPackageSimpleModel.setIcon(getPackageManager().getApplicationIcon(pi.applicationInfo));
+                    installedPackagesList.add(androidPackageSimpleModel);
                 }
             } catch (NullPointerException e) {
                 Log.e(TAG, "Null pointer error occurred when getting an ApplicationInfo object for: " + pi.packageName);
@@ -301,19 +303,17 @@ public class MainActivity extends AppCompatActivity {
     private void sortPackageInfoList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             boolean reverseSort = preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false);
-            installedPackagesInfo.sort((o1, o2) -> {
+            installedPackagesList.sort((o1, o2) -> {
                 int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
                 if (sortType == FLAG_SORT_BY_NAME) {
-                    String name1 = getPackageManager().getApplicationLabel(o1.applicationInfo) + "";
-                    String name2 = getPackageManager().getApplicationLabel(o2.applicationInfo) + "";
-                    return reverseSort ? name2.compareTo(name1) : name1.compareTo(name2);
+                    return reverseSort ? o2.getLabel().compareTo(o1.getLabel()) : o1.getLabel().compareTo(o2.getLabel());
                 } else if (sortType == FLAG_SORT_BY_INSTALL_DATE) {
-                    String date1 = o1.firstInstallTime + "";
-                    String date2 = o2.firstInstallTime + "";
+                    String date1 = o1.getPackageInfo().firstInstallTime + "";
+                    String date2 = o2.getPackageInfo().firstInstallTime + "";
                     return reverseSort ? date2.compareTo(date1) : date1.compareTo(date2);
                 } else if (sortType == FLAG_SORT_BY_SIZE) {
-                    String size1 = new File(o1.applicationInfo.sourceDir).length() + "";
-                    String size2 = new File(o2.applicationInfo.sourceDir).length() + "";
+                    String size1 = o1.getApkFile().length() + "";
+                    String size2 = o2.getApkFile().length() + "";
                     return reverseSort ? size2.compareTo(size1) : size1.compareTo(size2);
                 }
                 return 0;
@@ -374,8 +374,8 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.column_count)
                     .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
                         preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
-                        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), which + 1));
-                        recyclerView.setAdapter(new MainRecyclerViewAdapter(getApplicationContext(), installedPackagesInfo));
+                        recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, which + 1));
+                        recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList));
                         dialog12.dismiss();
                         if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAppsOnScreen() {
-        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(this, installedPackagesInfo);
+        MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }
