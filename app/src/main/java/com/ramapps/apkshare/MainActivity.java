@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.loadingindicator.LoadingIndicator;
+import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import java.io.File;
@@ -270,6 +271,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(null);
         loadingIndicator.setVisibility(View.VISIBLE);
         fabSend.hide();
+        SearchBar searchBar = findViewById(R.id.mainSearchBar);
+        searchBar.setEnabled(false);
+        searchBar.setHint(R.string.preparing_packages_list);
         executor.execute(() -> {
             getInstalledApps();
             sortPackageInfoList();
@@ -279,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerView.setAdapter(adapter);
                 loadingIndicator.setVisibility(View.GONE);
+                searchBar.setEnabled(true);
+                searchBar.setHint(R.string.search_for_apps);
             });
         });
     }

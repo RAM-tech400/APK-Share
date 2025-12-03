@@ -76,4 +76,5 @@
     <string name="megabyte_label">MB</string>
     <string name="gigabyte_label">GB</string>
     <string name="this_app_has_not_need_any_permissions">This app hasn\'t need to any permissions!</string>
+    <string name="preparing_packages_list">Preparing packages list...</string>
 </resources>
