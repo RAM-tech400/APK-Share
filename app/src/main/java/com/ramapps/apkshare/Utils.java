@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -49,6 +50,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Utils {
     private static final String TAG = "Utils";
+
+    public static final int KILO_BYTE_SCALE = 1024;
+    public static final int MEGA_BYTE_SCALE = 1024 * 1024;
+    public static final int GIGA_BYTE_SCALE = 1024 * 1024 * 1024;
 
     public static final String ACTION_RESHARE = "com.ramapps.apkshare.Utils.ACTION_RESHARE";
 
@@ -230,6 +235,21 @@ public class Utils {
             Log.d(TAG, "Formatting <" + milliseconds + "> in epoc into <" + formattedTime + "> human-readable on API version lower than O!");
             return formattedTime;
         }
+    }
+
+    public static String getHumanReadableFileSize(Context context, long fileSize) {
+        String humanReadableSize = "";
+        if (fileSize < KILO_BYTE_SCALE) {
+            humanReadableSize = fileSize + " " + context.getString(R.string.byte_label);
+        } else if (fileSize < MEGA_BYTE_SCALE) {
+            humanReadableSize = new DecimalFormat("#.##").format((((float) fileSize) / KILO_BYTE_SCALE)) + " " + context.getString(R.string.kilobyte_label);
+        } else if (fileSize < GIGA_BYTE_SCALE) {
+            humanReadableSize = new DecimalFormat("#.##").format((((float) fileSize) / MEGA_BYTE_SCALE)) + " " + context.getString(R.string.megabyte_label);
+        } else {
+            humanReadableSize = new DecimalFormat("#.##").format((((float) fileSize) / GIGA_BYTE_SCALE)) + " " + context.getString(R.string.gigabyte_label);
+        }
+        Log.d(TAG, "Format file size <" + fileSize + "> into human-readable <" + humanReadableSize + ">!");
+        return humanReadableSize;
     }
 
 }

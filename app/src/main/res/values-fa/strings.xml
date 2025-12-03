@@ -66,4 +66,11 @@
     <string name="last_update_time">زمان آخرین بروزرسانی</string>
     <string name="installation_time">زمان نصب</string>
     <string name="show_detailed_information">نمایش جزئیات</string>
+    <string name="kilobyte">کیلوبایت</string>
+    <string name="megabyte">مگابایت</string>
+    <string name="gigabyte">گیگابایت</string>
+    <string name="byte_label">بایت</string>
+    <string name="kilobyte_label">کیلو</string>
+    <string name="megabyte_label">مگا</string>
+    <string name="gigabyte_label">گیگ</string>
 </resources>

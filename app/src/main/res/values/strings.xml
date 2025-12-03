@@ -68,4 +68,11 @@
     <string name="last_update_time">Last update time</string>
     <string name="installation_time">Installation time</string>
     <string name="show_detailed_information">Show detailed information</string>
+    <string name="kilobyte">Kilobyte</string>
+    <string name="megabyte">Megabyte</string>
+    <string name="gigabyte">Gigabyte</string>
+    <string name="byte_label">B</string>
+    <string name="kilobyte_label">KB</string>
+    <string name="megabyte_label">MB</string>
+    <string name="gigabyte_label">GB</string>
 </resources>
