@@ -49,17 +49,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/aboutNestedScrollView"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:paddingTop="100dp"
             android:paddingBottom="50dp">
 
             <ImageView
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/aboutImageViewAppIcon"
                 android:src="@mipmap/ic_launcher"
                 android:contentDescription="@string/app_name" />
 
@@ -70,56 +72,80 @@
                 android:textColor="?android:colorPrimary"
                 android:textAppearance="?textAppearanceHeadlineLarge"
                 android:layout_marginTop="24dp"
-                android:layout_gravity="center_horizontal"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/aboutImageViewAppIcon"
+                android:id="@+id/aboutTextViewAppLabel"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_version_name"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:layout_gravity="center_horizontal"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
-                android:gravity="center_horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/developer_colon"
-                    android:textAppearance="?textAppearanceBodyLarge"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleLarge"
-                    android:text="@string/developer_name"
-                    android:textColor="?android:colorPrimary"
-                    android:layout_marginStart="8dp"/>
-            </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/aboutTextViewAppLabel"
+                android:id="@+id/aboutTextViewAppVersionName"/>
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:text="@string/about_text"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:justificationMode="inter_word"
-                tools:targetApi="o" />
-
-            <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Button.IconButton.Outlined"
-                app:icon="@drawable/ic_github"
-                android:id="@+id/aboutButtonGithub"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"/>
+                android:text="@string/developer_colon"
+                android:textAppearance="?textAppearanceBodyLarge"
+                android:id="@+id/aboutTextViewDeveloperLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="48dp"
+                app:layout_constraintEnd_toStartOf="@id/aboutTextViewDeveloperName"
+                app:layout_constraintTop_toBottomOf="@id/aboutTextViewAppVersionName"/>
 
-        </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceTitleLarge"
+                android:text="@string/developer_name"
+                android:textColor="?android:colorPrimary"
+                android:layout_marginStart="8dp"
+                android:id="@+id/aboutTextViewDeveloperName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/aboutTextViewDeveloperLabel"
+                app:layout_constraintTop_toTopOf="@id/aboutTextViewDeveloperLabel"
+                app:layout_constraintBottom_toBottomOf="@id/aboutTextViewDeveloperLabel"
+                android:layout_marginEnd="24dp" />
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"-->
+<!--                android:text="@string/about_text"-->
+<!--                android:layout_marginStart="24dp"-->
+<!--                android:layout_marginEnd="24dp"-->
+<!--                android:justificationMode="inter_word"-->
+<!--                tools:targetApi="o" />-->
+
+            <com.google.android.material.button.MaterialButtonGroup
+                android:id="@+id/aboutMaterialButtonGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/aboutTextViewDeveloperLabel"
+                app:layout_constraintVertical_bias="1.0">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/aboutButtonGithub"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:icon="@drawable/ic_github" />
+
+            </com.google.android.material.button.MaterialButtonGroup>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
