@@ -114,16 +114,6 @@
                 app:layout_constraintBottom_toBottomOf="@id/aboutTextViewDeveloperLabel"
                 android:layout_marginEnd="24dp" />
 
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"-->
-<!--                android:text="@string/about_text"-->
-<!--                android:layout_marginStart="24dp"-->
-<!--                android:layout_marginEnd="24dp"-->
-<!--                android:justificationMode="inter_word"-->
-<!--                tools:targetApi="o" />-->
-
             <com.google.android.material.button.MaterialButtonGroup
                 android:id="@+id/aboutMaterialButtonGroup"
                 android:layout_width="wrap_content"
@@ -134,14 +124,36 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/aboutTextViewDeveloperLabel"
-                app:layout_constraintVertical_bias="1.0">
+                app:layout_constraintVertical_bias="1.0"
+                app:innerCornerSize="8dp"
+                android:spacing="0dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/aboutButtonGithub"
-                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    app:icon="@drawable/ic_github"
+                    android:tooltipText="@string/view_source_code_on_the_github"
+                    android:contentDescription="@string/view_source_code_on_the_github" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/aboutButtonEmailToDeveloper"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:contentDescription="@string/email_to_developer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:icon="@drawable/ic_github" />
+                    android:tooltipText="@string/email_to_developer"
+                    app:icon="@drawable/baseline_mail_outline_24" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/aboutButtonCheckUpdates"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:contentDescription="@string/check_updates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tooltipText="@string/check_updates"
+                    app:icon="@drawable/baseline_update_24" />
 
             </com.google.android.material.button.MaterialButtonGroup>
 

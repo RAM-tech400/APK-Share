@@ -75,4 +75,7 @@
     <string name="gigabyte_label">گیگ</string>
     <string name="this_app_has_not_need_any_permissions">این برنامه نیاز به هیچ مجوزی ندارد!</string>
     <string name="preparing_packages_list">آماده‌سازی فهرست بسته‌ها</string>
+    <string name="email_to_developer">ایمیل‌زدن به توسعه دهنده</string>
+    <string name="check_updates">بررسی بروزرسانی</string>
+    <string name="view_source_code_on_the_github">دیدن کد منبع در گیتهاب</string>
 </resources>
