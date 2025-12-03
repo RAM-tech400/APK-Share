@@ -58,6 +58,12 @@ public class AboutActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             finish();
         });
+        buttonEmailToDeveloper.setOnClickListener((v) -> {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"newram098@gmail.com"});
+            emailIntent.setData(Uri.parse("mailto:"));
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.compose_email_via)));
+        });
     }
 
     private void initViews() {
