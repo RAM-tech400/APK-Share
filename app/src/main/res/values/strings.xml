@@ -63,4 +63,8 @@
     <string name="copy_files">Copying files...</string>
     <string name="formatable_msg_copy_files_progress">Copying %s to .../CacheStorage/%s  • %d%% completed • Working on...</string>
     <string name="msg_no_any_app_for_intent">There is no any app that do this work!</string>
+    <string name="view_this_app_in_the_settings">View this app in the Settings</string>
+    <string name="permissions">Permissions</string>
+    <string name="last_update_time">Last update time</string>
+    <string name="installation_time">Installation time</string>
 </resources>
