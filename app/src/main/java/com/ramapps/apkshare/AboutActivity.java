@@ -19,7 +19,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private static final String TAG = "AboutActivity";
     private AppBarLayout appBarLayout;
-    private MaterialButton btnGithub;
+    private MaterialButton btnGithub, buttonEmailToDeveloper, buttonCheckUpdate;
     private MaterialToolbar toolbar;
 
     @Override
@@ -64,5 +64,7 @@ public class AboutActivity extends AppCompatActivity {
         appBarLayout = findViewById(R.id.aboutAppBarLayout);
         toolbar = findViewById(R.id.aboutToolbar);
         btnGithub = findViewById(R.id.aboutButtonGithub);
+        buttonEmailToDeveloper = findViewById(R.id.aboutButtonEmailToDeveloper);
+        buttonCheckUpdate = findViewById(R.id.aboutButtonCheckUpdates);
     }
 }
