@@ -73,4 +73,5 @@
     <string name="kilobyte_label">کیلو</string>
     <string name="megabyte_label">مگا</string>
     <string name="gigabyte_label">گیگ</string>
+    <string name="this_app_has_not_need_any_permissions">این برنامه نیاز به هیچ مجوزی ندارد!</string>
 </resources>

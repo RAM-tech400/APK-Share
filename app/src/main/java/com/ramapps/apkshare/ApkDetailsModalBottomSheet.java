@@ -92,5 +92,9 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         if (packageInfo.firstInstallTime == packageInfo.lastUpdateTime) {
             textViewLastUpdateTime.setVisibility(View.GONE);
         }
+
+        if (Utils.getPackagePermissionsList(context, packageInfo.packageName).isEmpty()) {
+            textViewPermissions.setText(context.getString(R.string.this_app_has_not_need_any_permissions));
+        }
     }
 }
