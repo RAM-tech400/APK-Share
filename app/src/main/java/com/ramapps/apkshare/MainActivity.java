@@ -440,7 +440,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Intent.ACTION_PACKAGE_CHANGED:
                     Log.d(TAG, "A package changed: " + intent.getData());
-                    loadPackagesListAsync();
                     break;
                 default:
                     Log.w(TAG, "The provided intent action is not match to any expected cases: " + intent.getAction());
