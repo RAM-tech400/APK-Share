@@ -59,7 +59,7 @@
     <string name="size">Size</string>
     <string name="storage_permission_description">(OPTIONAL) This permission used for creating backup files into download directory.</string>
     <string name="app_permissions">App pernissions</string>
-    <string name="app_version_name">2.0.0</string>
+    <string name="app_version_name">3.0.0</string>
     <string name="copy_files">Copying files...</string>
     <string name="formatable_msg_copy_files_progress">Copying %s to .../CacheStorage/%s  • %d%% completed • Working on...</string>
     <string name="msg_no_any_app_for_intent">There is no any app that do this work!</string>
