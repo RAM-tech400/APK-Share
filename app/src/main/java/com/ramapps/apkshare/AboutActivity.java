@@ -1,9 +1,12 @@
 package com.ramapps.apkshare;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,9 +14,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -64,6 +74,9 @@ public class AboutActivity extends AppCompatActivity {
             emailIntent.setData(Uri.parse("mailto:"));
             startActivity(Intent.createChooser(emailIntent, getString(R.string.compose_email_via)));
         });
+        buttonCheckUpdate.setOnClickListener((v) -> {
+            checkUpdate();
+        });
     }
 
     private void initViews() {
@@ -72,5 +85,40 @@ public class AboutActivity extends AppCompatActivity {
         btnGithub = findViewById(R.id.aboutButtonGithub);
         buttonEmailToDeveloper = findViewById(R.id.aboutButtonEmailToDeveloper);
         buttonCheckUpdate = findViewById(R.id.aboutButtonCheckUpdates);
+    }
+
+    private void checkUpdate() {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                "https://api.github.com/repos/RAM-tech400/APK-Share/releases/latest",
+                (response) -> {
+                    Log.d(TAG, "Github api latest release response: " + response);
+                    try {
+                        JSONObject jsonObjectResponse = new JSONObject(response);
+                        String tagName = jsonObjectResponse.optString("tag_name");
+                        String versionName = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+                        if (versionName == null) {
+                            Log.e(TAG, "Version name is null!");
+                            return;
+                        }
+                        int compareResult = tagName.compareToIgnoreCase(versionName);
+                        Log.d(TAG, "Version tags comparing result: " + compareResult);
+                        if (compareResult > 0) {
+                            Toast.makeText(this, "Wow... There is a newer version with awesome features! Update app at first time.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Hooray!!! You've the latest version ;)", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Cannot make json object from the given response: " + e);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        Log.e(TAG, "Cannot find <" + getPackageName() + "> package information: " + e);
+                    }
+                },
+                (error) -> {
+                    Log.e(TAG, "The request to github api got error: " + error);
+                });
+        requestQueue.add(request);
+        requestQueue.start();
     }
 }

@@ -10,6 +10,7 @@ constraintlayout = "2.2.1"
 dotlottieAndroid = "0.3.0"
 lottie = "6.4.1"
 dexter = "6.2.3"
+volley = "1.2.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -22,6 +23,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 dotlottie-android = { group = "com.github.LottieFiles", name = "dotlottie-android", version.ref = "dotlottieAndroid" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 dexter = { group = "com.karumi", name = "dexter", version.ref = "dexter" }
+volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
