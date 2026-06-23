@@ -29,4 +29,26 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
+    <style name="ShapeAppearance.ListItemContainer.LargeCorner.Single" parent="">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ListItemContainer.LargeCorner.Middle" parent="">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ListItemContainer.LargeCorner.Top" parent="">
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ListItemContainer.LargeCorner.Bottom" parent="">
+        <item name="cornerSizeTopLeft">8dp</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeBottomLeft">24dp</item>
+        <item name="cornerSizeBottomRight">24dp</item>
+    </style>
+
 </resources>

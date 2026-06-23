@@ -8,227 +8,391 @@
     tools:context=".SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/settingsAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:id="@+id/settingsAppBarLayout">
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/settingsToolbar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:navigationIcon="@drawable/outline_arrow_back_24"
-            app:title="@string/settings"/>
+            app:title="@string/settings" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/settingsNestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/settingsNestedScrollView"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="24dp">
-            <TextView
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_long_press_action"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:textAppearance="?textAppearanceBodySmall"
-                android:text="@string/general"
-                android:textColor="?colorPrimary"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutLonPressAction"
-                android:padding="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Top">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/long_press_action"/>
+                    android:padding="24dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/settingsTextViewLongPressActionPreview"
-                    android:text="@string/open_application"
-                    android:textAppearance="?textAppearanceBodyMedium"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_long_press_action"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_touch_app_24"
+                        android:background="#aafb4934"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_text_view_title_long_press_action"
+                        android:text="@string/long_press_action"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_long_press_action"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/settingsTextViewLongPressActionPreview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_application"
+                        android:textAppearance="?textAppearanceBodyMedium"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_long_press_action"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="12dp"/>
 
-            <LinearLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_quick_info"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutQuickInfo"
-                android:padding="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Middle">
+
+                <LinearLayout
+                    android:id="@+id/settingsLinearLayoutQuickInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/quick_info"/>
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/settingsTextViewQuickInfoPreview"
-                    android:text="@string/package_name"
-                    android:textAppearance="?textAppearanceBodyMedium"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quick_info"
+                        android:textAppearance="?textAppearanceTitleMedium" />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/settingsTextViewQuickInfoPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/package_name"
+                        android:textAppearance="?textAppearanceBodyMedium" />
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                </LinearLayout>
 
-            <LinearLayout
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_language"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutLanguage"
-                android:padding="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="12dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Bottom">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/language"/>
+                    android:padding="24dp">
 
-                <TextView
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_language"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_language_24"
+                        android:background="#aa689d6a"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_text_view_title_language"
+                        android:text="@string/language"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintStart_toEndOf="@+id/settings_shapeable_image_view_icon_language"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:id="@+id/settingsTextViewLanguagePreview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/system_default"
+                        android:textAppearance="?textAppearanceBodyMedium"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_language"
+                        app:layout_constraintTop_toBottomOf="@id/settings_text_view_title_language"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="10dp"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_night_mode"
+                style="@style/Widget.Material3.CardView.Filled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Single">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/settingsTextViewLanguagePreview"
-                    android:text="@string/system_default"
-                    android:textAppearance="?textAppearanceBodyMedium"/>
+                    android:padding="24dp">
 
-            </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_night_mode"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_dark_mode_24"
+                        android:background="#aad79921"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_text_view_title_night_mode"
+                        android:text="@string/night_mode"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintStart_toEndOf="@+id/settings_shapeable_image_view_icon_night_mode"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:id="@+id/settingsTextViewNightModePreview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/system_default"
+                        android:textAppearance="?textAppearanceBodyMedium"
+                        app:layout_constraintTop_toBottomOf="@id/settings_text_view_title_night_mode"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_night_mode"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="10dp"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_app_permissions"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:textAppearance="?textAppearanceBodySmall"
-                android:text="@string/display"
-                android:textColor="?colorPrimary"/>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutNightMode"
-                android:padding="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Top">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/night_mode"/>
+                    android:padding="24dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/settingsTextViewNightModePreview"
-                    android:text="@string/system_default"
-                    android:textAppearance="?textAppearanceBodyMedium"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_app_permissions"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_security_update_warning_24"
+                        android:background="#aab16286"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_text_view_title_app_permissions"
+                        android:text="@string/app_permissions"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_app_permissions"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="10dp"/>
 
-            <TextView
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_help_and_feedback"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:textAppearance="?textAppearanceBodySmall"
-                android:text="@string/more"
-                android:textColor="?colorPrimary"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutAppPermissions"
-                android:padding="24dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Middle">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/app_permissions"/>
+                    android:padding="24dp">
 
-            </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_help_and_feedback"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_live_help_24"
+                        android:background="#aab16286"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_text_view_title_help_and_feedback"
+                        android:text="@string/help_and_feedback"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_help_and_feedback"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="10dp"/>
 
-            <LinearLayout
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card_view_container_about"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutHelpAndFeedback"
-                android:padding="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
+                app:cardBackgroundColor="?colorSurfaceContainerLowest"
+                app:cardPreventCornerOverlap="false"
+                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Bottom">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/help_and_feedback"/>
+                    android:padding="24dp">
 
-            </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:id="@+id/settings_shapeable_image_view_icon_about"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        android:src="@drawable/baseline_info_24"
+                        android:background="#aab16286"
+                        app:contentPadding="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/about"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/settings_shapeable_image_view_icon_about"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="10dp"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/settingsLinearLayoutAbout"
-                android:padding="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?selectableItemBackground"
-                tools:targetApi="m">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:text="@string/about"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

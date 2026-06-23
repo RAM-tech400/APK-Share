@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.LocaleList;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +25,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
-    private LinearLayout llLongPressAction, llQuickInfo, llLanguage, llNightMode, llPermissions, llHelp, llAbout;
+    private MaterialCardView containerLongPressAction, containerQuickInfo, containerLanguage, containerNightMode, containerAppPermissions, containerHelpAndFeedback, containerAbout;
     private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode;
     private MaterialToolbar toolbar;
     private SharedPreferences preferences;
@@ -47,13 +47,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void initViews() {
         preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
-        llLongPressAction = findViewById(R.id.settingsLinearLayoutLonPressAction);
-        llQuickInfo = findViewById(R.id.settingsLinearLayoutQuickInfo);
-        llLanguage = findViewById(R.id.settingsLinearLayoutLanguage);
-        llNightMode = findViewById(R.id.settingsLinearLayoutNightMode);
-        llPermissions = findViewById(R.id.settingsLinearLayoutAppPermissions);
-        llHelp = findViewById(R.id.settingsLinearLayoutHelpAndFeedback);
-        llAbout = findViewById(R.id.settingsLinearLayoutAbout);
+        containerLongPressAction = findViewById(R.id.settings_card_view_container_long_press_action);
+        containerQuickInfo = findViewById(R.id.settings_card_view_container_quick_info);
+        containerLanguage = findViewById(R.id.settings_card_view_container_language);
+        containerNightMode = findViewById(R.id.settings_card_view_container_night_mode);
+        containerAppPermissions = findViewById(R.id.settings_card_view_container_app_permissions);
+        containerHelpAndFeedback = findViewById(R.id.settings_card_view_container_help_and_feedback);
+        containerAbout = findViewById(R.id.settings_card_view_container_about);
         textViewLongPressAction = findViewById(R.id.settingsTextViewLongPressActionPreview);
         textViewQuickInfo = findViewById(R.id.settingsTextViewQuickInfoPreview);
         textViewLanguage = findViewById(R.id.settingsTextViewLanguagePreview);
@@ -80,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
                     toolbar.getPaddingBottom());
             return insets;
         });
-        llLongPressAction.setOnClickListener(v -> {
+        containerLongPressAction.setOnClickListener(v -> {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
                     .setTitle(R.string.long_press_action)
@@ -92,7 +92,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
-        llQuickInfo.setOnClickListener(v -> {
+        containerQuickInfo.setOnClickListener(v -> {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
                     .setTitle(R.string.quick_info)
@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
-        llLanguage.setOnClickListener(v -> {
+        containerLanguage.setOnClickListener(v -> {
             int selected = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 LocaleList currentLocales = getSystemService(LocaleManager.class).getApplicationLocales(getPackageName());
@@ -138,7 +138,7 @@ public class SettingsActivity extends AppCompatActivity {
                     .create();
             dialog.show();
         });
-        llNightMode.setOnClickListener(v -> {
+        containerNightMode.setOnClickListener(v -> {
             int selected = 0;
 
             if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -166,12 +166,12 @@ public class SettingsActivity extends AppCompatActivity {
             dialog.show();
         });
 
-        llPermissions.setOnClickListener(v -> {
+        containerAppPermissions.setOnClickListener(v -> {
             PermissionsListModalBottomSheet permissionsListModalBottomSheet = new PermissionsListModalBottomSheet();
             permissionsListModalBottomSheet.show(getSupportFragmentManager(), PermissionsListModalBottomSheet.class.getName());
         });
 
-        llHelp.setOnClickListener(v -> {
+        containerHelpAndFeedback.setOnClickListener(v -> {
             try{
                 Intent selectorIntent = new Intent(Intent.ACTION_SENDTO);
                 selectorIntent.setData(Uri.parse("mailto:"));
@@ -187,7 +187,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Log.w(TAG, "Not Found Error: The activity looking for is not found! Details: " + e);
             }
         });
-        llAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
+        containerAbout.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), AboutActivity.class)));
     }
 
     private void loadSettings() {
