@@ -222,14 +222,12 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         private final MaterialCardView cardViewContainer;
         private final ImageView imageViewIcon;
         private final TextView textViewAppName;
-        private final TextView textViewAppDetail;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
             cardViewContainer = itemView.findViewById(R.id.listItemCardViewContainer);
             imageViewIcon = itemView.findViewById(R.id.listItemImageViewAppIcon);
             textViewAppName = itemView.findViewById(R.id.mainListTextViewAppName);
-            textViewAppDetail = itemView.findViewById(R.id.mainListTextViewAppDetail);
         }
 
         @SuppressLint("SetTextI18n")
