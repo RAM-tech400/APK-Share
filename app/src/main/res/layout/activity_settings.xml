@@ -92,45 +92,6 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/settings_card_view_container_quick_info"
-                style="@style/Widget.Material3.CardView.Filled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="2dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="?colorSurfaceContainerLowest"
-                app:cardPreventCornerOverlap="false"
-                app:shapeAppearance="@style/ShapeAppearance.ListItemContainer.LargeCorner.Middle">
-
-                <LinearLayout
-                    android:id="@+id/settingsLinearLayoutQuickInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quick_info"
-                        android:textAppearance="?textAppearanceTitleMedium" />
-
-                    <TextView
-                        android:id="@+id/settingsTextViewQuickInfoPreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/package_name"
-                        android:textAppearance="?textAppearanceBodyMedium" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/settings_card_view_container_language"
                 style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"

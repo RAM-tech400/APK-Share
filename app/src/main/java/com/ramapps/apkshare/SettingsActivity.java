@@ -30,8 +30,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
-    private MaterialCardView containerLongPressAction, containerQuickInfo, containerLanguage, containerNightMode, containerAppPermissions, containerHelpAndFeedback, containerAbout;
-    private TextView textViewLongPressAction, textViewQuickInfo, textViewLanguage, textViewNightMode;
+    private MaterialCardView containerLongPressAction, containerLanguage, containerNightMode, containerAppPermissions, containerHelpAndFeedback, containerAbout;
+    private TextView textViewLongPressAction, textViewLanguage, textViewNightMode;
     private MaterialToolbar toolbar;
     private SharedPreferences preferences;
 
@@ -48,14 +48,12 @@ public class SettingsActivity extends AppCompatActivity {
     private void initViews() {
         preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
         containerLongPressAction = findViewById(R.id.settings_card_view_container_long_press_action);
-        containerQuickInfo = findViewById(R.id.settings_card_view_container_quick_info);
         containerLanguage = findViewById(R.id.settings_card_view_container_language);
         containerNightMode = findViewById(R.id.settings_card_view_container_night_mode);
         containerAppPermissions = findViewById(R.id.settings_card_view_container_app_permissions);
         containerHelpAndFeedback = findViewById(R.id.settings_card_view_container_help_and_feedback);
         containerAbout = findViewById(R.id.settings_card_view_container_about);
         textViewLongPressAction = findViewById(R.id.settingsTextViewLongPressActionPreview);
-        textViewQuickInfo = findViewById(R.id.settingsTextViewQuickInfoPreview);
         textViewLanguage = findViewById(R.id.settingsTextViewLanguagePreview);
         textViewNightMode = findViewById(R.id.settingsTextViewNightModePreview);
         toolbar = findViewById(R.id.settingsToolbar);
@@ -88,18 +86,6 @@ public class SettingsActivity extends AppCompatActivity {
                         textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[which]);
                         preferences.edit().putInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, which).apply();
                         dialog1.dismiss();
-                    })
-                    .create();
-            dialog.show();
-        });
-        containerQuickInfo.setOnClickListener(v -> {
-
-            AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
-                    .setTitle(R.string.quick_info)
-                    .setSingleChoiceItems(R.array.quickInfoOptions, preferences.getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1), (dialog12, which) -> {
-                        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[which]);
-                        preferences.edit().putInt(PREFERENCES_SETTINGS_QUICK_INFO, which).apply();
-                        dialog12.dismiss();
                     })
                     .create();
             dialog.show();
@@ -192,7 +178,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void loadSettings() {
         textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
-        textViewQuickInfo.setText(getResources().getStringArray(R.array.quickInfoOptions)[preferences.getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1)]);
 
         int lang = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
