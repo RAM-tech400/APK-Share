@@ -27,31 +27,20 @@
             android:id="@+id/listItemImageViewAppIcon"
             android:layout_centerHorizontal="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                android:id="@+id/mainListTextViewAppName"
-                android:layout_marginTop="10dp"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:gravity="center_horizontal"
-                android:layout_below="@id/listItemImageViewAppIcon"
-                android:layout_centerHorizontal="true"/>
-
         <TextView
+            android:id="@+id/mainListTextViewAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/mainListTextViewAppDetail"
-            android:text="@string/app_version"
+            android:layout_below="@id/listItemImageViewAppIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:ellipsize="marquee"
             android:gravity="center_horizontal"
-            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_below="@id/mainListTextViewAppName"
-            android:layout_centerHorizontal="true"/>
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>
