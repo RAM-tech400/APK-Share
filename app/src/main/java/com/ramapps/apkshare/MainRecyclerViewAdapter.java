@@ -237,16 +237,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             textViewAppName.setSelected(true);
             imageViewIcon.setImageDrawable(androidPackageSimpleModel.getIcon());
             textViewAppName.setText(androidPackageSimpleModel.getLabel());
-            int quickInfoSettings = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_QUICK_INFO, 1);
-            if (quickInfoSettings == 1) {
-                textViewAppDetail.setText(androidPackageSimpleModel.getPackageName());
-            } else if (quickInfoSettings == 2) {
-                textViewAppDetail.setText(androidPackageSimpleModel.getPackageInfo().versionCode + "");
-            } else if (quickInfoSettings == 3) {
-                textViewAppDetail.setText(androidPackageSimpleModel.getPackageInfo().versionName);
-            } else {
-                textViewAppDetail.setVisibility(View.GONE);
-            }
         }
 
         public MaterialCardView getCardViewContainer() {
