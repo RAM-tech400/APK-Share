@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_item_selection_menu_deselect"
+        android:title="@string/deselect"
+        android:icon="@drawable/baseline_close_24"/>
+
+    <item
+        android:id="@+id/menu_item_selection_menu_backup"
+        android:title="@string/backup"
+        android:icon="@drawable/outline_move_to_inbox_24" />
+
+    <item
+        android:id="@+id/menu_item_selection_menu_uninstall"
+        android:title="@string/uninstall"
+        android:icon="@drawable/outline_delete_24" />
+
+</menu>
