@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Objects;
 
 public class AndroidPackageSimpleModel {
     public static final String TAG = "ApkSimpleModel";
@@ -65,6 +66,6 @@ public class AndroidPackageSimpleModel {
     }
 
     public File getApkFile() {
-        return new File(getPackageInfo().applicationInfo.publicSourceDir);
+        return new File(Objects.requireNonNull(getPackageInfo().applicationInfo).publicSourceDir);
     }
 }
