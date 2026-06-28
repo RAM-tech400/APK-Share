@@ -213,14 +213,11 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
             intentOpenAppInTheSettings.setData(Uri.fromParts("package", packageInfo.packageName, null));
             startActivity(intentOpenAppInTheSettings);
         }));
-        nestedScrollDetailsSection.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY == 0) {
-                    dividerActionButtonsAndDetailsSection.setVisibility(View.INVISIBLE);
-                } else {
-                    dividerActionButtonsAndDetailsSection.setVisibility(View.VISIBLE);
-                }
+        nestedScrollDetailsSection.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY == 0) {
+                dividerActionButtonsAndDetailsSection.setVisibility(View.INVISIBLE);
+            } else {
+                dividerActionButtonsAndDetailsSection.setVisibility(View.VISIBLE);
             }
         });
     }
