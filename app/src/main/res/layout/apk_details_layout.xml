@@ -54,14 +54,76 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/apk_details_layout_image_view_launcher_icon"
             android:autoSizeMaxTextSize="14sp"
-            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMinTextSize="13sp"
             android:id="@+id/apk_details_layout_text_view_package_name"/>
+
+        <com.google.android.material.button.MaterialButtonGroup
+            android:id="@+id/apk_details_button_group_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/apk_details_layout_text_view_label_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/apk_details_layout_image_view_launcher_icon"
+            android:weightSum="10"
+            android:spacing="0dp"
+            app:innerCornerSize="4dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/apk_details_button_uninstall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                app:icon="@drawable/outline_delete_24"
+                android:layout_weight="1"
+                app:iconGravity="textStart"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/apk_details_button_backup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                app:icon="@drawable/outline_move_to_inbox_24"
+                android:layout_weight="2"
+                app:iconGravity="textStart"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/apk_details_button_open"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                app:icon="@drawable/outline_play_arrow_24"
+                android:layout_weight="3"
+                app:iconGravity="textStart"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/apk_details_button_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                app:icon="@drawable/ic_send"
+                android:layout_weight="2"
+                app:iconGravity="textStart"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/apk_details_button_view_app_in_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                app:icon="@drawable/outline_open_in_new_24"
+                android:layout_weight="1"
+                app:iconGravity="textStart"/>
+
+        </com.google.android.material.button.MaterialButtonGroup>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/apk_details_layout_image_view_launcher_icon"
+            app:layout_constraintTop_toBottomOf="@id/apk_details_button_group_actions"
             android:text="@string/size"
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             android:layout_marginTop="24dp"
@@ -127,18 +189,6 @@
             android:layout_marginTop="10dp"
             app:layout_constraintStart_toStartOf="parent"
             android:id="@+id/apk_details_layout_text_view_content_permissions"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/view_this_app_in_the_settings"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/apk_details_layout_text_view_content_permissions"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:id="@+id/apk_details_layout_button_app_settings" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
