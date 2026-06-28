@@ -11,7 +11,7 @@ import java.io.File;
 
 public class AndroidPackageSimpleModel {
     public static final String TAG = "ApkSimpleModel";
-    private Context context;
+    private final Context context;
     private String label;
     private String packageName;
     private Drawable icon;
