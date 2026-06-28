@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleOnBackPressed() {
                 if (searchView.getCurrentTransitionState() == SearchView.TransitionState.SHOWN) {
                     searchView.hide();
-                } else if (!((MainRecyclerViewAdapter) recyclerView.getAdapter()).getSelectedItems().isEmpty()) {
+                } else if (!((MainRecyclerViewAdapter) Objects.requireNonNull(recyclerView.getAdapter())).getSelectedItems().isEmpty()) {
                     recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList));
                 } else {
                     finish();
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         installedPackagesList = new ArrayList<>();
         for (PackageInfo pi : getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             try {
-                if ((pi.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
+                if ((Objects.requireNonNull(pi.applicationInfo).flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) <= 0) {
                     AndroidPackageSimpleModel androidPackageSimpleModel = new AndroidPackageSimpleModel(this);
                     androidPackageSimpleModel.setPackageName(pi.packageName);
                     androidPackageSimpleModel.setLabel(getPackageManager().getApplicationLabel(pi.applicationInfo).toString());
@@ -400,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         try {
-            recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+            recyclerViewState = Objects.requireNonNull(recyclerView.getLayoutManager()).onSaveInstanceState();
         } catch (NullPointerException e) {
             Log.e(TAG, "Null pointer exception error for saving the state instance for recycler view: " + e);
         } catch (Exception e) {
@@ -418,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             if (Objects.isNull(intent.getAction()) || Objects.equals(intent.getAction(), "")) {
                 Log.e(TAG, "The intent action that provided by onReceive() is null or empty!");
             }
-            switch (intent.getAction()) {
+            switch (Objects.requireNonNull(intent.getAction())) {
                 case Intent.ACTION_PACKAGE_ADDED:
                     Log.d(TAG, "A package added: " + intent.getData());
                     loadPackagesListAsync();
