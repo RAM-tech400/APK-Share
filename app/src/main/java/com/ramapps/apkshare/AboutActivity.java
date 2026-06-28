@@ -18,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
@@ -28,7 +27,6 @@ import org.json.JSONObject;
 public class AboutActivity extends AppCompatActivity {
 
     private static final String TAG = "AboutActivity";
-    private AppBarLayout appBarLayout;
     private MaterialButton btnGithub, buttonEmailToDeveloper, buttonCheckUpdate;
     private MaterialToolbar toolbar;
 
@@ -80,7 +78,6 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        appBarLayout = findViewById(R.id.aboutAppBarLayout);
         toolbar = findViewById(R.id.aboutToolbar);
         btnGithub = findViewById(R.id.aboutButtonGithub);
         buttonEmailToDeveloper = findViewById(R.id.aboutButtonEmailToDeveloper);
