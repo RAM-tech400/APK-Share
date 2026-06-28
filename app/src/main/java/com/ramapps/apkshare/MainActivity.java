@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private LoadingIndicator loadingIndicator;
 
     private List<AndroidPackageSimpleModel> installedPackagesList, searchedPackagesInfo;
-    private SharedPreferences preferences;
 
     private Parcelable recyclerViewState;
 
@@ -86,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         // TODO: Move preferences into the Utils class.
-        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
-
         searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         MainRecyclerViewAdapter searchResultAdapter = new MainRecyclerViewAdapter(MainActivity.this, searchForApps(keyword));
-                        recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                        recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                         recyclerViewSearchResults.setAdapter(searchResultAdapter);
                     }
                 };
@@ -194,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 if (transitionState == SearchView.TransitionState.SHOWN) {
                     searchedPackagesInfo = new ArrayList<>();
                     MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, searchedPackagesInfo);
-                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                     recyclerViewSearchResults.setAdapter(adapter);
                     fabSendSearchView.hide();
                     textViewSearchResultCount.setVisibility(View.GONE);
@@ -280,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 //          showAppsOnScreen(); another implementation in below:
             MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList);
             handler.post(() -> {
-                recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                recyclerView.setLayoutManager(new GridLayoutManager(this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
                 recyclerView.setAdapter(adapter);
                 loadingIndicator.setVisibility(View.GONE);
                 searchBar.setEnabled(true);
@@ -308,9 +305,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void sortPackageInfoList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            boolean reverseSort = preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false);
+            boolean reverseSort = ApkShareApplication.preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false);
             installedPackagesList.sort((o1, o2) -> {
-                int sortType = preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
+                int sortType = ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME);
                 if (sortType == FLAG_SORT_BY_NAME) {
                     return reverseSort ? o2.getLabel().compareTo(o1.getLabel()) : o1.getLabel().compareTo(o2.getLabel());
                 } else if (sortType == FLAG_SORT_BY_INSTALL_DATE) {
@@ -344,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         ((MenuBuilder) menu).setOptionalIconsVisible(true);
-        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+        if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
             menu.getItem(2).setIcon(R.drawable.ic_list);
         } else {
             menu.getItem(2).setIcon(R.drawable.ic_grid_view);
@@ -355,16 +352,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.mainMenuItemSort) {
-            AtomicInteger choice = new AtomicInteger(preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME));
+            AtomicInteger choice = new AtomicInteger(ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME));
             CheckBox cbReverseSort = new CheckBox(this);
             cbReverseSort.setText(R.string.reverse_sort);
-            cbReverseSort.setChecked(preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false));
+            cbReverseSort.setChecked(ApkShareApplication.preferences.getBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, false));
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.sort_by)
-                    .setSingleChoiceItems(R.array.sortOptions, preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> choice.set(which))
+                    .setSingleChoiceItems(R.array.sortOptions, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_SORT_BY, FLAG_SORT_BY_NAME), (dialog1, which) -> choice.set(which))
                     .setPositiveButton(R.string.apply, (DialogInterface dia, int which) -> {
-                            preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
-                            preferences.edit().putBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
+                            ApkShareApplication.preferences.edit().putInt(PREFERENCES_SETTINGS_SORT_BY, choice.get()).apply();
+                            ApkShareApplication.preferences.edit().putBoolean(PREFERENCES_SETTINGS_REVERSE_SORT, cbReverseSort.isChecked()).apply();
                             sortPackageInfoList();
                             showAppsOnScreen();
                             dia.dismiss();
@@ -378,12 +375,12 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.mainMenuItemColumnCount) {
             AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.column_count)
-                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
-                        preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
+                    .setSingleChoiceItems(new CharSequence[]{"1", "2", "3", "4", "5", "6"}, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2), (dialog12, which) -> {
+                        ApkShareApplication.preferences.edit().putInt(PREFERENCES_SETTINGS_COLUMN_COUNT, which).apply();
                         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, which + 1));
                         recyclerView.setAdapter(new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList));
                         dialog12.dismiss();
-                        if (preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
+                        if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1 == 1) {
                             item.setIcon(R.drawable.ic_list);
                         } else {
                             item.setIcon(R.drawable.ic_grid_view);
@@ -399,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAppsOnScreen() {
         MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter(MainActivity.this, installedPackagesList);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
         recyclerView.setAdapter(adapter);
     }
 

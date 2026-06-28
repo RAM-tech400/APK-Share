@@ -52,7 +52,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     public MainRecyclerViewAdapter(Context context, List<AndroidPackageSimpleModel> packagesList) {
         this.context = context;
         this.packagesList = packagesList;
-        columnCount = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
+        columnCount = ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1;
     }
 
     @NonNull
@@ -89,7 +89,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             ((MaterialCardView) v).setChecked(selectionTracker.contains(position));
         });
         holder.getCardViewContainer().setOnLongClickListener(v -> {
-            int action = context.getSharedPreferences(PREFERENCES_SETTINGS, Context.MODE_PRIVATE).getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
+            int action = ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
                 if (packagesList.get(position).getPackageName().equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();

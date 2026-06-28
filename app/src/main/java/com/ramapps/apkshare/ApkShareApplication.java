@@ -7,6 +7,7 @@ import static com.ramapps.apkshare.GlobalVariables.PREFERENCES_SETTINGS_THEME;
 
 import android.app.Application;
 import android.app.LocaleManager;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.LocaleList;
@@ -20,6 +21,9 @@ import com.google.android.material.color.DynamicColors;
 import java.util.Locale;
 
 public class ApkShareApplication  extends Application {
+
+    public static SharedPreferences preferences;
+
     @Override
     public void onCreate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -40,5 +44,6 @@ public class ApkShareApplication  extends Application {
         }
         DynamicColors.applyToActivitiesIfAvailable(this);
         super.onCreate();
+        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
     }
 }

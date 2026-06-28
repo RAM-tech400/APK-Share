@@ -5,7 +5,6 @@ import static com.ramapps.apkshare.GlobalVariables.*;
 import android.app.LocaleManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +32,6 @@ public class SettingsActivity extends AppCompatActivity {
     private MaterialCardView containerLongPressAction, containerLanguage, containerNightMode, containerAppPermissions, containerHelpAndFeedback, containerAbout;
     private TextView textViewLongPressAction, textViewLanguage, textViewNightMode;
     private MaterialToolbar toolbar;
-    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        preferences = getSharedPreferences(PREFERENCES_SETTINGS, MODE_PRIVATE);
         containerLongPressAction = findViewById(R.id.settings_card_view_container_long_press_action);
         containerLanguage = findViewById(R.id.settings_card_view_container_language);
         containerNightMode = findViewById(R.id.settings_card_view_container_night_mode);
@@ -82,9 +79,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             AlertDialog dialog = new MaterialAlertDialogBuilder(SettingsActivity.this)
                     .setTitle(R.string.long_press_action)
-                    .setSingleChoiceItems(R.array.longPressActionOptions, preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0), (dialog1, which) -> {
+                    .setSingleChoiceItems(R.array.longPressActionOptions, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0), (dialog1, which) -> {
                         textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[which]);
-                        preferences.edit().putInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, which).apply();
+                        ApkShareApplication.preferences.edit().putInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, which).apply();
                         dialog1.dismiss();
                     })
                     .create();
@@ -100,9 +97,9 @@ public class SettingsActivity extends AppCompatActivity {
                     selected = 2;
                 }
             } else {
-                if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+                if (ApkShareApplication.preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
                     selected = 1;
-                } else if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+                } else if (ApkShareApplication.preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
                     selected = 2;
                 }
             }
@@ -116,7 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
                             LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(locales[which]);
                             AppCompatDelegate.setApplicationLocales(appLocale);
                         } else {
-                            preferences.edit().putString(PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
+                            ApkShareApplication.preferences.edit().putString(PREFERENCES_SETTINGS_LANGUAGE, locales[which]).apply();
                             dialog13.dismiss();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         }
@@ -127,9 +124,9 @@ public class SettingsActivity extends AppCompatActivity {
         containerNightMode.setOnClickListener(v -> {
             int selected = 0;
 
-            if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
+            if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
                 selected = 1;
-            } else if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
+            } else if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
                 selected = 2;
             }
 
@@ -144,7 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
                             mode = AppCompatDelegate.MODE_NIGHT_NO;
                         }
 
-                        preferences.edit().putInt(PREFERENCES_SETTINGS_NIGHT_MODE, mode).apply();
+                        ApkShareApplication.preferences.edit().putInt(PREFERENCES_SETTINGS_NIGHT_MODE, mode).apply();
                         AppCompatDelegate.setDefaultNightMode(mode);
                         dialog14.dismiss();
                     })
@@ -177,7 +174,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSettings() {
-        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
+        textViewLongPressAction.setText(getResources().getStringArray(R.array.longPressActionOptions)[ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0)]);
 
         int lang = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -188,9 +185,9 @@ public class SettingsActivity extends AppCompatActivity {
                 lang = 2;
             }
         } else {
-            if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
+            if (ApkShareApplication.preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("en")) {
                 lang = 1;
-            } else if (preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
+            } else if (ApkShareApplication.preferences.getString(PREFERENCES_SETTINGS_LANGUAGE, "").equals("fa")) {
                 lang = 2;
             }
         }
@@ -198,9 +195,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         int night = 0;
 
-        if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
+        if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES) {
             night = 1;
-        } else if (preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
+        } else if (ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_NO) {
             night = 2;
         }
         textViewNightMode.setText(getResources().getStringArray(R.array.nightModeOptions)[night]);
