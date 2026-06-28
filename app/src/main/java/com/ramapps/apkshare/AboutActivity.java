@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -57,24 +56,15 @@ public class AboutActivity extends AppCompatActivity {
                     toolbar.getPaddingBottom());
             return insets;
         });
-        btnGithub.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RAM-tech400/APK-Share")));
-            }
-        });
-        toolbar.setNavigationOnClickListener(v -> {
-            finish();
-        });
+        btnGithub.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RAM-tech400/APK-Share"))));
+        toolbar.setNavigationOnClickListener(v -> finish());
         buttonEmailToDeveloper.setOnClickListener((v) -> {
             Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
             emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"newram098@gmail.com"});
             emailIntent.setData(Uri.parse("mailto:"));
             startActivity(Intent.createChooser(emailIntent, getString(R.string.compose_email_via)));
         });
-        buttonCheckUpdate.setOnClickListener((v) -> {
-            checkUpdate();
-        });
+        buttonCheckUpdate.setOnClickListener((v) -> checkUpdate());
     }
 
     private void initViews() {
@@ -112,9 +102,7 @@ public class AboutActivity extends AppCompatActivity {
                         Log.e(TAG, "Cannot find <" + getPackageName() + "> package information: " + e);
                     }
                 },
-                (error) -> {
-                    Log.e(TAG, "The request to github api got error: " + error);
-                });
+                (error) -> Log.e(TAG, "The request to github api got error: " + error));
         requestQueue.add(request);
         requestQueue.start();
     }
