@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -17,7 +16,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,9 +39,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
@@ -103,7 +99,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
                 startActivity(launcherIntent);
             } catch (NullPointerException e) {
                 Toast.makeText(context, R.string.msg_openning_app_error, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "App con not be launch, because NullPointerException: " + e.toString());
+                Log.e(TAG, "App con not be launch, because NullPointerException: " + e);
             }
 
         });
@@ -207,7 +203,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
             }
             File file = new File(packageInfo.applicationInfo.publicSourceDir);
             File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
-            Utils.deleteRecursive(cacheApkFile.getParentFile());
+            Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
             Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
         });
 
@@ -230,6 +226,10 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void loadDetails(Context context, PackageInfo packageInfo) {
+        if (packageInfo.applicationInfo == null) {
+            Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
+            return;
+        }
         textViewAppLabel.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
         textViewAppPackageName.setText(packageInfo.packageName);
         imageViewLauncherIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.applicationInfo));
