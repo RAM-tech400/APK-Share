@@ -19,10 +19,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.divider.MaterialDivider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
     private ImageView imageViewLauncherIcon;
     private TextView textViewAppLabel, textViewAppPackageName, textViewVersionCode, textViewVersionName, textViewSize, textViewInstallationTime, textViewLastUpdateTime, textViewPermissions;
     private MaterialButton buttonSend, buttonBackup, buttonPlay, buttonUninstall, buttonViewAppSettings;
+    private MaterialDivider dividerActionButtonsAndDetailsSection;
+    private NestedScrollView nestedScrollDetailsSection;
 
     public ApkDetailsModalBottomSheet(Context context, PackageInfo packageInfo) {
         this.context = context;
@@ -72,6 +76,8 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         buttonPlay = parentView.findViewById(R.id.apk_details_button_open);
         buttonUninstall = parentView.findViewById(R.id.apk_details_button_uninstall);
         buttonViewAppSettings = parentView.findViewById(R.id.apk_details_button_view_app_in_settings);
+        dividerActionButtonsAndDetailsSection = parentView.findViewById(R.id.apk_details_divider_top_and_details);
+        nestedScrollDetailsSection = parentView.findViewById(R.id.apk_details_nested_scroll_view_details);
     }
 
     private void loadDetails(Context context, PackageInfo packageInfo) {
