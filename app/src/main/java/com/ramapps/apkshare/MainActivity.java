@@ -163,19 +163,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Runnable doSearchingRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        String keyword = s.toString();
-                        if (keyword.trim().isEmpty()) {
-                            Log.w(TAG, "The search keyword is empty (the search field was cleared!).");
-                            recyclerViewSearchResults.setAdapter(null);
-                            return;
-                        }
-                        MainRecyclerViewAdapter searchResultAdapter = new MainRecyclerViewAdapter(MainActivity.this, searchForApps(keyword));
-                        recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
-                        recyclerViewSearchResults.setAdapter(searchResultAdapter);
+                Runnable doSearchingRunnable = () -> {
+                    String keyword = s.toString();
+                    if (keyword.trim().isEmpty()) {
+                        Log.w(TAG, "The search keyword is empty (the search field was cleared!).");
+                        recyclerViewSearchResults.setAdapter(null);
+                        return;
                     }
+                    MainRecyclerViewAdapter searchResultAdapter = new MainRecyclerViewAdapter(MainActivity.this, searchForApps(keyword));
+                    recyclerViewSearchResults.setLayoutManager(new GridLayoutManager(MainActivity.this, ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_COLUMN_COUNT, 2) + 1));
+                    recyclerViewSearchResults.setAdapter(searchResultAdapter);
                 };
                 Handler waitForEditHandler = new Handler();
                 waitForEditHandler.removeCallbacks(doSearchingRunnable);
