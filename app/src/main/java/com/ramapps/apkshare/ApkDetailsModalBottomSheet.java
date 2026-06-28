@@ -49,8 +49,8 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
     public static final String TAG = "ApkDetailsBottomSheet";
 
-    private Context context;
-    private PackageInfo packageInfo;
+    private final Context context;
+    private final PackageInfo packageInfo;
 
     private ImageView imageViewLauncherIcon;
     private TextView textViewAppLabel, textViewAppPackageName, textViewVersionCode, textViewVersionName, textViewSize, textViewInstallationTime, textViewLastUpdateTime, textViewPermissions;
