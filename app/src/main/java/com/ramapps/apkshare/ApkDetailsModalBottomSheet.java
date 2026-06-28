@@ -97,6 +97,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
     private void addListeners(Context context, PackageInfo packageInfo) {
         buttonPlay.setOnClickListener(v -> {
+            // TODO: Add launch app codes to separated method. Because needed many places in the code.
             Intent launcherIntent = context.getPackageManager().getLaunchIntentForPackage(packageInfo.packageName);
             try {
                 startActivity(launcherIntent);
@@ -108,6 +109,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonBackup.setOnClickListener(v -> {
+            // TODO: Add backup apk file codes to separated method. Because needed many palaces in the code.
             if (packageInfo.applicationInfo == null) {
                 Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
                 return;
@@ -162,6 +164,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonUninstall.setOnClickListener(view -> {
+            // TODO: Add uninstall app codes to separated method. Because needed many places in the code.
             if (packageInfo.packageName.equals(context.getPackageName())){
                 Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
             } else {
@@ -197,6 +200,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonSend.setOnClickListener(view -> {
+            // TODO: Add send apk file codes to separated method. Because needed many places in the code.
             if (packageInfo.applicationInfo == null) {
                 Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
                 return;
@@ -208,6 +212,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonViewAppSettings.setOnClickListener((v -> {
+            // TODO: Add this code to separated method for cleaner code.
             Intent intentOpenAppInTheSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intentOpenAppInTheSettings.setData(Uri.fromParts("package", packageInfo.packageName, null));
             startActivity(intentOpenAppInTheSettings);
