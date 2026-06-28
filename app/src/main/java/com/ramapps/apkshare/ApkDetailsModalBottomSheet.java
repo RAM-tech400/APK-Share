@@ -108,12 +108,16 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonBackup.setOnClickListener(v -> {
-            if (packageInfo == null) {
-                Log.e(TAG, "Package info is null. Can not get information of apk file from null.");
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
                 return;
             }
             File apkFile = new File(packageInfo.applicationInfo.publicSourceDir);
             File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
+            if (backupFile.getParentFile() == null) {
+                Log.e(TAG, "The parent file that backup file will save into it is null. For null safety reason the method will stop here.");
+                return;
+            }
             if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
@@ -171,6 +175,10 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
                             context.startActivity(intent);
                         })
                         .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
+                            if (packageInfo.applicationInfo == null) {
+                                Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
+                                return;
+                            }
                             //Backup the APK and uninstall
                             File file = new File(packageInfo.applicationInfo.publicSourceDir);
                             File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
@@ -189,6 +197,10 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonSend.setOnClickListener(view -> {
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
+                return;
+            }
             File file = new File(packageInfo.applicationInfo.publicSourceDir);
             File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
             Utils.deleteRecursive(cacheApkFile.getParentFile());
