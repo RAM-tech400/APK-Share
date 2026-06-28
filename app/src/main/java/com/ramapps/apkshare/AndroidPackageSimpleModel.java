@@ -10,7 +10,7 @@ import android.util.Log;
 import java.io.File;
 
 public class AndroidPackageSimpleModel {
-    public static final String TAG = "AndroidPackageSimpleModel";
+    public static final String TAG = "ApkSimpleModel";
     private Context context;
     private String label;
     private String packageName;
