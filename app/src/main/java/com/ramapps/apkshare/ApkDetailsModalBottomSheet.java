@@ -47,7 +47,7 @@ import java.util.List;
 
 public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
-    public static final String TAG = "ApkDetailsModalBottomSheet";
+    public static final String TAG = "ApkDetailsBottomSheet";
 
     private Context context;
     private PackageInfo packageInfo;
