@@ -167,11 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         String keyword = s.toString();
-                        if (keyword == null) {
-                            Log.e(TAG, "NullPointerError: The search keyword is null!");
-                            return;
-                        }
-                        if (keyword.trim().equals("")) {
+                        if (keyword.trim().isEmpty()) {
                             Log.w(TAG, "The search keyword is empty (the search field was cleared!).");
                             recyclerViewSearchResults.setAdapter(null);
                             return;
