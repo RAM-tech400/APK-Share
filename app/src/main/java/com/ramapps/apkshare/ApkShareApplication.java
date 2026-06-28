@@ -2,8 +2,6 @@ package com.ramapps.apkshare;
 
 import static com.ramapps.apkshare.GlobalVariables.PREFERENCES_SETTINGS;
 import static com.ramapps.apkshare.GlobalVariables.PREFERENCES_SETTINGS_LANGUAGE;
-import static com.ramapps.apkshare.GlobalVariables.PREFERENCES_SETTINGS_NIGHT_MODE;
-import static com.ramapps.apkshare.GlobalVariables.PREFERENCES_SETTINGS_THEME;
 
 import android.app.Application;
 import android.app.LocaleManager;
