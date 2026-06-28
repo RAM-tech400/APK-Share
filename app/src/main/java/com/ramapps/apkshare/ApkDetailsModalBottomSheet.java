@@ -116,7 +116,10 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
                 Log.e(TAG, "The parent file that backup file will save into it is null. For null safety reason the method will stop here.");
                 return;
             }
-            if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
+            if (!backupFile.getParentFile().exists()) {
+                boolean result = backupFile.getParentFile().mkdir();
+                Log.i(TAG, "mkdir() returns " + result);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
                     Utils.copyFileAsyncOnUi(context, apkFile, backupFile, null, null);
