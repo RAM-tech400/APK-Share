@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
     private ImageView imageViewLauncherIcon;
     private TextView textViewAppLabel, textViewAppPackageName, textViewVersionCode, textViewVersionName, textViewSize, textViewInstallationTime, textViewLastUpdateTime, textViewPermissions;
-    private Button buttonViewAppSettings;
+    private MaterialButton buttonSend, buttonBackup, buttonPlay, buttonUninstall, buttonViewAppSettings;
 
     public ApkDetailsModalBottomSheet(Context context, PackageInfo packageInfo) {
         this.context = context;
@@ -66,7 +67,11 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         textViewInstallationTime = parentView.findViewById(R.id.apk_details_layout_text_view_label_installation_time);
         textViewLastUpdateTime = parentView.findViewById(R.id.apk_details_layout_text_view_label_last_update_time);
         textViewPermissions = parentView.findViewById(R.id.apk_details_layout_text_view_content_permissions);
-        buttonViewAppSettings = parentView.findViewById(R.id.apk_details_layout_button_app_settings);
+        buttonSend = parentView.findViewById(R.id.apk_details_button_share);
+        buttonBackup = parentView.findViewById(R.id.apk_details_button_backup);
+        buttonPlay = parentView.findViewById(R.id.apk_details_button_open);
+        buttonUninstall = parentView.findViewById(R.id.apk_details_button_uninstall);
+        buttonViewAppSettings = parentView.findViewById(R.id.apk_details_button_view_app_in_settings);
     }
 
     private void loadDetails(Context context, PackageInfo packageInfo) {
