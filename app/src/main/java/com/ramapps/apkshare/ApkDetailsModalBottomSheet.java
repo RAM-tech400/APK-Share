@@ -112,46 +112,14 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
                 boolean result = backupFile.getParentFile().mkdir();
                 Log.i(TAG, "mkdir() returns " + result);
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    Utils.copyFileAsyncOnUi(context, apkFile, backupFile, null, null);
-                } else {
-                    Intent intentGetAccessAllFiles = new Intent();
-                    intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                    intentGetAccessAllFiles.setData(Uri.fromParts("package", context.getPackageName(), null));
-                    context.startActivity(intentGetAccessAllFiles);
-                }
-            } else {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    Utils.copyFileAsyncOnUi(context, apkFile, backupFile, null, null);
-                } else {
-                    Dexter.withContext(context)
-                            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            .withListener(new PermissionListener() {
-                                @Override
-                                public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                    Utils.copyFileAsyncOnUi(context, apkFile, backupFile, null, null);
-                                }
-
-                                @Override
-                                public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-                                    Toast.makeText(context, R.string.msg_app_needs_storage_permission, Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
-                                    AlertDialog alertDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                                            .setIcon(R.drawable.outline_folder_24)
-                                            .setTitle(R.string.storage_permission)
-                                            .setMessage(R.string.msg_app_needs_storage_permission)
-                                            .setPositiveButton(R.string.grant, (DialogInterface dialog, int which) -> permissionToken.continuePermissionRequest())
-                                            .setNegativeButton(R.string.deny, null)
-                                            .create();
-                                    alertDialog.show();
-                                }
-                            }).check();
-                }
-            }
+            Utils.doStorageAccessRequiredTask(context, () -> {
+                Utils.copyFileAsyncOnUi(
+                        context,
+                        apkFile,
+                        backupFile,
+                        context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk",
+                        null);
+            });
         });
 
         buttonUninstall.setOnClickListener(view -> {

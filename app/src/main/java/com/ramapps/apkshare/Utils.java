@@ -5,25 +5,37 @@ package com.ramapps.apkshare;
  * All methods in this class should be public and static.
  */
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -255,6 +267,61 @@ public class Utils {
         }
         Log.d(TAG, "Format file size <" + fileSize + "> into human-readable <" + humanReadableSize + ">!");
         return humanReadableSize;
+    }
+
+    public static void doStorageAccessRequiredTask(Context context, Runnable task) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Log.d(TAG, "Checking permission access in API R and higher...");
+            if (Environment.isExternalStorageManager()) {
+                Log.d(TAG, "Checking storage permission access in older APIs than R...");
+                task.run();
+            } else {
+                Log.w(TAG, "Storage permission is not granted yet.");
+                Log.d(TAG, "Ask user to grant storage permission...");
+                Intent intentGetAccessAllFiles = new Intent();
+                intentGetAccessAllFiles.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intentGetAccessAllFiles.setData(Uri.fromParts("package", context.getPackageName(), null));
+                context.startActivity(intentGetAccessAllFiles);
+            }
+        } else {
+            Log.d(TAG, "Checking storage permission access in older APIs than R...");
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "Storage permission is granted. Doing runnable task...");
+                task.run();
+            } else {
+                Log.w(TAG, "Storage permission is not granted yet.");
+                Log.d(TAG, "Ask user to grant storage permission (Using the Dexter)...");
+                Dexter.withContext(context)
+                        .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .withListener(new PermissionListener() {
+                            @Override
+                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                                Log.d(TAG, "Dexter permission listener onPermissionGranted(); Do runnable task...");
+                                task.run();
+                            }
+
+                            @Override
+                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                                Log.d(TAG, "Dexter permission listener onPermissionDenied()...");
+                                Toast.makeText(context, R.string.msg_app_needs_storage_permission, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                                Log.d(TAG, "Dexter permission listener onPermissionRationaleShouldBeShown()...");
+                                Log.d(TAG, "Show an alert dialog to ask user for grant permission again.");
+                                AlertDialog alertDialog = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                                        .setIcon(R.drawable.outline_folder_24)
+                                        .setTitle(R.string.storage_permission)
+                                        .setMessage(R.string.msg_app_needs_storage_permission)
+                                        .setPositiveButton(R.string.grant, (DialogInterface dialog, int which) -> permissionToken.continuePermissionRequest())
+                                        .setNegativeButton(R.string.deny, null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        }).check();
+            }
+        }
     }
 
 }
