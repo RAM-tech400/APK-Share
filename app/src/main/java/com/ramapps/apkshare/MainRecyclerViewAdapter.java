@@ -103,7 +103,6 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
             } else if (action == 3) {
                 Utils.takeBackupApkFile(context, packagesList.get(position).getPackageInfo());
             } else if (action == 4) {
-                // TODO: Move to separate method. Here is so messy.
                 ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesList.get(position).getPackageInfo());
                 apkDetailsModalBottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), ApkDetailsModalBottomSheet.TAG);
             } else {

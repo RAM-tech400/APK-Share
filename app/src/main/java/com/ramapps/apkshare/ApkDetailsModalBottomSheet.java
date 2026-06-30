@@ -109,7 +109,6 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonSend.setOnClickListener(view -> {
-            // TODO: Add send apk file codes to separated method. Because needed many places in the code.
             if (packageInfo.applicationInfo == null) {
                 Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
                 return;
