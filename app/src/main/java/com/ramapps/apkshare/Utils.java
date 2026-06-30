@@ -192,8 +192,8 @@ public class Utils {
             }
             if (isContinue.get()) handler.post(() -> {
                 progressDialog.dismiss();
-                Log.d(TAG, "The cached apk files: " + Arrays.toString(new File(context.getCacheDir() + "/ApkFiles/").listFiles()));
-                postWorks.run();
+                if (postWorks != null)
+                    postWorks.run();
             });
         });
     }
