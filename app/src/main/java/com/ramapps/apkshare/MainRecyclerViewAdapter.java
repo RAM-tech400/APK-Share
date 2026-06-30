@@ -176,13 +176,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesList.get(position).getPackageInfo());
                 apkDetailsModalBottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), ApkDetailsModalBottomSheet.TAG);
             } else {
-                // TODO: Move to separate method. Here is so messy.
-                try {
-                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesList.get(position).getPackageName()));
-                } catch (NullPointerException e) {
-                    Toast.makeText(context, context.getString(R.string.msg_openning_app_error), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Null Pointer Exception Error: " + e);
-                }
+                ApkUtils.launchApp(context, packagesList.get(position).getPackageName());
             }
             return false;
         });

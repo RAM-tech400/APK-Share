@@ -93,15 +93,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
 
     private void addListeners(Context context, PackageInfo packageInfo) {
         buttonPlay.setOnClickListener(v -> {
-            // TODO: Add launch app codes to separated method. Because needed many places in the code.
-            Intent launcherIntent = context.getPackageManager().getLaunchIntentForPackage(packageInfo.packageName);
-            try {
-                startActivity(launcherIntent);
-            } catch (NullPointerException e) {
-                Toast.makeText(context, R.string.msg_openning_app_error, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "App con not be launch, because NullPointerException: " + e);
-            }
-
+            ApkUtils.launchApp(context, packageInfo.packageName);
         });
 
         buttonBackup.setOnClickListener(v -> {
