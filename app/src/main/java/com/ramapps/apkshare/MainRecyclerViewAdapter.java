@@ -127,13 +127,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
                 Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
             } else if (action == 3) {
-                // TODO: Move to separate method. Here is so messy.
-                File file = packagesList.get(position).getApkFile();
-                File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + packagesList.get(position).getLabel() + ".apk");
-                if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
-                Utils.doStorageAccessRequiredTask(context, () -> {
-                    Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> showSuccessfulBackupMessage());
-                });
+                Utils.takeBackupApkFile(context, packagesList.get(position).getPackageInfo());
             } else if (action == 4) {
                 // TODO: Move to separate method. Here is so messy.
                 ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesList.get(position).getPackageInfo());

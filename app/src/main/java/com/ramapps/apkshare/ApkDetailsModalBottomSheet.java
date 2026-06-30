@@ -97,29 +97,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonBackup.setOnClickListener(v -> {
-            // TODO: Add backup apk file codes to separated method. Because needed many palaces in the code.
-            if (packageInfo.applicationInfo == null) {
-                Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
-                return;
-            }
-            File apkFile = new File(packageInfo.applicationInfo.publicSourceDir);
-            File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
-            if (backupFile.getParentFile() == null) {
-                Log.e(TAG, "The parent file that backup file will save into it is null. For null safety reason the method will stop here.");
-                return;
-            }
-            if (!backupFile.getParentFile().exists()) {
-                boolean result = backupFile.getParentFile().mkdir();
-                Log.i(TAG, "mkdir() returns " + result);
-            }
-            Utils.doStorageAccessRequiredTask(context, () -> {
-                Utils.copyFileAsyncOnUi(
-                        context,
-                        apkFile,
-                        backupFile,
-                        context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk",
-                        null);
-            });
+            Utils.takeBackupApkFile(context, packageInfo);
         });
 
         buttonUninstall.setOnClickListener(view -> {

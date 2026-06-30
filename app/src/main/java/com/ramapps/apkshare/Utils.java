@@ -269,6 +269,29 @@ public class Utils {
         return humanReadableSize;
     }
 
+    public static void takeBackupApkFile(Context context, PackageInfo packageInfo) {
+        if (packageInfo.applicationInfo == null) {
+            Log.e(TAG, "PackageInfo.ApplicationInfo is null. Method not able to continue, so exit...");
+            return;
+        }
+        Log.d(TAG, "Getting apk file from package info...");
+        File apkFile = new File(packageInfo.applicationInfo.publicSourceDir);
+        File backupApkFile = new File(
+                Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS
+                        + "/APK-backups/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
+        if (!Objects.requireNonNull(backupApkFile.getParentFile()).exists()) {
+            Log.w(TAG, "The directory that should contains backup file is not exist. Try to make it by mkdir()...");
+            boolean resultMkdir = backupApkFile.getParentFile().mkdir();
+            Log.d(TAG, backupApkFile.getParentFile() + " mkdir() returns " + resultMkdir);
+        }
+        doStorageAccessRequiredTask(context, () -> copyFileAsyncOnUi(
+                context,
+                apkFile,
+                backupApkFile,
+                context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk",
+                null));
+    }
+
     public static void doStorageAccessRequiredTask(Context context, Runnable task) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Log.d(TAG, "Checking permission access in API R and higher...");
