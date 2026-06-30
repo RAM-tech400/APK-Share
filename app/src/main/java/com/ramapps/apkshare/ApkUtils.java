@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,6 +60,12 @@ public class ApkUtils {
                 })
                 .create();
         dialogUninstallAlert.show();
+    }
+
+    public static void openAppInSystemSettings(Context context, String packageName) {
+        Intent intentOpenAppInTheSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intentOpenAppInTheSettings.setData(Uri.fromParts("package", packageName, null));
+        context.startActivity(intentOpenAppInTheSettings);
     }
 
     public static void shareApkFile(Context context, File apkFile, String apkName) {

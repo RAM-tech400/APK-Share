@@ -118,10 +118,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonViewAppSettings.setOnClickListener((v -> {
-            // TODO: Add this code to separated method for cleaner code.
-            Intent intentOpenAppInTheSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intentOpenAppInTheSettings.setData(Uri.fromParts("package", packageInfo.packageName, null));
-            startActivity(intentOpenAppInTheSettings);
+            ApkUtils.openAppInSystemSettings(context, packageInfo.packageName);
         }));
         nestedScrollDetailsSection.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             if (scrollY == 0) {
