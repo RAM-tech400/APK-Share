@@ -46,7 +46,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     private static final String TAG = "MainRecyclerViewAdapter";
     private final Context context;
     private final List<AndroidPackageSimpleModel> packagesList;
-    private List<Integer> selectionTracker = new ArrayList<>();
+    private final List<Integer> selectionTracker = new ArrayList<>();
     private final int columnCount;
 
     public MainRecyclerViewAdapter(Context context, List<AndroidPackageSimpleModel> packagesList) {
@@ -91,6 +91,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.getCardViewContainer().setOnLongClickListener(v -> {
             int action = ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
+                // TODO: Move to separate method. Here is so messy.
                 if (packagesList.get(position).getPackageName().equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
@@ -120,11 +121,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                             .show();
                 }
             } else if (action == 2) {
+                // TODO: Move to separate method. Here is so messy.
                 File file = packagesList.get(position).getApkFile();
                 File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + packagesList.get(position).getLabel() + ".apk");
                 Utils.deleteRecursive(cacheApkFile.getParentFile());
                 Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
             } else if (action == 3) {
+                // TODO: Move to separate method. Here is so messy.
                 File file = packagesList.get(position).getApkFile();
                 File backupFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + "/APK-backups/" + packagesList.get(position).getLabel() + ".apk");
                 if (!backupFile.getParentFile().exists()) backupFile.getParentFile().mkdir();
@@ -169,9 +172,11 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     }
                 }
             } else if (action == 4) {
+                // TODO: Move to separate method. Here is so messy.
                 ApkDetailsModalBottomSheet apkDetailsModalBottomSheet = new ApkDetailsModalBottomSheet(context, packagesList.get(position).getPackageInfo());
                 apkDetailsModalBottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), ApkDetailsModalBottomSheet.TAG);
             } else {
+                // TODO: Move to separate method. Here is so messy.
                 try {
                     context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packagesList.get(position).getPackageName()));
                 } catch (NullPointerException e) {
@@ -217,7 +222,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         return selectedItems;
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder {
+    public static class CustomViewHolder extends RecyclerView.ViewHolder {
         private static final String TAG = "CustomViewHolder";
         private final MaterialCardView cardViewContainer;
         private final ImageView imageViewIcon;
