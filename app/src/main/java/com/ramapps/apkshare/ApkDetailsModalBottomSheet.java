@@ -115,9 +115,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
                 return;
             }
             File file = new File(packageInfo.applicationInfo.publicSourceDir);
-            File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
-            Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
-            Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
+            ApkUtils.shareApkFile(context, file, context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString());
         });
 
         buttonViewAppSettings.setOnClickListener((v -> {

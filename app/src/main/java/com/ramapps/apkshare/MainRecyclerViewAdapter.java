@@ -41,6 +41,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.CustomViewHolder> {
     private static final String TAG = "MainRecyclerViewAdapter";
@@ -97,11 +98,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
                     ApkUtils.uninstallApp(context, packagesList.get(position).getPackageInfo());
                 }
             } else if (action == 2) {
-                // TODO: Move to separate method. Here is so messy.
-                File file = packagesList.get(position).getApkFile();
-                File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + packagesList.get(position).getLabel() + ".apk");
-                Utils.deleteRecursive(cacheApkFile.getParentFile());
-                Utils.copyFileAsyncOnUi(context, file, cacheApkFile, null, () -> Utils.shareCachedApks(context));
+                File apkFile = packagesList.get(position).getApkFile();
+                ApkUtils.shareApkFile(context, apkFile, context.getPackageManager().getApplicationLabel(Objects.requireNonNull(packagesList.get(position).getPackageInfo().applicationInfo)).toString());
             } else if (action == 3) {
                 Utils.takeBackupApkFile(context, packagesList.get(position).getPackageInfo());
             } else if (action == 4) {

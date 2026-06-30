@@ -12,6 +12,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.File;
+import java.util.Objects;
+
 public class ApkUtils {
     public static final String TAG = "ApkUtils";
 
@@ -54,6 +57,12 @@ public class ApkUtils {
                 })
                 .create();
         dialogUninstallAlert.show();
+    }
+
+    public static void shareApkFile(Context context, File apkFile, String apkName) {
+        File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + apkName + ".apk");
+        Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
+        Utils.copyFileAsyncOnUi(context, apkFile, cacheApkFile, apkName + ".apk", () -> Utils.shareCachedApks(context));
     }
 
 }
