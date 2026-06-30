@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,7 +60,10 @@ public class Utils {
 
     public static void copyFile(File source, File destination) {
         try {
-            if (!destination.getParentFile().exists()) destination.getParentFile().mkdir();
+            if (!Objects.requireNonNull(destination.getParentFile()).exists()) {
+                boolean result = destination.getParentFile().mkdir();
+                Log.i(TAG, "The mkdir() returns: " + result);
+            }
             InputStream inputStream = new FileInputStream(source);
             OutputStream outputStream = new FileOutputStream(destination);
             int length;
@@ -79,7 +83,7 @@ public class Utils {
         File cachedApksDir = new File(context.getCacheDir() + "/ApkFiles/");
         List<Uri> cachedApksUri = new ArrayList<>();
         if (cachedApksDir.listFiles() != null) {
-            for (File file : cachedApksDir.listFiles()) {
+            for (File file : Objects.requireNonNull(cachedApksDir.listFiles())) {
                 Uri uri = FileProvider.getUriForFile(context, ".provider", file);
                 cachedApksUri.add(uri);
             }
@@ -194,10 +198,11 @@ public class Utils {
 
     public static void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles())
+            for (File child : Objects.requireNonNull(fileOrDirectory.listFiles()))
                 deleteRecursive(child);
 
-        fileOrDirectory.delete();
+        boolean result = fileOrDirectory.delete();
+        Log.i(TAG, "delete() for \"" + fileOrDirectory + "\" returns: " + result);
     }
 
     public static int pixelToDp(Context context, int pixelSize) {
