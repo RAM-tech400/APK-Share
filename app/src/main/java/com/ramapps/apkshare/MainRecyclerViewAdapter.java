@@ -91,34 +91,10 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         holder.getCardViewContainer().setOnLongClickListener(v -> {
             int action = ApkShareApplication.preferences.getInt(PREFERENCES_SETTINGS_LONG_PRESS_ACTON, 0);
             if (action == 1) {
-                // TODO: Move to separate method. Here is so messy.
                 if (packagesList.get(position).getPackageName().equals(context.getPackageName())){
                     Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
                 } else {
-                    new AlertDialog.Builder(context)
-                            .setTitle("What would you like to do?")
-                            .setMessage("Choose an action for this app:")
-                            .setNegativeButton("Uninstall", (dialog, which) -> {
-                                //Uninstall the app
-                                Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packagesList.get(position).getPackageName(), null));
-                                context.startActivity(intent);
-                            })
-                            .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
-                                //Backup the APK and uninstall
-                                File file = packagesList.get(position).getApkFile();
-                                File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
-                                        context.getPackageManager().getApplicationLabel(packagesList.get(position).getApplicationInfo()) + ".apk");
-                                Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> {
-                                    Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
-                                            Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(Intent.ACTION_DELETE);
-                                    intent.setData(Uri.fromParts("package", packagesList.get(position).getPackageName(), null));
-                                    context.startActivity(intent);
-                                });
-                            })
-                            .setNeutralButton("Cancel", null)
-                            .show();
+                    ApkUtils.uninstallApp(context, packagesList.get(position).getPackageInfo());
                 }
             } else if (action == 2) {
                 // TODO: Move to separate method. Here is so messy.

@@ -2,8 +2,15 @@ package com.ramapps.apkshare;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class ApkUtils {
     public static final String TAG = "ApkUtils";
@@ -16,6 +23,37 @@ public class ApkUtils {
             Toast.makeText(context, R.string.msg_openning_app_error, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "App con not be launch, because NullPointerException: " + e);
         }
+    }
+
+    public static void uninstallApp(Context context, PackageInfo packageInfo) {
+        String appName = "";
+        if (packageInfo.applicationInfo == null) {
+            Log.e(TAG, "PakcageInfo.ApplicationInfo object is null cannot use it to get app name. Use package name as app name instead.");
+            appName = packageInfo.packageName;
+        } else {
+            Log.d(TAG, "Getting app name using PackageManager and ApplicationInfo object...");
+            appName = context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo).toString();
+        }
+        AlertDialog dialogUninstallAlert = new MaterialAlertDialogBuilder(context, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                .setTitle(String.format(context.getString(R.string.confirm_uninstall_app), appName))
+                .setMessage(String.format(context.getString(R.string.msg_uninstall_app_alert_dialog), appName))
+                .setIcon(AppCompatResources.getDrawable(context, R.drawable.outline_delete_24))
+                .setPositiveButton(context.getString(R.string.uninstall), ((dialogInterface, i) -> {
+                    Intent intentUninstall = new Intent(Intent.ACTION_DELETE);
+                    intentUninstall.setData(Uri.fromParts("package", packageInfo.packageName, null));
+                    context.startActivity(intentUninstall);
+                }))
+                .setNegativeButton(context.getString(R.string.backup_and_uninstall), ((dialogInterface, i) -> {
+                    Utils.takeBackupApkFile(context, packageInfo);
+                    Intent intentUninstall = new Intent(Intent.ACTION_DELETE);
+                    intentUninstall.setData(Uri.fromParts("package", packageInfo.packageName, null));
+                    context.startActivity(intentUninstall);
+                }))
+                .setNeutralButton(context.getString(R.string.cancel), (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialogUninstallAlert.show();
     }
 
 }

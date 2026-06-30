@@ -101,38 +101,10 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         });
 
         buttonUninstall.setOnClickListener(view -> {
-            // TODO: Add uninstall app codes to separated method. Because needed many places in the code.
             if (packageInfo.packageName.equals(context.getPackageName())){
                 Toast.makeText(context, context.getString(R.string.delete_own_error_msg), Toast.LENGTH_SHORT).show();
             } else {
-                new AlertDialog.Builder(context)
-                        .setTitle("What would you like to do?")
-                        .setMessage("Choose an action for this app:")
-                        .setNegativeButton("Uninstall", (dialog, which) -> {
-                            //Uninstall the app
-                            Intent intent = new Intent(Intent.ACTION_DELETE);
-                            intent.setData(Uri.fromParts("package", packageInfo.packageName, null));
-                            context.startActivity(intent);
-                        })
-                        .setPositiveButton("Backup and Uninstall", (dialog, which) -> {
-                            if (packageInfo.applicationInfo == null) {
-                                Log.e(TAG, "Application info is null. Can not get information of apk file from null application info.");
-                                return;
-                            }
-                            //Backup the APK and uninstall
-                            File file = new File(packageInfo.applicationInfo.publicSourceDir);
-                            File backupFile = new File(Environment.getExternalStorageDirectory() + "/Download/APK-backups/" +
-                                    context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
-                            Utils.copyFileAsyncOnUi(context, file, backupFile, null, () -> {
-                                Toast.makeText(context, "Backup complete:\n" + backupFile.getAbsolutePath(),
-                                        Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(Intent.ACTION_DELETE);
-                                intent.setData(Uri.fromParts("package", packageInfo.packageName, null));
-                                context.startActivity(intent);
-                            });
-                        })
-                        .setNeutralButton("Cancel", null)
-                        .show();
+                ApkUtils.uninstallApp(context, packageInfo);
             }
         });
 

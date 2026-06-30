@@ -85,4 +85,7 @@
     <string name="backup">Backup</string>
     <string name="uninstall">Uninstall</string>
     <string name="open">Open</string>
+    <string name="confirm_uninstall_app">Confirm Uninstall \"%s\"</string>
+    <string name="msg_uninstall_app_alert_dialog">Whould you want to uninstall \"%s\"? Also you can make a backup before uninstalling. What do you want to do?</string>
+    <string name="backup_and_uninstall">Backup And Uninstall</string>
 </resources>
