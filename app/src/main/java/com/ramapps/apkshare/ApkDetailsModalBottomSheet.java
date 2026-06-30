@@ -51,6 +51,11 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         initComponents(contentView);
         addListeners(context, packageInfo);
         loadDetails(context, packageInfo);
+        // Hide uninstall and open button for this app to avoid some potential bugs or UX breaks.
+        if (context.getPackageName().equals(packageInfo.packageName)) {
+            buttonUninstall.setVisibility(View.GONE);
+            buttonPlay.setVisibility(View.GONE);
+        }
         return bottomSheetDialog;
     }
 
