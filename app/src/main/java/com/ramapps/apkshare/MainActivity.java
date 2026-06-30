@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         Utils.copyFilesAsyncOnUi(
                 MainActivity.this,
                 getApkFilesFromPackageInfoList(selectedPackages),
-                getApkNamedFilesFromPackageInfoList(selectedPackages),
+                ApkUtils.getApkNamesFromPackageInfoList(MainActivity.this, selectedPackages),
                 cachedApksDir,
                 () -> Utils.shareCachedApks(MainActivity.this)
         );
@@ -226,18 +226,6 @@ public class MainActivity extends AppCompatActivity {
             apkFiles.add(new File(packageInfo.applicationInfo.publicSourceDir));
         }
         return apkFiles;
-    }
-
-    private List<String> getApkNamedFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
-        List<String> apkNamedFiles = new ArrayList<>();
-        for (PackageInfo packageInfo : packageInfos) {
-            if (packageInfo.applicationInfo == null) {
-                Log.e(TAG, "This package info provides a null application info object!");
-                continue;
-            }
-            apkNamedFiles.add(getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
-        }
-        return apkNamedFiles;
     }
 
     private List<AndroidPackageSimpleModel> searchForApps(String keyword) {

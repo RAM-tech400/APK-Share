@@ -13,6 +13,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ApkUtils {
@@ -63,6 +65,18 @@ public class ApkUtils {
         File cacheApkFile = new File(context.getCacheDir() + "/ApkFiles/" + apkName + ".apk");
         Utils.deleteRecursive(Objects.requireNonNull(cacheApkFile.getParentFile()));
         Utils.copyFileAsyncOnUi(context, apkFile, cacheApkFile, apkName + ".apk", () -> Utils.shareCachedApks(context));
+    }
+
+    public static List<String> getApkNamesFromPackageInfoList(Context context, List<PackageInfo> packageInfos) {
+        List<String> apkNamedFiles = new ArrayList<>();
+        for (PackageInfo packageInfo : packageInfos) {
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "This package info provides a null application info object!");
+                continue;
+            }
+            apkNamedFiles.add(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo) + ".apk");
+        }
+        return apkNamedFiles;
     }
 
 }
