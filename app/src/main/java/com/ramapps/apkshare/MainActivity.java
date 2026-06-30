@@ -46,7 +46,6 @@ import com.google.android.material.loadingindicator.LoadingIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "The recycler view provide null as its adapter!");
                 return;
             }
-            shareSelectedPackages(adapter.getSelectedItems());
+            ApkUtils.sharePackageInfoListAsApkFiles(MainActivity.this, adapter.getSelectedItems());
         });
 
         fabSendSearchView.setOnClickListener(v -> {
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "The recycler view (At search view section) provide null as its adapter!");
                 return;
             }
-            shareSelectedPackages(adapter.getSelectedItems());
+            ApkUtils.sharePackageInfoListAsApkFiles(MainActivity.this, adapter.getSelectedItems());
         });
 
         searchView.getEditText().addTextChangedListener(new TextWatcher() {
@@ -202,18 +201,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void shareSelectedPackages(List<PackageInfo> selectedPackages) {
-        File cachedApksDir = new File(getCacheDir() + "/ApkFiles/");
-        Utils.deleteRecursive(cachedApksDir);
-        Utils.copyFilesAsyncOnUi(
-                MainActivity.this,
-                ApkUtils.getApkFilesFromPackageInfoList(selectedPackages),
-                ApkUtils.getApkNamesFromPackageInfoList(MainActivity.this, selectedPackages),
-                cachedApksDir,
-                () -> Utils.shareCachedApks(MainActivity.this)
-        );
     }
 
     private List<AndroidPackageSimpleModel> searchForApps(String keyword) {

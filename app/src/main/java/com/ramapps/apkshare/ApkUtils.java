@@ -67,6 +67,18 @@ public class ApkUtils {
         Utils.copyFileAsyncOnUi(context, apkFile, cacheApkFile, apkName + ".apk", () -> Utils.shareCachedApks(context));
     }
 
+    public static void sharePackageInfoListAsApkFiles(Context context, List<PackageInfo> selectedPackages) {
+        File cachedApksDir = new File(context.getCacheDir() + "/ApkFiles/");
+        Utils.deleteRecursive(cachedApksDir);
+        Utils.copyFilesAsyncOnUi(
+                context,
+                ApkUtils.getApkFilesFromPackageInfoList(selectedPackages),
+                ApkUtils.getApkNamesFromPackageInfoList(context, selectedPackages),
+                cachedApksDir,
+                () -> Utils.shareCachedApks(context)
+        );
+    }
+
     public static List<File> getApkFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
         List<File> apkFiles = new ArrayList<>();
         for (PackageInfo packageInfo : packageInfos) {
