@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        // TODO: Move preferences into the Utils class.
         searchView = findViewById(R.id.mainSearchView);
         recyclerView = findViewById(R.id.mainRecyclerView);
         recyclerViewSearchResults = findViewById(R.id.mainRecyclerViewSearchResults);
