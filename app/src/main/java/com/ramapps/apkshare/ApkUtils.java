@@ -67,6 +67,18 @@ public class ApkUtils {
         Utils.copyFileAsyncOnUi(context, apkFile, cacheApkFile, apkName + ".apk", () -> Utils.shareCachedApks(context));
     }
 
+    public static List<File> getApkFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
+        List<File> apkFiles = new ArrayList<>();
+        for (PackageInfo packageInfo : packageInfos) {
+            if (packageInfo.applicationInfo == null) {
+                Log.e(TAG, "This package info provides a null application info object!");
+                continue;
+            }
+            apkFiles.add(new File(packageInfo.applicationInfo.publicSourceDir));
+        }
+        return apkFiles;
+    }
+
     public static List<String> getApkNamesFromPackageInfoList(Context context, List<PackageInfo> packageInfos) {
         List<String> apkNamedFiles = new ArrayList<>();
         for (PackageInfo packageInfo : packageInfos) {

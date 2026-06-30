@@ -209,23 +209,11 @@ public class MainActivity extends AppCompatActivity {
         Utils.deleteRecursive(cachedApksDir);
         Utils.copyFilesAsyncOnUi(
                 MainActivity.this,
-                getApkFilesFromPackageInfoList(selectedPackages),
+                ApkUtils.getApkFilesFromPackageInfoList(selectedPackages),
                 ApkUtils.getApkNamesFromPackageInfoList(MainActivity.this, selectedPackages),
                 cachedApksDir,
                 () -> Utils.shareCachedApks(MainActivity.this)
         );
-    }
-
-    private List<File> getApkFilesFromPackageInfoList(List<PackageInfo> packageInfos) {
-        List<File> apkFiles = new ArrayList<>();
-        for (PackageInfo packageInfo : packageInfos) {
-            if (packageInfo.applicationInfo == null) {
-                Log.e(TAG, "This package info provides a null application info object!");
-                continue;
-            }
-            apkFiles.add(new File(packageInfo.applicationInfo.publicSourceDir));
-        }
-        return apkFiles;
     }
 
     private List<AndroidPackageSimpleModel> searchForApps(String keyword) {
