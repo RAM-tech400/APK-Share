@@ -265,4 +265,31 @@ public class ApkUtils {
         return AppCategory.UNKNOWN;
     }
 
+    public static String getAppCategoryLabel(Context context, AppCategory appCategory) {
+        HashMap <AppCategory, String> appCategoryStringHashMap = new HashMap<>();
+        appCategoryStringHashMap.put(AppCategory.GAME, context.getString(R.string.app_category_game));
+        appCategoryStringHashMap.put(AppCategory.AUDIO, context.getString(R.string.app_category_audio));
+        appCategoryStringHashMap.put(AppCategory.VIDEO, context.getString(R.string.app_category_video));
+        appCategoryStringHashMap.put(AppCategory.IMAGE, context.getString(R.string.app_category_image));
+        appCategoryStringHashMap.put(AppCategory.SOCIAL, context.getString(R.string.app_category_social));
+        appCategoryStringHashMap.put(AppCategory.NEWS, context.getString(R.string.app_category_news));
+        appCategoryStringHashMap.put(AppCategory.MAPS, context.getString(R.string.app_category_maps));
+        appCategoryStringHashMap.put(AppCategory.PRODUCTIVITY, context.getString(R.string.app_category_productivity));
+        appCategoryStringHashMap.put(AppCategory.ACCESSIBILITY, context.getString(R.string.app_category_accessibility));
+        appCategoryStringHashMap.put(AppCategory.SHOPPING, context.getString(R.string.app_category_shoping));
+        appCategoryStringHashMap.put(AppCategory.FINANCE, context.getString(R.string.app_category_finance));
+        appCategoryStringHashMap.put(AppCategory.HEALTH, context.getString(R.string.app_category_health));
+        appCategoryStringHashMap.put(AppCategory.EDUCATION, context.getString(R.string.app_category_education));
+        appCategoryStringHashMap.put(AppCategory.COMMUNICATION, context.getString(R.string.app_category_communication));
+        appCategoryStringHashMap.put(AppCategory.BROWSER, context.getString(R.string.app_category_browser));
+        appCategoryStringHashMap.put(AppCategory.FOOD, context.getString(R.string.app_category_food));
+        appCategoryStringHashMap.put(AppCategory.TRAVEL, context.getString(R.string.app_category_travel));
+        appCategoryStringHashMap.put(AppCategory.TOOLS, context.getString(R.string.app_category_tools));
+        appCategoryStringHashMap.put(AppCategory.SYSTEM, context.getString(R.string.app_category_system));
+        appCategoryStringHashMap.put(AppCategory.LAUNCHER, context.getString(R.string.app_category_launcher));
+        appCategoryStringHashMap.put(AppCategory.UNKNOWN, context.getString(R.string.app_category_unknown));
+
+        return appCategoryStringHashMap.get(appCategory);
+    }
+
 }
