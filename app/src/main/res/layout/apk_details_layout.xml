@@ -142,8 +142,16 @@
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             android:id="@+id/apk_details_layout_text_view_label_size" />
 
-
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_marginTop="24dp"
+            android:id="@+id/apk_details_layout_text_view_label_category" />
+
+
+            <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/version_code"

@@ -31,7 +31,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
     private final PackageInfo packageInfo;
 
     private ImageView imageViewLauncherIcon;
-    private TextView textViewAppLabel, textViewAppPackageName, textViewVersionCode, textViewVersionName, textViewSize, textViewInstallationTime, textViewLastUpdateTime, textViewPermissions;
+    private TextView textViewAppLabel, textViewAppPackageName, textViewCategory, textViewVersionCode, textViewVersionName, textViewSize, textViewInstallationTime, textViewLastUpdateTime, textViewPermissions;
     private MaterialButton buttonSend, buttonBackup, buttonPlay, buttonUninstall, buttonViewAppSettings;
     private MaterialDivider dividerActionButtonsAndDetailsSection;
     private NestedScrollView nestedScrollDetailsSection;
@@ -63,6 +63,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         imageViewLauncherIcon = parentView.findViewById(R.id.apk_details_layout_image_view_launcher_icon);
         textViewAppLabel = parentView.findViewById(R.id.apk_details_layout_text_view_app_name);
         textViewAppPackageName = parentView.findViewById(R.id.apk_details_layout_text_view_package_name);
+        textViewCategory = parentView.findViewById(R.id.apk_details_layout_text_view_label_category);
         textViewSize = parentView.findViewById(R.id.apk_details_layout_text_view_label_size);
         textViewVersionCode = parentView.findViewById(R.id.apk_details_layout_text_view_label_version_code);
         textViewVersionName = parentView.findViewById(R.id.apk_details_layout_text_view_label_version_name);
@@ -124,6 +125,7 @@ public class ApkDetailsModalBottomSheet extends BottomSheetDialogFragment {
         textViewAppLabel.setText(context.getPackageManager().getApplicationLabel(packageInfo.applicationInfo));
         textViewAppPackageName.setText(packageInfo.packageName);
         imageViewLauncherIcon.setImageDrawable(context.getPackageManager().getApplicationIcon(packageInfo.applicationInfo));
+        textViewCategory.setText(getString(R.string.category) + ": " + ApkUtils.getAppCategoryLabel(context, ApkUtils.getAppCategory(context, packageInfo)));
         textViewSize.setText(context.getString(R.string.size) + ": " + Utils.getHumanReadableFileSize(context, new File(packageInfo.applicationInfo.publicSourceDir).length()));
         textViewVersionName.setText(context.getString(R.string.version_name) + ": " + packageInfo.versionName);
         textViewInstallationTime.setText(context.getString(R.string.installation_time) + ": " + Utils.epocTimeToHumanReadableFormat(packageInfo.firstInstallTime));
